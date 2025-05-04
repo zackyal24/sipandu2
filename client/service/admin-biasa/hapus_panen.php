@@ -16,9 +16,13 @@ if ($id > 0) {
     $query = mysqli_query($conn, "DELETE FROM monitoring_data_panen WHERE id = $id");
 
     if ($query) {
-        echo "<script>alert('Data berhasil dihapus!'); window.location.href='dashboard.php';</script>";
+        header("Location: dashboard.php?status=success");
+        exit;
     } else {
-        echo "<script>alert('Gagal menghapus data: " . mysqli_error($conn) . "'); window.history.back();</script>";
+        echo "<script>
+            alert('Gagal menghapus data: " . mysqli_error($conn) . "');
+            window.history.back();
+        </script>";
     }
 } else {
     echo "<script>alert('ID tidak valid!'); window.history.back();</script>";

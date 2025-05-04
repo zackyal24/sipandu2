@@ -23,8 +23,10 @@ if ($data && password_verify($password, $data['password'])) {
         $_SESSION['admin'] = $data['username'];
         header("Location: ../service/admin-biasa/dashboard.php");
     } else {
-        $_SESSION['user'] = $data['username'];
-        header("Location: ../service/form-user/form_monitoring.php");
+        $_SESSION['user_id'] = $data['id']; // Simpan user_id ke sesi
+        $_SESSION['username'] = $data['username'];
+        $_SESSION['role'] = $data['role']; // Pastikan role juga disimpan
+        header("Location: ../service/form-user/dashboard_user.php");
     }
     exit;
 } else {

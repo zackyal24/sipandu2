@@ -4,10 +4,34 @@ include '../../../server/config/koneksi.php';
 
 // Cek login
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
-    header("Location: ../index.php");
+  header("Location: ../index.php");
+  exit;
+}
+
+// Ambil ID dari parameter URL
+$id = $_GET['id'] ?? null;
+if (!$id) {
+    echo "<script>alert('ID tidak ditemukan!'); window.location.href='dashboard_user.php';</script>";
     exit;
 }
+
+// Ambil data berdasarkan ID
+$query = "SELECT * FROM monitoring_data_panen WHERE id = ?";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$data = mysqli_fetch_assoc($result);
+
+if (!$data) {
+    echo "<script>alert('Data tidak ditemukan!'); window.location.href='dashboard_user.php';</script>";
+    exit;
+}
+
+// Cek apakah data sudah selesai
+$isCompleted = $data['status'] === 'selesai';
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -84,7 +108,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
             Form Panel
         </a>
         <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['user']); ?></strong></span>
+            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
             <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
         </div>
     </div>
@@ -94,7 +118,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
 <div class="container my-5">
   <div class="card mx-auto">
     <div class="text-center pb-5">
-      <img src="../../assets/logo.png" alt="Logo BPS" class="logo">
+      <div class="d-flex justify-content-start mb-3">
+          <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+              ←
+          </a>
+      </div>
+      <!-- <img src="../../assets/logo.png" alt="Logo BPS" class="logo"> -->
       <h1>Form Data Ubinan</h1>
       <h5 class="text-muted">Badan Pusat Statistik (BPS) Kabupaten Bekasi</h5>
     </div>
@@ -107,45 +136,51 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
       <p class="mt-2">Menyimpan data, mohon tunggu...</p>
     </div>
 
-    <form action="simpan_panen.php" method="POST" enctype="multipart/form-data">
+    <form action="simpan_ubinan.php" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="id" value="<?= htmlspecialchars($data['id']); ?>">
+
       <div class="mb-3">
         <label class="form-label">Nama Petani</label>
-        <input type="text" name="nama_petani" class="form-control" placeholder="Nama Petani" required>
+        <input type="text" name="nama_petani" class="form-control" value="<?= htmlspecialchars($data['nama_petani']); ?>" <?= $isCompleted ? 'readonly' : ''; ?> required>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Lokasi Lahan (Desa/Kecamatan)</label>
-        <input type="text" name="lokasi" class="form-control" placeholder="Contoh: Desa Sukamaju, Kec. Cikarang" required>
+        <input type="text" name="lokasi" class="form-control" value="<?= htmlspecialchars($data['lokasi']); ?>" <?= $isCompleted ? 'readonly' : ''; ?> required>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Tanggal Panen</label>
-        <input type="date" name="tanggal_panen" class="form-control" required>
+        <input type="date" name="tanggal_panen" class="form-control" value="<?= htmlspecialchars($data['tanggal_panen']); ?>" <?= $isCompleted ? 'readonly' : ''; ?> required>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Upload Foto Petani</label>
-        <input type="file" name="foto_petani" class="form-control" accept="image/*" required>
+        <input type="file" name="foto_petani" class="form-control" accept="image/*" <?= $isCompleted ? 'disabled' : ''; ?> required>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Upload Foto Setelah Potong Padi</label>
-        <input type="file" name="foto_potong" class="form-control" accept="image/*" required>
+        <input type="file" name="foto_potong" class="form-control" accept="image/*" <?= $isCompleted ? 'disabled' : ''; ?> required>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Upload Foto Timbangan</label>
-        <input type="file" name="foto_timbangan" class="form-control" accept="image/*" required>
+        <input type="file" name="foto_timbangan" class="form-control" accept="image/*" <?= $isCompleted ? 'disabled' : ''; ?> required>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Berat Hasil Panen (kg)</label>
-        <input type="number" name="berat_panen" class="form-control" placeholder="Masukkan berat hasil panen" required>
+        <input type="number" name="berat_panen" class="form-control" value="<?= htmlspecialchars($data['berat_panen'] ?? ''); ?>" step="0.01" <?= $isCompleted ? 'readonly' : ''; ?> required>
       </div>
 
-      <div class="d-grid pt-3">
-        <button type="submit" class="btn btn-primary" id="submitButton">Simpan Data Panen</button>
-      </div>
+      <?php if (!$isCompleted): ?>
+        <div class="d-grid pt-3">
+          <button type="submit" class="btn btn-primary">Simpan Data ubinan</button>
+        </div>
+      <?php else: ?>
+        <div class="alert alert-success text-center mt-3">Data sudah selesai dan tidak dapat diedit.</div>
+      <?php endif; ?>
     </form>
   </div>
 </div>
@@ -164,6 +199,10 @@ document.querySelector('form').addEventListener('submit', function() {
   document.getElementById('submitButton').disabled = true;
   document.getElementById('submitButton').innerText = 'Menyimpan...';
 });
+
+function confirmSubmit() {
+    return confirm("Apakah Anda yakin semua data sudah benar?");
+}
 </script>
 
 </body>

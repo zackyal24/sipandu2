@@ -68,10 +68,28 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
 
 <!-- Main Content -->
 <div class="container my-5">
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus data ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <a href="#" id="deleteConfirmButton" class="btn btn-danger">Hapus</a>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold mb-0">Data Monitoring Panen</h3>
         <div>
-            <a href="export_excell.php" class="btn btn-success btn-sm btn-custom me-2">Export Excel</a>
+            <a href="export_excel.php" class="btn btn-success btn-sm btn-custom me-2">Export Excel</a>
         </div>
     </div>
 
@@ -100,9 +118,9 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
                             <td class="text-center"><?= htmlspecialchars($row['berat_panen']); ?></td>
                             <td class="text-center">
                                 <a href="detail_panen.php?id=<?= $row['id']; ?>" class="btn btn-info btn-sm btn-custom">Detail</a>
-                                <a href="hapus_panen.php?id=<?= $row['id']; ?>" 
-                                onclick="return confirm('Yakin ingin menghapus data ini?')"
-                                class="btn btn-danger btn-sm btn-custom">Hapus</a>
+                                <a href="#" 
+                                class="btn btn-danger btn-sm btn-custom deleteButton" 
+                                data-id="<?= $row['id']; ?>">Hapus</a>
                             </td>
                         </tr>
                         <?php endwhile; ?>
@@ -151,6 +169,16 @@ $(document).ready(function () {
             cell.innerHTML = i + 1;
         });
     }).draw();
+
+    $(document).ready(function () {
+    // Tangkap klik tombol Hapus
+    $('.deleteButton').on('click', function () {
+        var id = $(this).data('id'); // Ambil ID dari tombol
+        var deleteUrl = 'hapus_panen.php?id=' + id; // URL untuk hapus
+        $('#deleteConfirmButton').attr('href', deleteUrl); // Set URL ke tombol konfirmasi
+        $('#confirmDeleteModal').modal('show'); // Tampilkan modal
+        });
+    });
 });
 </script>
 
