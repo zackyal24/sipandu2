@@ -126,92 +126,95 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
             </a>
         </div>
     </div>
+
+    <!-- Ringkasan Data Terbaru -->
+    <div class="row mt-5">
+        <!-- Kolom Kiri: Data Ubinan Terbaru -->
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span>5 Data Ubinan Terbaru</span>
+                    <a href="monitoring_panen.php" class="btn btn-sm btn-light">Lihat Semua</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Petani</th>
+                                    <th>Lokasi</th>
+                                    <th>Tanggal</th>
+                                    <th>Hasil (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $sql = "SELECT nama_petani, lokasi, tanggal_panen, berat_panen
+                                    FROM monitoring_data_panen
+                                    ORDER BY id DESC LIMIT 5";
+                            $result = mysqli_query($conn, $sql);
+                            $no = 1;
+                            while($row = mysqli_fetch_assoc($result)): ?>
+                                <tr>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= htmlspecialchars($row['nama_petani']); ?></td>
+                                    <td><?= htmlspecialchars($row['lokasi']); ?></td>
+                                    <td><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                                    <td><?= htmlspecialchars($row['berat_panen']); ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Kolom Kanan: User Baru Submit Ubinan -->
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <span>5 User Baru Submit Ubinan</span>
+                    <a href="monitoring_akun.php" class="btn btn-sm btn-light">Lihat Semua</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama User</th>
+                                    <th>Username</th>
+                                    <th>Waktu Submit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $sql = "SELECT u.nama_lengkap, u.username, m.tanggal_panen
+                                    FROM monitoring_data_panen m
+                                    LEFT JOIN users u ON m.user_id = u.id
+                                    ORDER BY m.id DESC LIMIT 5";
+                            $result = mysqli_query($conn, $sql);
+                            $no = 1;
+                            while($row = mysqli_fetch_assoc($result)): ?>
+                                <tr>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= htmlspecialchars($row['nama_lengkap']); ?></td>
+                                    <td><?= htmlspecialchars($row['username']); ?></td>
+                                    <td><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Ringkasan Data Terbaru -->
-<div class="row mt-5">
-    <!-- Kolom Kiri: Data Ubinan Terbaru -->
-    <div class="col-lg-7 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <span>5 Data Ubinan Terbaru</span>
-                <a href="monitoring_panen.php" class="btn btn-sm btn-light">Lihat Semua</a>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Petani</th>
-                                <th>Lokasi</th>
-                                <th>Tanggal</th>
-                                <th>Hasil (kg)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $sql = "SELECT nama_petani, lokasi, tanggal_panen, berat_panen
-                                FROM monitoring_data_panen
-                                ORDER BY id DESC LIMIT 5";
-                        $result = mysqli_query($conn, $sql);
-                        $no = 1;
-                        while($row = mysqli_fetch_assoc($result)): ?>
-                            <tr>
-                                <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['nama_petani']); ?></td>
-                                <td><?= htmlspecialchars($row['lokasi']); ?></td>
-                                <td><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                                <td><?= htmlspecialchars($row['berat_panen']); ?></td>
-                            </tr>
-                        <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Kolom Kanan: User Baru Submit Ubinan -->
-    <div class="col-lg-5 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <span>5 User Baru Submit Ubinan</span>
-                <a href="monitoring_akun.php" class="btn btn-sm btn-light">Lihat Semua</a>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama User</th>
-                                <th>Username</th>
-                                <th>Waktu Submit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $sql = "SELECT u.nama_lengkap, u.username, m.tanggal_panen
-                                FROM monitoring_data_panen m
-                                LEFT JOIN users u ON m.user_id = u.id
-                                ORDER BY m.id DESC LIMIT 5";
-                        $result = mysqli_query($conn, $sql);
-                        $no = 1;
-                        while($row = mysqli_fetch_assoc($result)): ?>
-                            <tr>
-                                <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['nama_lengkap']); ?></td>
-                                <td><?= htmlspecialchars($row['username']); ?></td>
-                                <td><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                            </tr>
-                        <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
+
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-4 text-muted">
