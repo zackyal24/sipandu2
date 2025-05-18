@@ -155,17 +155,22 @@ $isCompleted = $data['status'] === 'selesai';
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Upload Foto Petani</label>
+        <label class="form-label">Nomor Sub Segmen (Kode Kecamatan)</label>
+        <input type="text" name="nomor_sub_segmen" placeholder="Masukkan 11 digit angka" class="form-control" value="<?= htmlspecialchars($data['nomor_sub_segmen'] ?? ''); ?>" pattern="\d{11}" maxlength="11" <?= $isCompleted ? 'readonly' : ''; ?> required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Upload Foto Serah Terima Uang Pengganti Responden</label>
         <input type="file" name="foto_petani" class="form-control" accept="image/*" <?= $isCompleted ? 'disabled' : ''; ?> required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Upload Foto Setelah Potong Padi</label>
+        <label class="form-label">Upload Foto Setelah Diotong</label>
         <input type="file" name="foto_potong" class="form-control" accept="image/*" <?= $isCompleted ? 'disabled' : ''; ?> required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Upload Foto Timbangan</label>
+        <label class="form-label">Upload Foto Berat Gabah yang Ditimbang</label>
         <input type="file" name="foto_timbangan" class="form-control" accept="image/*" <?= $isCompleted ? 'disabled' : ''; ?> required>
       </div>
 

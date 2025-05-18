@@ -10,14 +10,33 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
 
 // Ambil data dari form
 $nama_petani = $_POST['nama_petani'];
-$lokasi = $_POST['lokasi'];
+// $lokasi = $_POST['lokasi'];
 $tanggal_panen = $_POST['tanggal_panen'];
-$user_id = $_SESSION['user_id']; // Ambil user_id dari sesi
+$user_id = $_SESSION['user_id'];
+$nomor_sub_segmen = $_POST['nomor_sub_segmen'];
+$status = $_POST['status'];
+
+// Ambil id kecamatan & desa dari form
+$id_kecamatan = $_POST['kecamatan'];
+$id_desa = $_POST['desa'];
+
+// Ambil nama kecamatan
+$qKec = mysqli_query($conn, "SELECT nama_kecamatan FROM kecamatan WHERE id='$id_kecamatan'");
+$kec = mysqli_fetch_assoc($qKec);
+$nama_kecamatan = $kec['nama_kecamatan'] ?? '';
+
+// Ambil nama desa
+$qDesa = mysqli_query($conn, "SELECT nama_desa FROM desa WHERE id='$id_desa'");
+$desa = mysqli_fetch_assoc($qDesa);
+$nama_desa = $desa['nama_desa'] ?? '';
+
+// Gabungkan
+$lokasi = 'Desa ' . $nama_desa . ', ' . $nama_kecamatan;
 
 // Simpan data ke database
-$query = "INSERT INTO monitoring_data_panen (user_id, nama_petani, lokasi, tanggal_panen, status) VALUES (?, ?, ?, ?, 'belum selesai')";
+$query = "INSERT INTO monitoring_data_panen (user_id, nama_petani, lokasi, tanggal_panen, nomor_sub_segmen, status) VALUES (?, ?, ?, ?, ?, ?)";
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "isss", $user_id, $nama_petani, $lokasi, $tanggal_panen);
+mysqli_stmt_bind_param($stmt, "isssss", $user_id, $nama_petani, $lokasi, $tanggal_panen, $nomor_sub_segmen, $status);
 
 if (mysqli_stmt_execute($stmt)) {
     echo "<!DOCTYPE html>

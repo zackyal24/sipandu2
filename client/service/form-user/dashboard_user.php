@@ -86,12 +86,14 @@ $result = mysqli_stmt_get_result($stmt);
                 <td class="text-center"><?= $no++; ?></td>
                 <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
                 <td class="text-center">
-                    <?php if ($row['status'] !== 'selesai'): ?>
-                        <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-success btn-sm btn-custom">Isi Form</a>
-                    <?php else: ?>
-                        <button class="btn btn-secondary btn-sm btn-custom" disabled>Selesai</button>
-                    <?php endif; ?>
-                </td>
+                  <?php if ($row['status'] === 'belum selesai'): ?>
+                      <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-success btn-sm btn-custom">Isi Form</a>
+                  <?php elseif ($row['status'] === 'tidak bisa'): ?>
+                      <button class="btn btn-danger btn-sm btn-custom" disabled>Tidak Bisa Ubinan</button>
+                  <?php else: ?>
+                      <button class="btn btn-secondary btn-sm btn-custom" disabled>Selesai</button>
+                  <?php endif; ?>
+              </td>
             </tr>
         <?php endwhile; ?>
     <?php else: ?>
@@ -131,10 +133,12 @@ $(document).ready(function () {
     columnDefs: [
       { orderable: false, targets: 0 } // Kolom nomor tidak dapat diurutkan
     ],
-    rowCallback: function (row, data, index) {
-      // Tambahkan nomor urut dinamis
-      $('td:eq(0)', row).html(index + 1);
-    }
+    rowCallback: function (row, data, displayIndex, displayIndexFull) {
+  var table = $('#tabelUbinan').DataTable();
+  var pageInfo = table.page.info();
+  var nomor = pageInfo.start + displayIndex + 1;
+  $('td:eq(0)', row).html(nomor);
+}
   });
 });
 </script>

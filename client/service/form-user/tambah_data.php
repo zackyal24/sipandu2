@@ -8,6 +8,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -105,13 +106,51 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Lokasi Lahan (Desa/Kecamatan)</label>
-        <input type="text" name="lokasi" class="form-control" placeholder="Contoh: Desa Sukamaju, Kec. Cikarang" required>
+        <label class="form-label">Kecamatan</label>
+        <select name="kecamatan" id="kecamatan" class="form-control" required>
+          <option value="">-- Pilih Kecamatan --</option>
+          <?php
+            $result = mysqli_query($conn, 'SELECT id, nama_kecamatan FROM kecamatan ORDER BY nama_kecamatan ASC');
+            while($kecamatan = mysqli_fetch_assoc($result)) {
+              echo '<option value="'.$kecamatan['id'].'">'.htmlspecialchars($kecamatan['nama_kecamatan']).'</option>';
+            }
+          ?>
+        </select>
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Desa</label>
+        <select name="desa" id="desa" class="form-control" required>
+          <option value="">-- Pilih Desa --</option>
+          
+        </select>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Tanggal Panen</label>
         <input type="date" name="tanggal_panen" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nomor Sub Segmen</label>
+        <input type="text"
+         name="nomor_sub_segmen"
+         class="form-control"
+         placeholder="Masukkan maksimal 11 karakter"
+         value="<?= htmlspecialchars($data['nomor_sub_segmen'] ?? ''); ?>"
+         pattern="[A-Za-z0-9]{1,11}"
+         maxlength="11"
+         required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-control" required>
+          <option value="">-- Pilih Status --</option>
+          <option value="belum selesai">Belum dilakukan ubinan</option>
+          <option value="selesai">Sudah dilakukan ubinan</option>
+          <option value="tidak bisa">Tidak bisa dilakukan ubinan</option>
+        </select>
       </div>
 
       <div class="d-grid pt-3">
@@ -125,7 +164,25 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
   &copy; <?php echo date("Y"); ?> Monitoring Panen Umbinan | Kabupaten Bekasi
 </footer>
 
+<script>
+document.getElementById('kecamatan').addEventListener('change', function() {
+    var kecamatanId = this.value;
+    var desaSelect = document.getElementById('desa');
+    desaSelect.innerHTML = '<option value="">-- Pilih Desa --</option>';
+    if (kecamatanId) {
+        fetch('get_desa.php?id_kecamatan=' + kecamatanId)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(function(desa) {
+                    desaSelect.innerHTML += `<option value="${desa.id}">${desa.nama_desa}</option>`;
+                });
+            });
+    }
+});
+</script>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

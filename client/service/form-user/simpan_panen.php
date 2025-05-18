@@ -71,7 +71,7 @@ function uploadFoto($inputName, $folderName) {
     }
 
     // Validasi ukuran file (maksimal 2MB)
-    if ($fileSize > 2 * 1024 * 1024) {
+    if ($fileSize > 8 * 1024 * 1024) {
         return false;
     }
 
