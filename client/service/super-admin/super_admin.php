@@ -52,11 +52,11 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
+    <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="#">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            Superadmin Panel
+            Dashboard
         </a>
         <div class="d-flex align-items-center">
             <span class="text-white me-3">👋 Halo, <strong><?= $nama_pengguna; ?></strong></span>
@@ -65,11 +65,49 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
     </div>
 </nav>
 
-<!-- Main Content -->
-<div class="container my-5">
-    <h2 class="mb-4">Dashboard Monitoring Panen</h2>
+<!-- Layout Wrapper -->
+<div class="container-fluid" style="padding-top:70px;">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-3 col-lg-2 d-md-block bg-white border-end shadow-sm sidebar py-4 position-fixed" style="height:100vh; z-index:1030;">
+      <div class="position-sticky">
+        <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-primary text-decoration-none px-3">
+          <span class="fs-5 fw-bold">Superadmin</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto px-2">
+          <li class="nav-item mb-2">
+            <a href="super_admin.php" class="nav-link active" aria-current="page">
+              <i class="bi bi-speedometer2 me-2"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item mb-2">
+            <a href="monitoring_panen.php" class="nav-link text-primary">
+              <i class="bi bi-basket-fill me-2"></i> Data Ubinan
+            </a>
+          </li>
+          <li class="nav-item mb-2">
+            <a href="monitoring_akun.php" class="nav-link text-primary">
+              <i class="bi bi-person-gear me-2"></i> Manajemen User
+            </a>
+          </li>
+          <li class="nav-item mb-2">
+            <a href="desa_kecamatan.php" class="nav-link text-primary">
+              <i class="bi bi-geo-alt-fill me-2"></i> Desa / Kecamatan
+            </a>
+          </li>
+        </ul>
+        <hr>
+        <div class="px-2">
+          <a href="../../auth/logout.php" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+        </div>
+      </div>
+    </nav>
 
-    <div class="row g-4">
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 px-3" style="margin-left:240px;">
+      <h2 class="mb-4">Dashboard Monitoring Panen</h2>
+      <div class="row g-4">
         <!-- Statistik: Total Panen -->
         <div class="col-sm-6 col-xl-3">
             <div class="card card-stat text-white bg-success">
@@ -125,21 +163,20 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
                 </div>
             </a>
         </div>
-    </div>
-
-    <!-- Ringkasan Data Terbaru -->
-    <div class="row mt-5">
+      </div>
+      <!-- Ringkasan Data Terbaru -->
+      <div class="row mt-5">
         <!-- Kolom Kiri: Data Ubinan Terbaru -->
         <div class="col-lg-7 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <span>5 Data Ubinan Terbaru</span>
-                    <a href="monitoring_panen.php" class="btn btn-sm btn-light">Lihat Semua</a>
+                    <span><i class="bi bi-basket-fill me-2"></i>5 Data Ubinan Terbaru</span>
+                    <a href="monitoring_panen.php" class="btn btn-sm btn-light"><i class="bi bi-list-ul me-1"></i>Lihat Semua</a>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead class="table-light">
+                    <div class="table-responsive" style="padding-bottom: 12px; overflow-x: unset;">
+                        <table class="table table-sm table-hover align-middle mb-0" id="table-ubinan" style="cursor:pointer;">
+                            <thead style="background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); color: #222;">
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Petani</th>
@@ -150,18 +187,18 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
                             </thead>
                             <tbody>
                             <?php
-                            $sql = "SELECT nama_petani, lokasi, tanggal_panen, berat_panen
+                            $sql = "SELECT id, nama_petani, desa, tanggal_panen, berat_panen
                                     FROM monitoring_data_panen
                                     ORDER BY id DESC LIMIT 5";
                             $result = mysqli_query($conn, $sql);
                             $no = 1;
                             while($row = mysqli_fetch_assoc($result)): ?>
-                                <tr>
+                                <tr class="table-row-link-ubinan" data-href="detail_panen.php?id=<?= $row['id']; ?>">
                                     <td><?= $no++; ?></td>
-                                    <td><?= htmlspecialchars($row['nama_petani']); ?></td>
-                                    <td><?= htmlspecialchars($row['lokasi']); ?></td>
-                                    <td><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                                    <td><?= htmlspecialchars($row['berat_panen']); ?></td>
+                                    <td><span class="fw-semibold text-primary"><i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($row['nama_petani']); ?></span></td>
+                                    <td><span class="badge bg-info text-dark"><i class="bi bi-geo-alt-fill me-1"></i><?= htmlspecialchars($row['desa']); ?></span></td>
+                                    <td><span class="badge bg-light text-dark border border-primary shadow-sm"><i class="bi bi-calendar-event me-1"></i><?= htmlspecialchars($row['tanggal_panen']); ?></span></td>
+                                    <td><span class="badge bg-success"><i class="bi bi-basket-fill me-1"></i><?= htmlspecialchars($row['berat_panen']); ?></span></td>
                                 </tr>
                             <?php endwhile; ?>
                             </tbody>
@@ -172,15 +209,15 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
         </div>
         <!-- Kolom Kanan: User Baru Submit Ubinan -->
         <div class="col-lg-5 mb-4">
-            <div class="card shadow-sm">
+            <div class="card shadow-sm animate__animated animate__fadeInRight">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <span>5 User Baru Submit Ubinan</span>
-                    <a href="monitoring_akun.php" class="btn btn-sm btn-light">Lihat Semua</a>
+                    <span><i class="bi bi-person-check-fill me-2"></i>5 User Baru Submit Ubinan</span>
+                    <a href="monitoring_akun.php" class="btn btn-sm btn-light"><i class="bi bi-list-ul me-1"></i>Lihat Semua</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead class="table-light">
+                        <table class="table table-hover align-middle mb-0" id="table-user" style="cursor:pointer;">
+                            <thead style="background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); color: #222;">
                                 <tr>
                                     <th>No</th>
                                     <th>Nama User</th>
@@ -190,18 +227,18 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
                             </thead>
                             <tbody>
                             <?php
-                            $sql = "SELECT u.nama_lengkap, u.username, m.tanggal_panen
+                            $sql = "SELECT u.id, u.nama_lengkap, u.username, m.tanggal_panen
                                     FROM monitoring_data_panen m
                                     LEFT JOIN users u ON m.user_id = u.id
                                     ORDER BY m.id DESC LIMIT 5";
                             $result = mysqli_query($conn, $sql);
                             $no = 1;
                             while($row = mysqli_fetch_assoc($result)): ?>
-                                <tr>
+                                <tr class="table-row-link-user" data-href="edit_akun.php?id=<?= $row['id']; ?>">
                                     <td><?= $no++; ?></td>
-                                    <td><?= htmlspecialchars($row['nama_lengkap']); ?></td>
-                                    <td><?= htmlspecialchars($row['username']); ?></td>
-                                    <td><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                                    <td><span class="fw-semibold text-success"><i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($row['nama_lengkap']); ?></span></td>
+                                    <td><span class="badge bg-info text-dark"><i class="bi bi-person-badge me-1"></i><?= htmlspecialchars($row['username']); ?></span></td>
+                                    <td><span class="badge bg-light text-dark border border-success shadow-sm"><i class="bi bi-clock me-1"></i><?= htmlspecialchars($row['tanggal_panen']); ?></span></td>
                                 </tr>
                             <?php endwhile; ?>
                             </tbody>
@@ -210,11 +247,10 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
                 </div>
             </div>
         </div>
-    </div>
+      </div>
+    </main>
+  </div>
 </div>
-
-
-
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-4 text-muted">
@@ -223,6 +259,34 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Klik baris tabel ubinan ke detail_panen.php?id=...
+const rowsUbinan = document.querySelectorAll('.table-row-link-ubinan');
+rowsUbinan.forEach(row => {
+    row.addEventListener('mouseenter', function() {
+        this.style.background = 'linear-gradient(90deg, #e0f7fa 0%, #e3f2fd 100%)';
+    });
+    row.addEventListener('mouseleave', function() {
+        this.style.background = '';
+    });
+    row.addEventListener('click', function() {
+        window.location.href = this.getAttribute('data-href');
+    });
+});
+// Klik baris tabel user ke edit_akun.php?id=...
+const rowsUser = document.querySelectorAll('.table-row-link-user');
+rowsUser.forEach(row => {
+    row.addEventListener('mouseenter', function() {
+        this.style.background = 'linear-gradient(90deg, #e0ffe8 0%, #e0f7fa 100%)';
+    });
+    row.addEventListener('mouseleave', function() {
+        this.style.background = '';
+    });
+    row.addEventListener('click', function() {
+        window.location.href = this.getAttribute('data-href');
+    });
+});
+</script>
 
 </body>
 </html>

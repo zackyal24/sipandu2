@@ -30,13 +30,10 @@ $qDesa = mysqli_query($conn, "SELECT nama_desa FROM desa WHERE id='$id_desa'");
 $desa = mysqli_fetch_assoc($qDesa);
 $nama_desa = $desa['nama_desa'] ?? '';
 
-// Gabungkan
-$lokasi = 'Desa ' . $nama_desa . ', ' . $nama_kecamatan;
-
-// Simpan data ke database
-$query = "INSERT INTO monitoring_data_panen (user_id, nama_petani, lokasi, tanggal_panen, nomor_sub_segmen, status) VALUES (?, ?, ?, ?, ?, ?)";
+// Simpan data ke database (desa dan kecamatan dipisah)
+$query = "INSERT INTO monitoring_data_panen (user_id, nama_petani, desa, kecamatan, tanggal_panen, nomor_sub_segmen, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "isssss", $user_id, $nama_petani, $lokasi, $tanggal_panen, $nomor_sub_segmen, $status);
+mysqli_stmt_bind_param($stmt, "issssss", $user_id, $nama_petani, $nama_desa, $nama_kecamatan, $tanggal_panen, $nomor_sub_segmen, $status);
 
 if (mysqli_stmt_execute($stmt)) {
     echo "<!DOCTYPE html>

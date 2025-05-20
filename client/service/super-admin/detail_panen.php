@@ -53,25 +53,26 @@ if (!$data) {
 <div class="container my-5">
     <div class="card shadow-sm">
         <div class="card-body">
+            <a href="monitoring_panen.php" class="btn btn-outline-primary btn-custom mb-3">
+              <i class="bi bi-arrow-left"></i> Kembali
+            </a>
             <h3 class="fw-bold mb-4">Detail Data Panen</h3>
             <table class="table table-bordered">
-                <tr><th>ID</th><td><?= $data['id']; ?></td></tr>
                 <tr><th>Nama Petani</th><td><?= htmlspecialchars($data['nama_petani']); ?></td></tr>
-                <tr><th>Lokasi</th><td><?= htmlspecialchars($data['lokasi']); ?></td></tr>
+                <tr><th>Desa</th><td><?= htmlspecialchars($data['desa']); ?></td></tr>
+                <tr><th>Kecamatan</th><td><?= htmlspecialchars($data['kecamatan']); ?></td></tr>
                 <tr><th>Tanggal Panen</th><td><?= htmlspecialchars($data['tanggal_panen']); ?></td></tr>
                 <tr><th>Berat Panen (kg)</th><td><?= htmlspecialchars($data['berat_panen']); ?></td></tr>
                 <tr><th>Status</th><td><?= htmlspecialchars($data['status'] ?? '-'); ?></td></tr>
-                <tr><th>User ID</th><td><?= htmlspecialchars($data['user_id'] ?? '-'); ?></td></tr>
                 <tr><th>Foto Petani</th>
-                    <td><img src="../../../server/uploads/<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview"></td></tr>
+                    <td><img src="../../<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview"></td></tr>
                 <tr><th>Foto Potong</th>
-                    <td><img src="../../../server/uploads/<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview"></td></tr>
+                    <td><img src="../../<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview"></td></tr>
                 <tr><th>Foto Timbangan</th>
-                    <td><img src="../../../server/uploads/<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview"></td></tr>
+                    <td><img src="../../<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview"></td></tr>
                 <tr><th>Dibuat Pada</th><td><?= htmlspecialchars($data['created_at']); ?></td></tr>
                 <tr><th>Diperbarui</th><td><?= htmlspecialchars($data['updated_at'] ?? '-'); ?></td></tr>
             </table>
-            <a href="monitoring_panen.php" class="btn btn-secondary btn-custom mt-3">← Kembali</a>
         </div>
     </div>
 </div>

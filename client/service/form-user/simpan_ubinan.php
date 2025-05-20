@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Ambil input
     $id = $_POST['id'];
     $nama_petani = htmlspecialchars($_POST['nama_petani']);
-    $lokasi = htmlspecialchars($_POST['lokasi']);
+    $desa = htmlspecialchars($_POST['desa']);
+    $kecamatan = htmlspecialchars($_POST['kecamatan']);
     $tanggal_panen = $_POST['tanggal_panen'];
     $berat_panen = $_POST['berat_panen'];
     $nomor_sub_segmen = $_POST['nomor_sub_segmen'];
@@ -29,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Update data di database
     $query = "UPDATE monitoring_data_panen 
-            SET nama_petani = ?, lokasi = ?, tanggal_panen = ?, berat_panen = ?, 
+            SET nama_petani = ?, desa = ?, kecamatan = ?, tanggal_panen = ?, berat_panen = ?,
                 nomor_sub_segmen = ?, foto_petani = ?, foto_potong = ?, foto_timbangan = ?, status = 'selesai' 
             WHERE id = ?";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "ssssssssi", $nama_petani, $lokasi, $tanggal_panen, $berat_panen, $nomor_sub_segmen, $foto_petani, $foto_potong, $foto_timbangan, $id);
+    mysqli_stmt_bind_param($stmt, "sssssssssi", $nama_petani, $desa, $kecamatan, $tanggal_panen, $berat_panen, $nomor_sub_segmen, $foto_petani, $foto_potong, $foto_timbangan, $id);
 
     if (mysqli_stmt_execute($stmt)) {
         echo "<!DOCTYPE html>

@@ -148,7 +148,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
         <select name="status" class="form-control" required>
           <option value="">-- Pilih Status --</option>
           <option value="belum selesai">Belum dilakukan ubinan</option>
-          <option value="selesai">Sudah dilakukan ubinan</option>
+          <option value="sudah">Sudah dilakukan ubinan</option>
           <option value="tidak bisa">Tidak bisa dilakukan ubinan</option>
         </select>
       </div>

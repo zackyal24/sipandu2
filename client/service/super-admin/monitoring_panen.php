@@ -22,6 +22,7 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
     <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
         body {
@@ -47,6 +48,7 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
         .btn-custom:hover {
             transform: scale(1.05);
         }
+        .table-row-link { cursor: pointer; }
     </style>
 </head>
 
@@ -68,41 +70,42 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
 <!-- Main Content -->
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold mb-0">Data Monitoring Panen</h3>
-        <div>
-            <a href="export_excel.php" class="btn btn-success btn-sm btn-custom me-2">Export Excel</a>
-            <a href="super_admin.php" class="btn btn-secondary btn-sm btn-custom">← Kembali ke Dashboard</a>
-        </div>
+        <a href="super_admin.php" class="btn btn-outline-primary btn-custom">
+        Kembali
+        </a>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
+            <div class="d-flex justify-content-end mb-2">
+                <a href="export_excel.php" class="btn btn-success btn-sm btn-custom me-2"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
+            </div>
+            <h3 class="fw-bold mb-4 text-center">Data Monitoring Panen</h3>
             <div class="table-responsive">
                 <table id="tabelPanen" class="table table-striped align-middle table-hover">
                     <thead class="table-primary text-center">
                         <tr>
-                            <th>No</th>
-                            <th>Tanggal Panen</th>
-                            <th>Nama Petani</th>
-                            <th>Lokasi</th>
-                            <th>Berat Panen (kg)</th>
-                            <th>Aksi</th>
+                            <th class="text-center">No</th>
+                            <th class="text-center">Tanggal Panen</th>
+                            <th class="text-center">Nama Petani</th>
+                            <th class="text-center">Lokasi</th>
+                            <th class="text-center">Berat Panen (kg)</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (mysqli_num_rows($data) > 0): ?>
                             <?php while($row = mysqli_fetch_assoc($data)): ?>
-                            <tr>
+                            <tr class="table-row-link" data-href="detail_panen.php?id=<?= $row['id']; ?>">
                                 <td class="text-center"></td>
                                 <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                                <td><?= htmlspecialchars($row['nama_petani']); ?></td>
-                                <td><?= htmlspecialchars($row['lokasi']); ?></td>
+                                <td class="text-center"><?= htmlspecialchars($row['nama_petani']); ?></td>
+                                <td class="text-center"><?= htmlspecialchars($row['desa'] . ', ' . $row['kecamatan']); ?></td>
                                 <td class="text-center"><?= htmlspecialchars($row['berat_panen']); ?></td>
                                 <td class="text-center">
-                                    <a href="detail_panen.php?id=<?= $row['id']; ?>" class="btn btn-info btn-sm btn-custom">Detail</a>
-                                    <a href="hapus_panen.php?id=<?= $row['id']; ?>" 
-                                       onclick="return confirm('Yakin ingin menghapus data ini?')"
-                                       class="btn btn-danger btn-sm btn-custom">Hapus</a>
+                                    <a href="#" class="btn btn-link text-danger p-0 deleteButton" data-id="<?= $row['id']; ?>" title="Hapus Data">
+                                        <i class="bi bi-x-circle-fill fs-5"></i>
+                                    </a>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
@@ -113,6 +116,25 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus data ini?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <a href="#" id="deleteConfirmButton" class="btn btn-danger">Hapus</a>
             </div>
         </div>
     </div>
@@ -147,6 +169,28 @@ $(document).ready(function () {
             cell.innerHTML = i + 1;
         });
     }).draw();
+
+    // Modal konfirmasi hapus
+    $('.deleteButton').on('click', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        var deleteUrl = 'hapus_panen.php?id=' + id;
+        $('#deleteConfirmButton').attr('href', deleteUrl);
+        $('#confirmDeleteModal').modal('show');
+    });
+
+    // Buat baris tabel bisa diklik ke detail
+    $('#tabelPanen').on('click', '.table-row-link', function(e) {
+        if($(e.target).closest('a').length === 0) {
+            window.location.href = $(this).data('href');
+        }
+    });
+    $('#tabelPanen').on('mouseenter', '.table-row-link', function() {
+        $(this).css('background', 'linear-gradient(90deg, #e0f7fa 0%, #e3f2fd 100%)');
+    });
+    $('#tabelPanen').on('mouseleave', '.table-row-link', function() {
+        $(this).css('background', '');
+    });
 });
 </script>
 

@@ -141,22 +141,34 @@ $isCompleted = $data['status'] === 'selesai';
 
       <div class="mb-3">
         <label class="form-label">Nama Petani</label>
-        <input type="text" name="nama_petani" class="form-control" value="<?= htmlspecialchars($data['nama_petani']); ?>" <?= $isCompleted ? 'readonly' : ''; ?> required>
+        <input type="text" name="nama_petani" class="form-control" value="<?= htmlspecialchars($data['nama_petani']); ?>" readonly required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Lokasi Lahan (Desa/Kecamatan)</label>
-        <input type="text" name="lokasi" class="form-control" value="<?= htmlspecialchars($data['lokasi']); ?>" <?= $isCompleted ? 'readonly' : ''; ?> required>
+        <label class="form-label">Desa</label>
+        <input type="text" name="desa" class="form-control" value="<?= htmlspecialchars($data['desa']); ?>" readonly required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Kecamatan</label>
+        <input type="text" name="kecamatan" class="form-control" value="<?= htmlspecialchars($data['kecamatan']); ?>" readonly required>
       </div>
 
       <div class="mb-3">
         <label class="form-label">Tanggal Panen</label>
-        <input type="date" name="tanggal_panen" class="form-control" value="<?= htmlspecialchars($data['tanggal_panen']); ?>" <?= $isCompleted ? 'readonly' : ''; ?> required>
+        <input type="date" name="tanggal_panen" class="form-control" value="<?= htmlspecialchars($data['tanggal_panen']); ?>" readonly required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Nomor Sub Segmen (Kode Kecamatan)</label>
-        <input type="text" name="nomor_sub_segmen" placeholder="Masukkan 11 digit angka" class="form-control" value="<?= htmlspecialchars($data['nomor_sub_segmen'] ?? ''); ?>" pattern="\d{11}" maxlength="11" <?= $isCompleted ? 'readonly' : ''; ?> required>
+        <label class="form-label">Nomor Sub Segmen</label>
+        <input type="text"
+               name="nomor_sub_segmen"
+               class="form-control"
+               placeholder="Masukkan maksimal 11 karakter"
+               value="<?= htmlspecialchars($data['nomor_sub_segmen'] ?? ''); ?>"
+               pattern="[A-Za-z0-9]{1,11}"
+               maxlength="11"
+               readonly
+               required>
       </div>
 
       <div class="mb-3">
@@ -176,7 +188,7 @@ $isCompleted = $data['status'] === 'selesai';
 
       <div class="mb-3">
         <label class="form-label">Berat Hasil Panen (kg)</label>
-        <input type="number" name="berat_panen" class="form-control" value="<?= htmlspecialchars($data['berat_panen'] ?? ''); ?>" step="0.01" <?= $isCompleted ? 'readonly' : ''; ?> required>
+        <input type="number" name="berat_panen" class="form-control" value="<?= htmlspecialchars($data['berat_panen'] ?? ''); ?>" step="0.01" placeholder="Contoh: 5.25" <?= $isCompleted ? 'readonly' : ''; ?> required>
       </div>
 
       <?php if (!$isCompleted): ?>

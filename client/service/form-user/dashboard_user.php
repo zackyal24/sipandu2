@@ -86,12 +86,12 @@ $result = mysqli_stmt_get_result($stmt);
                 <td class="text-center"><?= $no++; ?></td>
                 <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
                 <td class="text-center">
-                  <?php if ($row['status'] === 'belum selesai'): ?>
-                      <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-success btn-sm btn-custom">Isi Form</a>
-                  <?php elseif ($row['status'] === 'tidak bisa'): ?>
-                      <button class="btn btn-danger btn-sm btn-custom" disabled>Tidak Bisa Ubinan</button>
-                  <?php else: ?>
-                      <button class="btn btn-secondary btn-sm btn-custom" disabled>Selesai</button>
+                  <?php if ($row['status'] === 'tidak bisa'): ?>
+                      <span class="text-danger fst-italic">Tidak Bisa Ubinan</span>
+                  <?php elseif ($row['status'] === 'selesai'): ?>
+                      <span class="text-success fst-italic">Selesai</span>
+                  <?php elseif ($row['status'] === 'belum selesai' || $row['status'] === 'sudah'): ?>
+                      <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-primary btn-sm btn-custom">Isi Form</a>
                   <?php endif; ?>
               </td>
             </tr>
@@ -112,7 +112,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-  &copy; <?= date('Y'); ?> Monitoring Panen Umbinan
+  &copy; <?= date('Y'); ?> Monitoring Panen Ubinan
 </footer>
 
 <!-- Scripts -->
