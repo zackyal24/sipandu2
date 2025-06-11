@@ -91,11 +91,6 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
               <i class="bi bi-person-gear me-2"></i> Manajemen User
             </a>
           </li>
-          <li class="nav-item mb-2">
-            <a href="desa_kecamatan.php" class="nav-link text-primary">
-              <i class="bi bi-geo-alt-fill me-2"></i> Desa / Kecamatan
-            </a>
-          </li>
         </ul>
         <hr>
         <div class="px-2">
