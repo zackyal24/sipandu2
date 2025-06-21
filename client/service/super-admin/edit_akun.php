@@ -25,6 +25,8 @@ if (!$user) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $nama_lengkap = trim($_POST['nama_lengkap']);
+    $no_hp = trim($_POST['no_hp']);
+    $email = trim($_POST['email']);
     $role = $_POST['role'];
     $password = isset($_POST['password']) ? $_POST['password'] : '';
 
@@ -37,25 +39,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mysqli_num_rows($cek) > 0) {
             $error = 'Username sudah digunakan oleh akun lain.';
         } else {
-            $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, role = ? WHERE id = ?");
-            mysqli_stmt_bind_param($stmt, "sssi", $username, $nama_lengkap, $role, $id);
-
             if ($password !== '') {
                 // Jika password diisi, update juga password
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, role = ?, password = ? WHERE id = ?");
-                mysqli_stmt_bind_param($stmt, "ssssi", $username, $nama_lengkap, $role, $password_hash, $id);
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, no_hp = ?, email = ?, role = ?, password = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "ssssssi", $username, $nama_lengkap, $no_hp, $email, $role, $password_hash, $id);
             } else {
                 // Jika password kosong, update tanpa password
-                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, role = ? WHERE id = ?");
-                mysqli_stmt_bind_param($stmt, "sssi", $username, $nama_lengkap, $role, $id);
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, no_hp = ?, email = ?, role = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "sssssi", $username, $nama_lengkap, $no_hp, $email, $role, $id);
             }
-            
+
             if (mysqli_stmt_execute($stmt)) {
                 $success = 'Data akun berhasil diperbarui.';
                 // Perbarui data lokal setelah update
                 $user['username'] = $username;
                 $user['nama_lengkap'] = $nama_lengkap;
+                $user['no_hp'] = $no_hp;
+                $user['email'] = $email;
                 $user['role'] = $role;
             } else {
                 $error = 'Gagal memperbarui data.';
@@ -97,6 +98,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label>Nama Lengkap</label>
                 <input type="text" name="nama_lengkap" class="form-control" required value="<?= htmlspecialchars($user['nama_lengkap']); ?>">
+            </div>
+
+            <div class="mb-3">
+                <label>No HP</label>
+                <input type="text" name="no_hp" class="form-control" required value="<?= htmlspecialchars($user['no_hp']); ?>">
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" required value="<?= htmlspecialchars($user['email']); ?>">
             </div>
 
             <div class="mb-3">

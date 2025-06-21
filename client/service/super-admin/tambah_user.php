@@ -15,11 +15,13 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $nama = trim($_POST['nama_lengkap']);
+    $no_hp = trim($_POST['no_hp']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
     $role = $_POST['role'];
 
     // Validasi form
-    if ($username === '' || $nama === '' || $password === '' || $role === '') {
+    if ($username === '' || $nama === '' || $no_hp === '' || $email === '' || $password === '' || $role === '') {
         $error = 'Semua field wajib diisi.';
     } else {
         // Cek apakah username sudah digunakan
@@ -31,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert ke database
-            $stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, nama_lengkap, role) VALUES (?, ?, ?, ?)");
-            mysqli_stmt_bind_param($stmt, "ssss", $username, $passwordHash, $nama, $role);
+            $stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, nama_lengkap, no_hp, email, role) VALUES (?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt, "ssssss", $username, $passwordHash, $nama, $no_hp, $email, $role);
 
             if (mysqli_stmt_execute($stmt)) {
                 $success = "Akun berhasil ditambahkan.";
@@ -77,6 +79,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label>Nama Lengkap</label>
                 <input type="text" name="nama_lengkap" class="form-control" required value="<?= htmlspecialchars($_POST['nama_lengkap'] ?? '') ?>">
+            </div>
+
+            <div class="mb-3">
+                <label>No HP</label>
+                <input type="text" name="no_hp" class="form-control" required value="<?= htmlspecialchars($_POST['no_hp'] ?? '') ?>">
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
             </div>
 
             <div class="mb-3">
