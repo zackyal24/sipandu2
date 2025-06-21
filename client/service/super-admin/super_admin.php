@@ -8,12 +8,33 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
     exit;
 }
 
+// Rata-rata hasil ubinan (hanya data yang sudah selesai)
+$q_avg_ubinan = mysqli_query($conn, "SELECT AVG(berat_panen) AS avg_ubinan FROM monitoring_data_panen WHERE status = 'selesai' AND berat_panen IS NOT NULL AND berat_panen != ''");
+$avg_ubinan = mysqli_fetch_assoc($q_avg_ubinan)['avg_ubinan'] ?? 0;
+
+// Jumlah status belum diubin (status 'belum selesai')
+$q_belum_diubin = mysqli_query($conn, "SELECT COUNT(*) AS total FROM monitoring_data_panen WHERE status = 'belum selesai'");
+$belum_diubin = mysqli_fetch_assoc($q_belum_diubin)['total'] ?? 0;
+
 // Ambil nama pengguna
 $nama_pengguna = htmlspecialchars($_SESSION['username']);
 
 // Ambil data statistik
 $jumlah_panen = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM monitoring_data_panen"))['total'];
 $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM users"))['total'];
+
+// Ambil data ubinan terbaru (misal 5 data terakhir)
+$q_ubinan = mysqli_query($conn, "SELECT id, nama_petani, desa, kecamatan, status, tanggal_panen FROM monitoring_data_panen ORDER BY created_at DESC LIMIT 5");
+
+$q_user = mysqli_query($conn, "
+    SELECT DISTINCT u.nama_lengkap, m.desa, m.tanggal_panen
+    FROM users u
+    JOIN monitoring_data_panen m ON u.id = m.user_id
+    WHERE (m.status = 'belum selesai' OR m.status = 'sudah')
+    ORDER BY m.tanggal_panen DESC
+    LIMIT 10
+");
+
 ?>
 
 <!DOCTYPE html>
@@ -46,6 +67,28 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
         .navbar-brand {
             font-weight: bold;
         }
+        .table-row-link {
+          cursor: pointer;
+          transition: background 0.15s, box-shadow 0.15s;
+        }
+        .table-row-link:hover {
+          background: #f1f3f5;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          filter: brightness(0.98);
+        }
+        @media (min-width: 992px) {
+          #mainContent {
+            margin-left: 240px !important; /* Lebar sidebar */
+          }
+        }
+        @media (max-width: 991.98px) {
+          #mainContent {
+            margin-left: 0 !important;
+          }
+        }
+        .sidebar {
+          width: 240px;
+        }
     </style>
 </head>
 
@@ -58,10 +101,6 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
             Dashboard
         </a>
-        <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= $nama_pengguna; ?></strong></span>
-            <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm">Logout</a>
-        </div>
     </div>
 </nav>
 
@@ -69,7 +108,7 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
 <div class="container-fluid" style="padding-top:70px;">
   <div class="row">
     <!-- Sidebar -->
-    <nav class="col-md-3 col-lg-2 d-md-block bg-white border-end shadow-sm sidebar py-4 position-fixed" style="height:100vh; z-index:1030;">
+    <nav class="col-lg-2 d-none d-lg-block sidebar position-fixed bg-white border-end shadow-sm py-4" style="height:100vh; z-index:1030;">
       <div class="position-sticky">
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-primary text-decoration-none px-3">
           <span class="fs-5 fw-bold">Superadmin</span>
@@ -100,149 +139,161 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
     </nav>
 
     <!-- Main Content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 px-3" style="margin-left:240px;">
-      <h2 class="mb-4">Dashboard Monitoring Panen</h2>
+    <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-5 px-3" style="margin-left:240px;">
+      <h2 class="mb-4 p-2 pt-4">Dashboard Monitoring Panen</h2>
       <div class="row g-4">
-        <!-- Statistik: Total Panen -->
+        <!-- Card 1: Total Panen Ubinan -->
         <div class="col-sm-6 col-xl-3">
-            <div class="card card-stat text-white bg-success">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <div>
-                        <h5 class="card-title">Total Panen</h5>
-                        <h3><?= $jumlah_panen; ?> Data</h3>
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="text-success fw-bold"><?= $jumlah_panen; ?></h3>
+                            <p class="mb-1 text-muted">Total Panen Ubinan</p>
+                        </div>
+                        <i class="bi bi-basket-fill fs-1 text-success"></i>
                     </div>
-                    <i class="bi bi-basket-fill fs-1 align-self-end"></i>
+                </div>
+                <div class="card-footer bg-success text-white fw-semibold">
+                    Data hasil panen masuk <i class="bi bi-check-circle-fill ms-1"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Statistik: Total User -->
+        <!-- Card 2: Rata-rata Ubinan -->
         <div class="col-sm-6 col-xl-3">
-            <div class="card card-stat text-white bg-info">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <div>
-                        <h5 class="card-title">Total User</h5>
-                        <h3><?= $jumlah_user; ?> Admin</h3>
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="text-warning fw-bold"><?= number_format($avg_ubinan, 2); ?> Kg</h3>
+                            <p class="mb-1 text-muted">Rata-rata Ubinan</p>
+                        </div>
+                        <i class="bi bi-bar-chart-line-fill fs-1 text-warning"></i>
                     </div>
-                    <i class="bi bi-people-fill fs-1 align-self-end"></i>
+                </div>
+                <div class="card-footer bg-warning text-white fw-semibold">
+                    Per hitungan luas ubinan <i class="bi bi-rulers ms-1"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Navigasi: Monitoring Panen -->
+        <!-- Card 3: Total User -->
         <div class="col-sm-6 col-xl-3">
-            <a href="monitoring_panen.php" class="text-decoration-none">
-                <div class="card card-stat bg-warning text-dark">
-                    <div class="card-body d-flex flex-column justify-content-between">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
                         <div>
-                            <h5 class="card-title">Monitoring Panen</h5>
-                            <h3>Lihat</h3>
+                            <h3 class="text-primary fw-bold"><?= $jumlah_user; ?></h3>
+                            <p class="mb-1 text-muted">Total User</p>
                         </div>
-                        <i class="bi bi-eye-fill fs-1 align-self-end"></i>
+                        <i class="bi bi-people-fill fs-1 text-primary"></i>
                     </div>
                 </div>
-            </a>
+                <div class="card-footer bg-primary text-white fw-semibold">
+                    Jumlah pengguna sistem <i class="bi bi-person-badge ms-1"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- Navigasi: Manajemen User -->
+        <!-- Card 4: Belum Diubin -->
         <div class="col-sm-6 col-xl-3">
-            <a href="monitoring_akun.php" class="text-decoration-none">
-                <div class="card card-stat bg-danger text-white">
-                    <div class="card-body d-flex flex-column justify-content-between">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
                         <div>
-                            <h5 class="card-title">Manajemen User</h5>
-                            <h3>Kelola</h3>
+                            <h3 class="text-danger fw-bold"><?= $belum_diubin; ?></h3>
+                            <p class="mb-1 text-muted">Belum Diubin</p>
                         </div>
-                        <i class="bi bi-person-gear fs-1 align-self-end"></i>
+                        <i class="bi bi-x-circle-fill fs-1 text-danger"></i>
                     </div>
                 </div>
-            </a>
+                <div class="card-footer bg-danger text-white fw-semibold">
+                    Lokasi belum ada data <i class="bi bi-exclamation-circle ms-1"></i>
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
+
       <!-- Ringkasan Data Terbaru -->
-      <div class="row mt-5">
-        <!-- Kolom Kiri: Data Ubinan Terbaru -->
-        <div class="col-lg-7 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-basket-fill me-2"></i>5 Data Ubinan Terbaru</span>
-                    <a href="monitoring_panen.php" class="btn btn-sm btn-light"><i class="bi bi-list-ul me-1"></i>Lihat Semua</a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="padding-bottom: 12px; overflow-x: unset;">
-                        <table class="table table-sm table-hover align-middle mb-0" id="table-ubinan" style="cursor:pointer;">
-                            <thead style="background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); color: #222;">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Petani</th>
-                                    <th>Lokasi</th>
-                                    <th>Tanggal</th>
-                                    <th>Hasil (kg)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php
-                            $sql = "SELECT id, nama_petani, desa, tanggal_panen, berat_panen
-                                    FROM monitoring_data_panen
-                                    ORDER BY id DESC LIMIT 5";
-                            $result = mysqli_query($conn, $sql);
-                            $no = 1;
-                            while($row = mysqli_fetch_assoc($result)): ?>
-                                <tr class="table-row-link-ubinan" data-href="detail_panen.php?id=<?= $row['id']; ?>">
-                                    <td><?= $no++; ?></td>
-                                    <td><span class="fw-semibold text-primary"><i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($row['nama_petani']); ?></span></td>
-                                    <td><span class="badge bg-info text-dark"><i class="bi bi-geo-alt-fill me-1"></i><?= htmlspecialchars($row['desa']); ?></span></td>
-                                    <td><span class="badge bg-light text-dark border border-primary shadow-sm"><i class="bi bi-calendar-event me-1"></i><?= htmlspecialchars($row['tanggal_panen']); ?></span></td>
-                                    <td><span class="badge bg-success"><i class="bi bi-basket-fill me-1"></i><?= htmlspecialchars($row['berat_panen']); ?></span></td>
-                                </tr>
-                            <?php endwhile; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+      <div class="container-fluid mt-5">
+        <div class="row align-items-stretch">
+
+          <!-- Kiri: Ubinan -->
+          <div class="col-md-7 mb-4">
+            <div class="card shadow-sm h-100 d-flex flex-column">
+              <div class="d-flex justify-content-between card-header bg-success text-white">
+                <h5 class="mb-0">Ubinan Terbaru</h5>
+                <a href="monitoring_panen.php" class="btn btn-outline-light btn-sm">Lihat Semua</a>
+              </div>
+              <div class="card-body flex-grow-1">
+                <table class="table table-bordered table-hover mb-0">
+                  <thead class="table-light">
+                    <tr class="text-center">
+                      <th>#</th>
+                      <th>Nama Petani</th>
+                      <th>Lokasi</th>
+                      <th>Status</th>
+                      <th>Deadline</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                    $no = 1;
+                    while ($row = mysqli_fetch_assoc($q_ubinan)): ?>
+                    <tr class="table-row-link" data-href="detail_panen.php?id=<?= $row['id']; ?>">
+                      <td class="text-center"><?= $no++; ?></td>
+                      <td class="text-center"><?= htmlspecialchars($row['nama_petani']); ?></td>
+                      <td class="text-center"><?= htmlspecialchars($row['desa'] . ', ' . $row['kecamatan']); ?></td>
+                      <td class="text-center"><?= htmlspecialchars($row['status']); ?></td>
+                      <td class="text-center text-nowrap"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                    </tr>
+                    <?php endwhile; ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
-        </div>
-        <!-- Kolom Kanan: User Baru Submit Ubinan -->
-        <div class="col-lg-5 mb-4">
-            <div class="card shadow-sm animate__animated animate__fadeInRight">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-person-check-fill me-2"></i>5 User Baru Submit Ubinan</span>
-                    <a href="monitoring_akun.php" class="btn btn-sm btn-light"><i class="bi bi-list-ul me-1"></i>Lihat Semua</a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" id="table-user" style="cursor:pointer;">
-                            <thead style="background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); color: #222;">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama User</th>
-                                    <th>Username</th>
-                                    <th>Waktu Submit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php
-                            $sql = "SELECT u.id, u.nama_lengkap, u.username, m.tanggal_panen
-                                    FROM monitoring_data_panen m
-                                    LEFT JOIN users u ON m.user_id = u.id
-                                    ORDER BY m.id DESC LIMIT 5";
-                            $result = mysqli_query($conn, $sql);
-                            $no = 1;
-                            while($row = mysqli_fetch_assoc($result)): ?>
-                                <tr class="table-row-link-user" data-href="edit_akun.php?id=<?= $row['id']; ?>">
-                                    <td><?= $no++; ?></td>
-                                    <td><span class="fw-semibold text-success"><i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($row['nama_lengkap']); ?></span></td>
-                                    <td><span class="badge bg-info text-dark"><i class="bi bi-person-badge me-1"></i><?= htmlspecialchars($row['username']); ?></span></td>
-                                    <td><span class="badge bg-light text-dark border border-success shadow-sm"><i class="bi bi-clock me-1"></i><?= htmlspecialchars($row['tanggal_panen']); ?></span></td>
-                                </tr>
-                            <?php endwhile; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+          </div>
+
+          <!-- Kanan: User -->
+          <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm h-100 d-flex flex-column">
+              <div class="text-nowrap d-flex justify-content-between card-header bg-primary text-white">
+                <h5 class="mb-0">Belum Isi Form Ubinan</h5>
+                <a href="monitoring_akun.php" class="btn btn-outline-light btn-sm">Lihat Semua</a>
+              </div>
+              <div class="card-body flex-grow-1">
+                <table class="table table-sm table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="text-center">#</th>
+                      <th class="text-center">Nama</th>
+                      <th class="text-center">Desa</th>
+                      <th class="text-center text-nowrap">Tanggal Ubinan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                      $no = 1;
+                      while ($row = mysqli_fetch_assoc($q_user)): ?>
+                        <tr>
+                          <td class="text-center"><?= $no++; ?></td>
+                          <td class="text-center"><?= htmlspecialchars($row['nama_lengkap']); ?></td>
+                          <td class="text-center"><?= htmlspecialchars($row['desa']); ?></td>
+                          <td class="text-center text-nowrap"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                        </tr>
+                      <?php endwhile; ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
+          </div>
+
         </div>
       </div>
+
+    </div>
+
     </main>
   </div>
 </div>
@@ -280,6 +331,16 @@ rowsUser.forEach(row => {
     row.addEventListener('click', function() {
         window.location.href = this.getAttribute('data-href');
     });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.table-row-link').forEach(function(row) {
+    row.addEventListener('click', function(e) {
+      // Jika klik pada tombol hapus, jangan redirect
+      if (e.target.closest('.deleteButton')) return;
+      window.location.href = this.getAttribute('data-href');
+    });
+  });
 });
 </script>
 

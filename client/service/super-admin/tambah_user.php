@@ -90,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="">-- Pilih Role --</option>
                     <option value="admin" <?= isset($_POST['role']) && $_POST['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
                     <option value="superadmin" <?= isset($_POST['role']) && $_POST['role'] == 'superadmin' ? 'selected' : '' ?>>Superadmin</option>
+                    <option value="user" <?= isset($_POST['role']) && $_POST['role'] == 'user' ? 'selected' : '' ?>>User</option>
                 </select>
             </div>
 

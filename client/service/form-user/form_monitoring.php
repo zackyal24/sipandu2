@@ -108,7 +108,7 @@ $isCompleted = $data['status'] === 'selesai';
             Form Panel
         </a>
         <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
+            <span class="text-white me-3"><strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
             <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
         </div>
     </div>

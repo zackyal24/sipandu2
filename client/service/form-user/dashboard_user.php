@@ -55,7 +55,7 @@ $result = mysqli_stmt_get_result($stmt);
   <div class="container">
     <a class="navbar-brand" href="#">Dashboard User</a>
     <div class="d-flex align-items-center">
-      <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
+      <span class="text-white me-3"><strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
       <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
     </div>
   </div>
@@ -75,7 +75,7 @@ $result = mysqli_stmt_get_result($stmt);
     <tr>
         <th class="text-center">No</th>
         <th class="text-center">Tanggal Panen</th>
-        <th class="text-center"></th>
+        <th class="text-center">Status</th>
     </tr>
 </thead>
 <tbody>

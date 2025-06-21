@@ -30,50 +30,128 @@ if (!$data) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+        body {
+        background-color: #f8f9fc;
+        font-family: 'Poppins', sans-serif;
+        }
+        .btn-custom { border-radius: 8px; }
+        @media (min-width: 992px) {
+        #mainContent {
+        margin-left: 240px !important; /* Lebar sidebar */
+        }
+        }
+        @media (max-width: 991.98px) {
+        #mainContent {
+            margin-left: 0 !important;
+        }
+        }
+        .sidebar {
+        width: 240px;
+        }
+        .navbar-brand {
+        font-weight: bold;
+        }
         .card { border-radius: 12px; }
         .btn-custom { border-radius: 8px; }
-        img.preview { max-width: 200px; border: 1px solid #ddd; border-radius: 8px; padding: 5px; }
+        img.preview {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <a class="navbar-brand" href="dashboard_adminsuper.php">Superadmin Panel</a>
-        <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
-            <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="monitoring_panen.php">
+            <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
+            Data Ubinan
+        </a>
     </div>
 </nav>
 
-<!-- Konten -->
-<div class="container my-5">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <a href="monitoring_panen.php" class="btn btn-outline-primary btn-custom mb-3">
-              <i class="bi bi-arrow-left"></i> Kembali
-            </a>
-            <h3 class="fw-bold mb-4">Detail Data Panen</h3>
-            <table class="table table-bordered">
-                <tr><th>Nama Petani</th><td><?= htmlspecialchars($data['nama_petani']); ?></td></tr>
-                <tr><th>Desa</th><td><?= htmlspecialchars($data['desa']); ?></td></tr>
-                <tr><th>Kecamatan</th><td><?= htmlspecialchars($data['kecamatan']); ?></td></tr>
-                <tr><th>Tanggal Panen</th><td><?= htmlspecialchars($data['tanggal_panen']); ?></td></tr>
-                <tr><th>Berat Panen (kg)</th><td><?= htmlspecialchars($data['berat_panen']); ?></td></tr>
-                <tr><th>Status</th><td><?= htmlspecialchars($data['status'] ?? '-'); ?></td></tr>
-                <tr><th>Foto Petani</th>
-                    <td><img src="../../<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview"></td></tr>
-                <tr><th>Foto Potong</th>
-                    <td><img src="../../<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview"></td></tr>
-                <tr><th>Foto Timbangan</th>
-                    <td><img src="../../<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview"></td></tr>
-                <tr><th>Dibuat Pada</th><td><?= htmlspecialchars($data['created_at']); ?></td></tr>
-                <tr><th>Diperbarui</th><td><?= htmlspecialchars($data['updated_at'] ?? '-'); ?></td></tr>
-            </table>
-        </div>
+<!-- Main Layout -->
+<div class="container-fluid" style="padding-top:70px;">
+    <div class="row">
+        
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-white border-end shadow-sm sidebar py-4 position-fixed" style="height:100vh; z-index:1030;">
+            <div class="position-sticky">
+                <a href="#" class="d-flex align-items-center mb-3 text-primary text-decoration-none px-3">
+                    <span class="fs-5 fw-bold">Superadmin</span>
+                </a>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto px-2">
+                    <li class="nav-item mb-2">
+                        <a href="super_admin.php" class="nav-link text-primary">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="monitoring_panen.php" class="nav-link active">
+                            <i class="bi bi-basket-fill me-2"></i> Data Ubinan
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="monitoring_akun.php" class="nav-link text-primary">
+                            <i class="bi bi-person-gear me-2"></i> Manajemen User
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <div class="px-2">
+                    <a href="../../auth/logout.php" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main id="mainContent" class="col-lg-10 ms-auto px-4">
+            <div class="container my-5">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <a href="monitoring_panen.php" class="btn btn-outline-primary btn-custom mb-3">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                        </a>
+                        <div class="d-flex justify-content-end mb-3">
+                            <a href="export_pdf_panen.php?id=<?= $row['id']; ?>" target="_blank" class="btn btn-outline-secondary">
+                                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                            </a>
+                        </div>
+                        <h3 class="fw-bold mb-4">Detail Data Panen</h3>
+                        <table class="table table-bordered">
+                            <tr><th>Nama Petani</th><td><?= htmlspecialchars($data['nama_petani']); ?></td></tr>
+                            <tr><th>Desa</th><td><?= htmlspecialchars($data['desa']); ?></td></tr>
+                            <tr><th>Kecamatan</th><td><?= htmlspecialchars($data['kecamatan']); ?></td></tr>
+                            <tr><th>Tanggal Panen</th><td><?= htmlspecialchars($data['tanggal_panen']); ?></td></tr>
+                            <tr><th>Berat Panen (kg)</th><td><?= htmlspecialchars($data['berat_panen']); ?></td></tr>
+                            <tr><th>Status</th><td><?= htmlspecialchars($data['status'] ?? '-'); ?></td></tr>
+                            <tr><th>Foto Petani</th>
+                                <td><img src="../../<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview"></td></tr>
+                            <tr><th>Foto Potong</th>
+                                <td><img src="../../<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview"></td></tr>
+                            <tr><th>Foto Timbangan</th>
+                                <td><img src="../../<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview"></td></tr>
+                            <tr><th>Dibuat Pada</th><td><?= htmlspecialchars($data['created_at']); ?></td></tr>
+                            <tr><th>Diperbarui</th><td><?= htmlspecialchars($data['updated_at'] ?? '-'); ?></td></tr>
+                        </table>
+                    </div>
+                </div>
+                <!-- Tombol Hapus -->
+                <div class="mt-4 d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalHapusPanen">
+                        <i class="bi bi-trash"></i> Hapus Data
+                    </button>
+                </div>
+            </div>
+        </main>
     </div>
 </div>
 
@@ -81,6 +159,37 @@ if (!$data) {
 <footer class="text-center mt-5 mb-4">
     &copy; <?= date('Y'); ?> Monitoring Panen | Superadmin
 </footer>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="modalHapusPanen" tabindex="-1" aria-labelledby="modalHapusPanenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalHapusPanenLabel">Konfirmasi Hapus Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        Apakah Anda yakin ingin menghapus data panen ini? Tindakan ini tidak dapat dibatalkan.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <a href="hapus_panen.php?id=<?= $data['id']; ?>" class="btn btn-danger">Hapus</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Tampilkan modal hapus
+        $('.deleteButton').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            $('#deleteConfirmButton').attr('href', 'hapus_panen.php?id=' + id);
+            $('#confirmDeleteModal').modal('show');
+        });
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

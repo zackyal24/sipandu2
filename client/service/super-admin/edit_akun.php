@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $nama_lengkap = trim($_POST['nama_lengkap']);
     $role = $_POST['role'];
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
 
     // Validasi
     if ($username === '' || $nama_lengkap === '' || $role === '') {
@@ -39,6 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, role = ? WHERE id = ?");
             mysqli_stmt_bind_param($stmt, "sssi", $username, $nama_lengkap, $role, $id);
 
+            if ($password !== '') {
+                // Jika password diisi, update juga password
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, role = ?, password = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "ssssi", $username, $nama_lengkap, $role, $password_hash, $id);
+            } else {
+                // Jika password kosong, update tanpa password
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, role = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "sssi", $username, $nama_lengkap, $role, $id);
+            }
+            
             if (mysqli_stmt_execute($stmt)) {
                 $success = 'Data akun berhasil diperbarui.';
                 // Perbarui data lokal setelah update
@@ -94,6 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
                     <option value="superadmin" <?= $user['role'] === 'superadmin' ? 'selected' : '' ?>>Superadmin</option>
                 </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Password Baru <span class="text-muted">(Kosongkan jika tidak ingin mengubah)</span></label>
+                <input type="password" name="password" class="form-control" placeholder="Password baru">
             </div>
 
             <div class="d-flex justify-content-between">
