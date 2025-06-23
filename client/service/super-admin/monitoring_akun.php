@@ -26,6 +26,7 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -142,16 +143,28 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
               <i class="bi bi-plus-lg me-1"></i>Tambah User
             </a>
           </div>
+          <!-- Filter dan Search -->
+          <div class="row mb-3">
+            <div class="col-md-4 mb-2 mb-md-0">
+              <select id="roleFilter" class="form-select">
+                <option value="">Semua Role</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                <option value="superadmin">Superadmin</option>
+              </select>
+            </div>
+          </div>
           <div class="table-responsive">
-            <table class="table table-bordered align-middle">
+            <table class="table table-bordered align-middle" id="userTable">
               <thead class="table-light">
                 <tr>
-                  <th class="text-center">#</th>
+                  <th class="text-center" style="width:40px;">#</th>
                   <th class="text-center">Nama Lengkap</th>
                   <th class="text-center">Username</th>
                   <th class="text-center">Role</th>
-                  <th class="text-center">Tanggal Daftar</th>
-                  <th class="text-center">Aksi</th>
+                  <th class="text-center">No HP</th>
+                  <th class="text-center">Email</th>
+                  <th class="text-center" style="width:60px;"></th>
                 </tr>
               </thead>
               <tbody>
@@ -159,12 +172,24 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
                 $no = 1;
                 $q_user = mysqli_query($conn, "SELECT * FROM users ORDER BY created_at DESC");
                 while ($row = mysqli_fetch_assoc($q_user)): ?>
-                  <tr>
-                    <td class="text-center"><?= $no++; ?></td>
-                    <td><?= htmlspecialchars($row['nama_lengkap']); ?></td>
-                    <td><?= htmlspecialchars($row['username']); ?></td>
-                    <td class="text-center"><?= htmlspecialchars($row['role']); ?></td>
-                    <td class="text-center"><?= htmlspecialchars(date('Y-m-d', strtotime($row['created_at']))); ?></td>
+                  <tr data-role="<?= htmlspecialchars($row['role']); ?>">
+                    <td class="text-center"></td>
+                    <td class="text-center"><?= htmlspecialchars($row['nama_lengkap']); ?></td>
+                    <td class="text-center"><?= htmlspecialchars($row['username']); ?></td>
+                    <td class="text-center">
+                      <?php
+                        $role = strtolower($row['role']);
+                        if ($role === 'superadmin') {
+                          echo '<span class="badge bg-danger">Superadmin</span>';
+                        } elseif ($role === 'admin') {
+                          echo '<span class="badge bg-primary">Admin</span>';
+                        } else {
+                          echo '<span class="badge bg-secondary">User</span>';
+                        }
+                      ?>
+                    </td>
+                    <td class="text-center"><?= htmlspecialchars($row['no_hp']); ?></td>
+                    <td class="text-center"><?= htmlspecialchars($row['email']); ?></td>
                     <td class="text-center">
                       <a href="edit_akun.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
                       <a href="#" 
@@ -204,11 +229,21 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
 </div>
 </body>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Tangkap klik tombol hapus
+  var t = $('#userTable').DataTable({
+    language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+    responsive: true,
+    pageLength: 10,
+    order: [[1, 'asc']]
+  });
+
+  // Modal hapus
   document.querySelectorAll('.deleteButton').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
@@ -218,6 +253,24 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('deleteUsername').textContent = username;
       var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
       modal.show();
+    });
+  });
+
+  // Filter role
+  $('#roleFilter').on('change', function() {
+    var val = this.value;
+    if(val) {
+      t.column(3).search('^' + val + '$', true, false).draw(); // index 3 = kolom Role
+    } else {
+      t.column(3).search('').draw();
+    }
+  });
+
+  // nomor otomatis
+    t.on('draw.dt', function () {
+    var pageInfo = t.page.info();
+    t.column(0, { search: 'applied', order: 'applied', page: 'current' }).nodes().each(function (cell, i) {
+      cell.innerHTML = i + 1 + pageInfo.start;
     });
   });
 });

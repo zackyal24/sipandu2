@@ -72,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Edit Akun</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
         .card { max-width: 600px; margin: 50px auto; border-radius: 12px; }
@@ -81,8 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="container">
     <div class="card shadow p-4">
-        <h4 class="mb-4 text-center">Edit Akun: <?= htmlspecialchars($user['username']) ?></h4>
-
+        <h4 class="mb-4"><i class="bi bi-pencil-square me-2"></i>Edit Akun: <?= htmlspecialchars($user['username']) ?></h4>
         <?php if ($error): ?>
             <div class="alert alert-danger"><?= $error; ?></div>
         <?php elseif ($success): ?>

@@ -62,51 +62,57 @@ $result = mysqli_stmt_get_result($stmt);
 </nav>
 
 <!-- Main Content -->
-<div class="container my-5">
-  <div class="card shadow-sm">
-    <div class="card-body">
-    <h3 class="fw-bold mb-4 d-flex justify-content-between align-items-center">
-        Data Ubinan Anda
-        <a href="tambah_data.php" class="btn btn-primary btn-sm btn-custom">Tambah Data</a>
-    </h3>
-      <div class="table-responsive">
-      <table id="tabelUbinan" class="table table-hover table-striped align-middle">
-      <thead class="table-primary text-center">
-    <tr>
-        <th class="text-center">No</th>
-        <th class="text-center">Tanggal Panen</th>
-        <th class="text-center">Status</th>
-    </tr>
-</thead>
-<tbody>
-    <?php if (mysqli_num_rows($result) > 0): ?>
-        <?php $no = 1; ?>
-        <?php while ($row = mysqli_fetch_assoc($result)): ?>
-            <tr>
-                <td class="text-center"><?= $no++; ?></td>
-                <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                <td class="text-center">
-                  <?php if ($row['status'] === 'tidak bisa'): ?>
-                      <span class="text-danger fst-italic">Tidak Bisa Ubinan</span>
-                  <?php elseif ($row['status'] === 'selesai'): ?>
-                      <span class="text-success fst-italic">Selesai</span>
-                  <?php elseif ($row['status'] === 'belum selesai' || $row['status'] === 'sudah'): ?>
-                      <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-primary btn-sm btn-custom">Isi Form</a>
-                  <?php endif; ?>
-              </td>
-            </tr>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <tr>
-            <td class="text-center">-</td>
-            <td class="text-center">-</td>
-            <td class="text-center">-</td>
-        </tr>
-    <?php endif; ?>
-</tbody>
-    </table>
+<div class="container-fluid" style="padding-top:70px;">
+  <div class="row justify-content-center">
+    <main id="mainContent" class="col-lg-10 px-4">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0 fw-bold">Data Ubinan Anda</h5>
+            <a href="tambah_data.php" class="btn btn-primary btn-sm btn-custom">
+              <i class="bi bi-plus-lg me-1"></i>Tambah Data
+            </a>
+          </div>
+          <div class="table-responsive">
+            <table id="tabelUbinan" class="table table-bordered align-middle table-hover">
+              <thead class="table-light text-center">
+                <tr>
+                  <th style="width:40px;">No</th>
+                  <th>Tanggal Panen</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (mysqli_num_rows($result) > 0): ?>
+                  <?php $no = 1; ?>
+                  <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <tr>
+                      <td class="text-center"></td>
+                      <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                      <td class="text-center">
+                        <?php if ($row['status'] === 'tidak bisa'): ?>
+                          <span class="badge bg-danger">Tidak Bisa Ubinan</span>
+                        <?php elseif ($row['status'] === 'selesai'): ?>
+                          <span class="badge bg-success">Selesai</span>
+                        <?php elseif ($row['status'] === 'belum selesai' || $row['status'] === 'sudah'): ?>
+                          <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-primary btn-sm btn-custom">Isi Form</a>
+                        <?php else: ?>
+                          <span class="badge bg-secondary">-</span>
+                        <?php endif; ?>
+                      </td>
+                    </tr>
+                  <?php endwhile; ?>
+                <?php else: ?>
+                  <tr>
+                    <td class="text-center" colspan="3">Belum ada data.</td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>
 
