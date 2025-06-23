@@ -285,7 +285,7 @@ $max_berat = $minmax['max_berat'] !== null ? $minmax['max_berat'] : '-';
 
 <script>
 $(document).ready(function () {
-    // Custom filter status (PASTIKAN kode ini SEBELUM inisialisasi DataTable)
+    // Custom filter status
     $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
         var selected = $('#statusFilter').val().toLowerCase();
         var rowStatus = (data[5] || '').toLowerCase();

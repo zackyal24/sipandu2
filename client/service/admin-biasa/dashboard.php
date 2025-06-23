@@ -10,6 +10,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
 
 // Query untuk mengambil data dari tabel monitoring_data_panen
 $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
+
+// Ambil nilai min & max berat panen dari database
+$q_minmax = mysqli_query($conn, "SELECT MIN(berat_panen) AS min_berat, MAX(berat_panen) AS max_berat FROM monitoring_data_panen WHERE berat_panen IS NOT NULL");
+$minmax = mysqli_fetch_assoc($q_minmax);
+$min_berat = $minmax['min_berat'] !== null ? $minmax['min_berat'] : '-';
+$max_berat = $minmax['max_berat'] !== null ? $minmax['max_berat'] : '-';
 ?>
 
 <!DOCTYPE html>
@@ -71,56 +77,129 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
 
 <!-- Main Content -->
 <div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
-                <a href="super_admin.php" class="btn btn-outline-primary btn-custom">
-                    <i class="bi bi-arrow-left me-1"></i> Kembali
-                </a>
-                <a href="export_excel.php" class="btn btn-success btn-sm btn-custom">
-                    <i class="bi bi-file-earmark-excel"></i> Export Excel
-                </a>
-            </div>
-
-            <div class="card shadow-sm">
+    <h2 class="mb-4">Data Ubinan</h2>
+    <!-- Card Statistik Ubinan -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 text-center h-100">
                 <div class="card-body">
-                    <h3 class="fw-bold mb-4 text-center">Data Monitoring Ubinan</h3>
-                    <div class="table-responsive">
-                        <table id="tabelPanen" class="table table-striped align-middle table-hover">
-                            <thead class="table-primary text-center">
-                                <tr>
-                                    <th class="text-center">No</th>
-                                    <th class="text-center">Tanggal Panen</th>
-                                    <th class="text-center">Nama Petani</th>
-                                    <th class="text-center">Lokasi</th>
-                                    <th class="text-center">Berat Panen (kg)</th>
-                                    <th class="text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (mysqli_num_rows($data) > 0): ?>
-                                    <?php while($row = mysqli_fetch_assoc($data)): ?>
-                                        <tr class="table-row-link" data-href="detail_panen.php?id=<?= $row['id']; ?>">
-                                            <td class="text-center"></td>
-                                            <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                                            <td class="text-center"><?= htmlspecialchars($row['nama_petani']); ?></td>
-                                            <td class=""><?= htmlspecialchars($row['desa'] . ', ' . $row['kecamatan']); ?></td>
-                                            <td class="text-center"><?= htmlspecialchars($row['berat_panen']); ?></td>
-                                            <td class="text-center">
-                                                <a href="#" class="btn btn-link text-danger p-0 deleteButton" data-id="<?= $row['id']; ?>" title="Hapus Data">
-                                                    <i class="bi bi-trash3 fs-5 text-secondary"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <?php endwhile; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted">Belum ada data panen.</td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="fs-5 text-muted mb-1">Max Berat Panen</div>
+                <div class="fs-3 fw-bold"><?= $min_berat ?? 0; ?></div>
+                <div class="small text-muted">Total user terdaftar</div>
                 </div>
             </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 text-center h-100">
+                <div class="card-body">
+                <div class="fs-5 text-muted mb-1">Min Berat Panen</div>
+                <div class="fs-3 fw-bold"><?= $max_berat ?? 0; ?></div>
+                <div class="small text-muted">Total user terdaftar</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 text-center h-100">
+                <div class="card-body">
+                <div class="fs-5 text-muted mb-1">Max Nilai Ubinan</div>
+                <div class="fs-3 fw-bold"><?= $jumlah_superadmin ?? 0; ?></div>
+                <div class="small text-muted">Total user terdaftar</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 text-center h-100">
+                <div class="card-body">
+                <div class="fs-5 text-muted mb-1">Min Nilai Ubinan</div>
+                <div class="fs-3 fw-bold"><?= $jumlah_superadmin ?? 0; ?></div>
+                <div class="small text-muted">Total user terdaftar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end align-items-center mt-4 mb-3">
+        <a href="export_excel.php" class="btn btn-success btn-sm btn-custom">
+            <i class="bi bi-file-earmark-excel"></i> Export Excel
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Data Monitoring Ubinan</h5>
+            <div class="row mb-3">
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">Semua Status</option>
+                        <option value="selesai">Selesai</option>
+                        <option value="belum selesai">Belum Selesai</option>
+                        <option value="tidak bisa">Tidak Bisa</option>
+                        <option value="sudah">Sudah</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="tabelPanen" class="table table-bordered align-middle table-hover">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th style="width:40px;">No</th>
+                            <th>Tanggal Panen</th>
+                            <th>Nama Petani</th>
+                            <th>Lokasi</th>
+                            <th>Berat Panen (kg)</th>
+                            <th>Status</th>
+                            <th style="width:60px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (mysqli_num_rows($data) > 0): ?>
+                            <?php while($row = mysqli_fetch_assoc($data)): ?>
+                                <tr class="table-row-link"
+                                    data-href="detail_panen.php?id=<?= $row['id']; ?>"
+                                    data-status="<?= strtolower($row['status'] ?? ''); ?>">
+                                    <td class="text-center"></td>
+                                    <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                                    <td class="text-center"><?= htmlspecialchars($row['nama_petani']); ?></td>
+                                    <td><?= htmlspecialchars($row['desa'] . ', ' . $row['kecamatan']); ?></td>
+                                    <td class="text-center"><?= htmlspecialchars($row['berat_panen']); ?></td>
+                                    <td class="text-center">
+                                        <?php
+                                        $status = isset($row['status']) ? strtolower($row['status']) : '';
+                                        if ($status === 'selesai') {
+                                            echo '<span class="badge bg-success">Selesai</span>';
+                                        } elseif ($status === 'belum selesai') {
+                                            echo '<span class="badge bg-warning text-dark">Belum Selesai</span>';
+                                        } elseif ($status === 'tidak bisa') {
+                                            echo '<span class="badge bg-danger">Tidak Bisa</span>';
+                                        } elseif ($status === 'sudah') {
+                                            echo '<span class="badge bg-primary">Sudah</span>';
+                                        } else {
+                                            echo '<span class="badge bg-secondary">-</span>';
+                                        }
+                                        ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="edit_panen.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-outline-warning me-1" title="Edit Data">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" 
+                                            class="btn btn-sm btn-outline-danger deleteButton" 
+                                            data-id="<?= $row['id']; ?>" 
+                                            title="Hapus Data">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Belum ada data panen.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Hapus -->
@@ -148,8 +227,18 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
 </footer>
 
 <!-- Scripts -->
- <script>
+<script>
 $(document).ready(function () {
+    // Custom filter status
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var selected = $('#statusFilter').val().toLowerCase();
+        var rowStatus = (data[5] || '').toLowerCase();
+
+        if (!selected) return true;
+        if (selected === rowStatus) return true;
+        return false;
+    });
+
     var t = $('#tabelPanen').DataTable({
         language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
         responsive: true,
@@ -159,11 +248,12 @@ $(document).ready(function () {
     });
 
     // Nomor otomatis
-    t.on('order.dt search.dt', function () {
+    t.on('draw.dt', function () {
         t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
             cell.innerHTML = i + 1;
         });
-    }).draw();
+    });
+    t.draw();
 
     // Tampilkan modal hapus
     $('.deleteButton').on('click', function (e) {
@@ -186,8 +276,14 @@ $(document).ready(function () {
     }).on('mouseleave', '.table-row-link', function() {
         $(this).css('background', '');
     });
+
+    // Filter
+    $('#statusFilter').on('change', function() {
+        t.draw();
+    });
 });
 </script>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
