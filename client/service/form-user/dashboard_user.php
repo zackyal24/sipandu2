@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
 // Ambil data ubinan berdasarkan user yang login
 include '../../../server/config/koneksi.php';
 $user_id = $_SESSION['user_id'];
-$query = "SELECT id, tanggal_panen, status FROM monitoring_data_panen WHERE user_id = ? ORDER BY tanggal_panen DESC";
+$query = "SELECT id, tanggal_panen, status, note FROM monitoring_data_panen WHERE user_id = ? ORDER BY tanggal_panen DESC";
 $stmt = mysqli_prepare($conn, $query);
 
 if (!$stmt) {
@@ -29,7 +29,6 @@ $result = mysqli_stmt_get_result($stmt);
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
   <style>
     body {
@@ -46,6 +45,18 @@ $result = mysqli_stmt_get_result($stmt);
     .btn-custom:hover {
       transform: scale(1.05);
     }
+    .ubinan-list { display: block; }
+    .ubinan-card {
+      margin-bottom: 1rem;
+      border: 1px solid #e3e3e3;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      padding: 1rem;
+      background: #fff;
+    }
+    .ubinan-card .badge,
+    .ubinan-card .btn { font-size: 0.95rem; }
+    .ubinan-card .catatan { font-size: 0.95rem; color: #555; }
   </style>
 </head>
 <body>
@@ -73,42 +84,41 @@ $result = mysqli_stmt_get_result($stmt);
               <i class="bi bi-plus-lg me-1"></i>Tambah Data
             </a>
           </div>
-          <div class="table-responsive">
-            <table id="tabelUbinan" class="table table-bordered align-middle table-hover">
-              <thead class="table-light text-center">
-                <tr>
-                  <th style="width:40px;">No</th>
-                  <th>Tanggal Panen</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if (mysqli_num_rows($result) > 0): ?>
-                  <?php $no = 1; ?>
-                  <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                    <tr>
-                      <td class="text-center"></td>
-                      <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                      <td class="text-center">
-                        <?php if ($row['status'] === 'tidak bisa'): ?>
-                          <span class="badge bg-danger">Tidak Bisa Ubinan</span>
-                        <?php elseif ($row['status'] === 'selesai'): ?>
-                          <span class="badge bg-success">Selesai</span>
-                        <?php elseif ($row['status'] === 'belum selesai' || $row['status'] === 'sudah'): ?>
-                          <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-primary btn-sm btn-custom">Isi Form</a>
-                        <?php else: ?>
-                          <span class="badge bg-secondary">-</span>
-                        <?php endif; ?>
-                      </td>
-                    </tr>
-                  <?php endwhile; ?>
-                <?php else: ?>
-                  <tr>
-                    <td class="text-center" colspan="3">Belum ada data.</td>
-                  </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
+          <div class="ubinan-list">
+            <?php
+            if (mysqli_num_rows($result) > 0):
+              mysqli_data_seek($result, 0);
+              while ($row = mysqli_fetch_assoc($result)):
+            ?>
+              <div class="ubinan-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="fw-bold"><?= date('d M Y', strtotime($row['tanggal_panen'])); ?></div>
+                  <div>
+                    <?php if ($row['status'] === 'tidak bisa'): ?>
+                      <span class="badge bg-danger">Tidak Bisa Ubinan</span>
+                    <?php elseif ($row['status'] === 'selesai'): ?>
+                      <span class="badge bg-success">Selesai</span>
+                    <?php elseif ($row['status'] === 'belum selesai' || $row['status'] === 'sudah'): ?>
+                      <a href="form_monitoring.php?id=<?= $row['id']; ?>" class="btn btn-primary btn-sm btn-custom">Isi Form</a>
+                    <?php else: ?>
+                      <span class="badge bg-secondary">-</span>
+                    <?php endif; ?>
+                  </div>
+                </div>
+                <div class="catatan mb-1">
+                  <strong>Catatan:</strong>
+                  <?php
+                    if (!empty($row['note'])) {
+                      echo nl2br(htmlspecialchars($row['note']));
+                    } else {
+                      echo '<span class="text-muted">-</span>';
+                    }
+                  ?>
+                </div>
+              </div>
+            <?php endwhile; else: ?>
+              <div class="text-center text-muted">Belum ada data.</div>
+            <?php endif; ?>
           </div>
         </div>
       </div>

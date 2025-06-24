@@ -1,40 +1,42 @@
 <?php
-include '../config/koneksi.php';
+// filepath: c:\xampp\htdocs\ubinan-monitoring\client\service\super-admin\export_excel.php
+include '../../../server/config/koneksi.php';
 
-// Header untuk unduh file Excel
-header("Content-type: application/vnd-ms-excel");
-header("Content-Disposition: attachment; filename=data_monitoring_panen.xls");
+header("Content-Type: application/vnd.ms-excel");
+header("Content-Disposition: attachment; filename=monitoring_panen.xls");
 
-$data = mysqli_query($conn, "SELECT * FROM monitoring_panen ORDER BY created_at DESC");
+echo "<table border='1'>";
+echo "<tr>
+<th>No</th>
+<th>Nama Petani</th>
+<th>Desa</th>
+<th>Kecamatan</th>
+<th>Tanggal Panen</th>
+<th>Nomor Sub Segmen</th>
+<th>Berat Plot (kg)</th>
+<th>GKP</th>
+<th>GKG</th>
+<th>Hasil Ubinan (kuintal)</th>
+<th>Status</th>
+</tr>";
+
+$q = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
+$no = 1;
+while($row = mysqli_fetch_assoc($q)) {
+    echo "<tr>";
+    echo "<td>{$no}</td>";
+    echo "<td>".htmlspecialchars($row['nama_petani'])."</td>";
+    echo "<td>".htmlspecialchars($row['desa'])."</td>";
+    echo "<td>".htmlspecialchars($row['kecamatan'])."</td>";
+    echo "<td>".htmlspecialchars($row['tanggal_panen'])."</td>";
+    echo "<td>".htmlspecialchars($row['nomor_sub_segmen'])."</td>";
+    echo "<td>".htmlspecialchars($row['berat_plot'])."</td>";
+    echo "<td>".htmlspecialchars($row['gkp'])."</td>";
+    echo "<td>".htmlspecialchars($row['gkg'])."</td>";
+    echo "<td>".htmlspecialchars($row['ku'])."</td>";
+    echo "<td>".htmlspecialchars($row['status'])."</td>";
+    echo "</tr>";
+    $no++;
+}
+echo "</table>";
 ?>
-
-<table border="1" cellpadding="5" cellspacing="0">
-  <thead>
-    <tr>
-      <th>No</th>
-      <th>Nama Petani</th>
-      <th>Lokasi</th>
-      <th>Tanggal Panen</th>
-      <th>Berat (kg)</th>
-      <th>Foto Petani</th>
-      <th>Foto Potong</th>
-      <th>Foto Timbangan</th>
-      <th>Waktu Submit</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php $no = 1; while($row = mysqli_fetch_assoc($data)): ?>
-    <tr>
-      <td><?= $no++; ?></td>
-      <td><?= $row['nama_petani']; ?></td>
-      <td><?= $row['lokasi']; ?></td>
-      <td><?= $row['tanggal_panen']; ?></td>
-      <td><?= $row['berat_panen']; ?></td>
-      <td><?= $row['foto_petani']; ?></td>
-      <td><?= $row['foto_potong']; ?></td>
-      <td><?= $row['foto_timbangan']; ?></td>
-      <td><?= $row['created_at']; ?></td>
-    </tr>
-    <?php endwhile; ?>
-  </tbody>
-</table>

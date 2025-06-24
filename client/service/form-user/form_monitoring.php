@@ -154,7 +154,7 @@ $isCompleted = $data['status'] === 'selesai';
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Tanggal Panen</label>
+        <label class="form-label">Tanggal Ubinan</label>
         <input type="date" name="tanggal_panen" class="form-control" value="<?= htmlspecialchars($data['tanggal_panen']); ?>" readonly required>
       </div>
 
@@ -187,8 +187,8 @@ $isCompleted = $data['status'] === 'selesai';
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Berat Hasil Panen (kg)</label>
-        <input type="number" name="berat_panen" class="form-control" value="<?= htmlspecialchars($data['berat_panen'] ?? ''); ?>" step="0.01" placeholder="Contoh: 5.25" <?= $isCompleted ? 'readonly' : ''; ?> required>
+        <label class="form-label">Berat Panen Per Plot (kg)</label>
+        <input type="number" name="berat_plot" class="form-control" value="<?= htmlspecialchars($data['berat_plot'] ?? ''); ?>" step="0.01" placeholder="Contoh: 5.25" <?= $isCompleted ? 'readonly' : ''; ?> required>
       </div>
 
       <?php if (!$isCompleted): ?>

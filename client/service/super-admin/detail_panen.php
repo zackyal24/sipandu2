@@ -131,16 +131,88 @@ if (!$data) {
                             <tr><th>Desa</th><td><?= htmlspecialchars($data['desa']); ?></td></tr>
                             <tr><th>Kecamatan</th><td><?= htmlspecialchars($data['kecamatan']); ?></td></tr>
                             <tr><th>Tanggal Panen</th><td><?= htmlspecialchars($data['tanggal_panen']); ?></td></tr>
-                            <tr><th>Berat Panen (kg)</th><td><?= htmlspecialchars($data['berat_panen']); ?></td></tr>
-                            <tr><th>Status</th><td><?= htmlspecialchars($data['status'] ?? '-'); ?></td></tr>
+                            <tr><th>Nomor Sub Segmen</th><td><?= htmlspecialchars($data['nomor_sub_segmen']); ?></td></tr>
+                            <tr><th>Status</th>
+                                <td>
+                                    <?php
+                                    $status = strtolower($data['status'] ?? '');
+                                    if ($status === 'selesai') {
+                                        echo '<span class="badge bg-success">Selesai</span>';
+                                    } elseif ($status === 'belum selesai') {
+                                        echo '<span class="badge bg-warning text-dark">Belum Selesai</span>';
+                                    } elseif ($status === 'tidak bisa') {
+                                        echo '<span class="badge bg-danger">Tidak Bisa</span>';
+                                    } elseif ($status === 'sudah') {
+                                        echo '<span class="badge bg-primary">Sudah</span>';
+                                    } else {
+                                        echo '<span class="badge bg-secondary">-</span>';
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr><th>Berat Plot (kg)</th>
+                                <td>
+                                    <?php if (!empty($data['berat_plot']) && $data['berat_plot'] != 0): ?>
+                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['berat_plot']); ?></span>
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum terdata</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr><th>GKP</th>
+                                <td>
+                                    <?php if (!empty($data['gkp']) && $data['gkp'] != 0): ?>
+                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['gkp']); ?></span>
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum terdata</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr><th>GKG</th>
+                                <td>
+                                    <?php if (!empty($data['gkg']) && $data['gkg'] != 0): ?>
+                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['gkg']); ?></span>
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum terdata</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr><th>Hasil Ubinan (kuintal)</th>
+                                <td>
+                                    <?php if (!empty($data['ku']) && $data['ku'] != 0): ?>
+                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['ku']); ?></span>
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum terdata</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             <tr><th>Foto Petani</th>
-                                <td><img src="../../<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview"></td></tr>
+                                <td>
+                                    <?php if (!empty($data['foto_petani'])): ?>
+                                        <img src="../../<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview">
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum terdata</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             <tr><th>Foto Potong</th>
-                                <td><img src="../../<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview"></td></tr>
+                                <td>
+                                    <?php if (!empty($data['foto_potong'])): ?>
+                                        <img src="../../<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview">
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum terdata</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             <tr><th>Foto Timbangan</th>
-                                <td><img src="../../<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview"></td></tr>
-                            <tr><th>Dibuat Pada</th><td><?= htmlspecialchars($data['created_at']); ?></td></tr>
-                            <tr><th>Diperbarui</th><td><?= htmlspecialchars($data['updated_at'] ?? '-'); ?></td></tr>
+                                <td>
+                                    <?php if (!empty($data['foto_timbangan'])): ?>
+                                        <img src="../../<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview">
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum terdata</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>

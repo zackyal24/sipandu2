@@ -11,12 +11,21 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
 // Ambil data panen
 $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
 
-// Ambil nilai min & max berat panen dari database
-$q_minmax = mysqli_query($conn, "SELECT MIN(berat_panen) AS min_berat, MAX(berat_panen) AS max_berat FROM monitoring_data_panen WHERE berat_panen IS NOT NULL");
-$minmax = mysqli_fetch_assoc($q_minmax);
-$min_berat = $minmax['min_berat'] !== null ? $minmax['min_berat'] : '-';
-$max_berat = $minmax['max_berat'] !== null ? $minmax['max_berat'] : '-';
+// Query rata-rata
+$q_avg = mysqli_query($conn, "SELECT 
+    AVG(ku) AS avg_ku, 
+    AVG(gkg) AS avg_gkg, 
+    AVG(gkp) AS avg_gkp, 
+    AVG(berat_plot) AS avg_berat_plot 
+    FROM monitoring_data_panen
+    WHERE ku IS NOT NULL AND gkg IS NOT NULL AND gkp IS NOT NULL AND berat_plot IS NOT NULL
+");
+$avg = mysqli_fetch_assoc($q_avg);
 
+$avg_ku = $avg['avg_ku'] !== null ? number_format($avg['avg_ku'], 2) : 'Belum terdata';
+$avg_gkg = $avg['avg_gkg'] !== null ? number_format($avg['avg_gkg'], 2) : 'Belum terdata';
+$avg_gkp = $avg['avg_gkp'] !== null ? number_format($avg['avg_gkp'], 2) : 'Belum terdata';
+$avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_berat_plot'], 2) : 'Belum terdata';
 
 ?>
 
@@ -132,36 +141,36 @@ $max_berat = $minmax['max_berat'] !== null ? $minmax['max_berat'] : '-';
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Max Berat Panen</div>
-                        <div class="fs-3 fw-bold"><?= $min_berat ?? 0; ?></div>
-                        <div class="small text-muted">Total user terdaftar</div>
+                        <div class="fs-5 text-muted mb-1">Rata-rata ubinan</div>
+                        <div class="fs-3 fw-bold"><?= $avg_ku; ?></div>
+                        <div class="small text-muted">kuintal beras</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Min Berat Panen</div>
-                        <div class="fs-3 fw-bold"><?= $max_berat ?? 0; ?></div>
-                        <div class="small text-muted">Total user terdaftar</div>
+                        <div class="fs-5 text-muted mb-1">Rata-rata GKG</div>
+                        <div class="fs-3 fw-bold"><?= $avg_gkg ?? 0; ?></div>
+                        <div class="small text-muted">ku/ha</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Max Nilai Ubinan</div>
-                        <div class="fs-3 fw-bold"><?= $jumlah_superadmin ?? 0; ?></div>
-                        <div class="small text-muted">Total user terdaftar</div>
+                        <div class="fs-5 text-muted mb-1">Rata-rata GKP</div>
+                        <div class="fs-3 fw-bold"><?= $avg_gkp ?? 0; ?></div>
+                        <div class="small text-muted">ku/ha</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Min Nilai Ubinan</div>
-                        <div class="fs-3 fw-bold"><?= $jumlah_superadmin ?? 0; ?></div>
-                        <div class="small text-muted">Total user terdaftar</div>
+                        <div class="fs-5 text-muted mb-1">Rata-rata Berat Plot</div>
+                        <div class="fs-3 fw-bold"><?= $avg_berat_plot ?? 0; ?></div>
+                        <div class="small text-muted">kg</div>
                         </div>
                     </div>
                 </div>
@@ -190,13 +199,13 @@ $max_berat = $minmax['max_berat'] !== null ? $minmax['max_berat'] : '-';
                         <table id="tabelPanen" class="table table-bordered align-middle table-hover">
                             <thead class="table-light text-center">
                                 <tr>
-                                    <th style="width:40px;">No</th>
-                                    <th>Tanggal Panen</th>
-                                    <th>Nama Petani</th>
-                                    <th>Lokasi</th>
-                                    <th>Berat Panen (kg)</th>
-                                    <th>Status</th>
-                                    <th style="width:60px;"></th>
+                                    <th class="text-center align-middle" style="width:40px;">No</th>
+                                    <th class="text-center align-middle">Tanggal Panen</th>
+                                    <th class="text-center align-middle">Nama Petani</th>
+                                    <th class="text-center align-middle">Lokasi</th>
+                                    <th class="text-center align-middle">Hasil Ubinan (kuintal)</th>
+                                    <th class="text-center align-middle">Status</th>
+                                    <th class="text-center align-middle" style="width:60px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -209,7 +218,15 @@ $max_berat = $minmax['max_berat'] !== null ? $minmax['max_berat'] : '-';
                                             <td class="text-center"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
                                             <td class="text-center"><?= htmlspecialchars($row['nama_petani']); ?></td>
                                             <td><?= htmlspecialchars($row['desa'] . ', ' . $row['kecamatan']); ?></td>
-                                            <td class="text-center"><?= htmlspecialchars($row['berat_panen']); ?></td>
+                                            <td class="text-center">
+                                                <?php
+                                                if (!empty($row['ku']) && $row['ku'] != 0) {
+                                                    echo '<span class="fw-bold">' . htmlspecialchars($row['ku']) . '</span>';
+                                                } else {
+                                                    echo '<span class="text-muted">Belum terdata</span>';
+                                                }
+                                                ?>
+                                            </td>
                                             <td class="text-center">
                                                 <?php
                                                 $status = isset($row['status']) ? strtolower($row['status']) : '';

@@ -9,7 +9,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
 }
 
 // Rata-rata hasil ubinan (hanya data yang sudah selesai)
-$q_avg_ubinan = mysqli_query($conn, "SELECT AVG(berat_panen) AS avg_ubinan FROM monitoring_data_panen WHERE status = 'selesai' AND berat_panen IS NOT NULL AND berat_panen != ''");
+$q_avg_ubinan = mysqli_query($conn, "SELECT AVG(ku) AS avg_ubinan FROM monitoring_data_panen WHERE status = 'selesai' AND ku IS NOT NULL AND ku != ''");
 $avg_ubinan = mysqli_fetch_assoc($q_avg_ubinan)['avg_ubinan'] ?? 0;
 
 // Jumlah status belum diubin (status 'belum selesai')
@@ -27,7 +27,7 @@ $jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total 
 $q_ubinan = mysqli_query($conn, "SELECT id, nama_petani, desa, kecamatan, status, tanggal_panen FROM monitoring_data_panen ORDER BY created_at DESC LIMIT 5");
 
 $q_user = mysqli_query($conn, "
-    SELECT DISTINCT u.nama_lengkap, m.desa, m.tanggal_panen
+    SELECT DISTINCT u.nama_lengkap, m.nomor_sub_segmen, m.tanggal_panen
     FROM users u
     JOIN monitoring_data_panen m ON u.id = m.user_id
     WHERE (m.status = 'belum selesai' OR m.status = 'sudah')
@@ -89,6 +89,20 @@ $q_user = mysqli_query($conn, "
         .sidebar {
           width: 240px;
         }
+        /* Warna lebih tegas untuk status deadline */
+        .tr-deadline-lewat td {
+            background-color: rgb(255, 146, 142) !important;
+            color: blank;
+        }
+        .tr-deadline-segera td {
+            background-color: rgb(247, 237, 108) !important;
+            color: black;
+        }
+        .tr-deadline-aman td {
+            background-color: rgb(179, 252, 157) !important;
+            color: black;
+        }
+
     </style>
 </head>
 
@@ -268,21 +282,35 @@ $q_user = mysqli_query($conn, "
                     <tr>
                       <th class="text-center">#</th>
                       <th class="text-center">Nama</th>
-                      <th class="text-center">Desa</th>
+                      <th class="text-center">SubSegmen</th>
                       <th class="text-center text-nowrap">Tanggal Ubinan</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php
                       $no = 1;
-                      while ($row = mysqli_fetch_assoc($q_user)): ?>
-                        <tr>
-                          <td class="text-center"><?= $no++; ?></td>
-                          <td class="text-center"><?= htmlspecialchars($row['nama_lengkap']); ?></td>
-                          <td class="text-center"><?= htmlspecialchars($row['desa']); ?></td>
-                          <td class="text-center text-nowrap"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
-                        </tr>
-                      <?php endwhile; ?>
+                      $today = new DateTime();
+                      while ($row = mysqli_fetch_assoc($q_user)):
+                        $tgl_ubinan = new DateTime($row['tanggal_panen']);
+                        $diff = $today->diff($tgl_ubinan)->days;
+                        $isPast = $tgl_ubinan < $today;
+                        $isSoon = !$isPast && $diff <= 7;
+                        // Tentukan class warna
+                        if ($isPast) {
+                          $rowClass = 'tr-deadline-lewat'; // Sudah lewat deadline
+                        } elseif ($isSoon) {
+                          $rowClass = 'tr-deadline-segera'; // Kurang dari atau sama dengan 7 hari
+                        } else {
+                          $rowClass = 'tr-deadline-aman'; // Masih lama
+                        }
+                    ?>
+                  <tr class="<?= $rowClass ?>">
+                    <td class="text-center"><?= $no++; ?></td>
+                    <td class="text-center"><?= htmlspecialchars($row['nama_lengkap']); ?></td>
+                    <td class="text-center"><?= htmlspecialchars($row['nomor_sub_segmen']); ?></td>
+                    <td class="text-center text-nowrap"><?= htmlspecialchars($row['tanggal_panen']); ?></td>
+                  </tr>
+                    <?php endwhile; ?>
                   </tbody>
                 </table>
               </div>

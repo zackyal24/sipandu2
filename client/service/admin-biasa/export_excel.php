@@ -1,40 +1,42 @@
 <?php
-session_start();
+// filepath: c:\xampp\htdocs\ubinan-monitoring\client\service\super-admin\export_excel.php
 include '../../../server/config/koneksi.php';
 
-// Cek login
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../index.php");
-    exit;
-}
-
-// Set header untuk file Excel
 header("Content-Type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; filename=data_monitoring_panen.xls");
-header("Pragma: no-cache");
-header("Expires: 0");
+header("Content-Disposition: attachment; filename=monitoring_panen.xls");
 
-// Query untuk mengambil data dari tabel
-$query = "SELECT tanggal_panen, nama_petani, lokasi, berat_panen FROM monitoring_data_panen ORDER BY created_at DESC";
-$result = mysqli_query($conn, $query);
-
-// Tampilkan data dalam format tabel HTML
 echo "<table border='1'>";
 echo "<tr>
-        <th>Tanggal Panen</th>
-        <th>Nama Petani</th>
-        <th>Lokasi</th>
-        <th>Berat Panen (kg)</th>
-      </tr>";
+<th>No</th>
+<th>Nama Petani</th>
+<th>Desa</th>
+<th>Kecamatan</th>
+<th>Tanggal Panen</th>
+<th>Nomor Sub Segmen</th>
+<th>Berat Plot (kg)</th>
+<th>GKP</th>
+<th>GKG</th>
+<th>Hasil Ubinan (kuintal)</th>
+<th>Status</th>
+</tr>";
 
-while ($row = mysqli_fetch_assoc($result)) {
-    echo "<tr>
-            <td>" . htmlspecialchars($row['tanggal_panen']) . "</td>
-            <td>" . htmlspecialchars($row['nama_petani']) . "</td>
-            <td>" . htmlspecialchars($row['lokasi']) . "</td>
-            <td>" . htmlspecialchars($row['berat_panen']) . "</td>
-          </tr>";
+$q = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
+$no = 1;
+while($row = mysqli_fetch_assoc($q)) {
+    echo "<tr>";
+    echo "<td>{$no}</td>";
+    echo "<td>".htmlspecialchars($row['nama_petani'])."</td>";
+    echo "<td>".htmlspecialchars($row['desa'])."</td>";
+    echo "<td>".htmlspecialchars($row['kecamatan'])."</td>";
+    echo "<td>".htmlspecialchars($row['tanggal_panen'])."</td>";
+    echo "<td>".htmlspecialchars($row['nomor_sub_segmen'])."</td>";
+    echo "<td>".htmlspecialchars($row['berat_plot'])."</td>";
+    echo "<td>".htmlspecialchars($row['gkp'])."</td>";
+    echo "<td>".htmlspecialchars($row['gkg'])."</td>";
+    echo "<td>".htmlspecialchars($row['ku'])."</td>";
+    echo "<td>".htmlspecialchars($row['status'])."</td>";
+    echo "</tr>";
+    $no++;
 }
-
 echo "</table>";
 ?>

@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $desa = mysqli_real_escape_string($conn, $_POST['desa']);
     $kecamatan = mysqli_real_escape_string($conn, $_POST['kecamatan']);
     $tanggal_panen = mysqli_real_escape_string($conn, $_POST['tanggal_panen']);
-    $berat_panen = floatval($_POST['berat_panen']);
+    $berat_plot = floatval($_POST['berat_plot']);
     $status = mysqli_real_escape_string($conn, $_POST['status']);
 
     $update = mysqli_query($conn, "UPDATE monitoring_data_panen SET 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         desa='$desa',
         kecamatan='$kecamatan',
         tanggal_panen='$tanggal_panen',
-        berat_panen='$berat_panen',
+        berat_plot='$berat_plot',
         status='$status'
         WHERE id=$id
     ");
@@ -89,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="date" name="tanggal_panen" class="form-control" value="<?= htmlspecialchars($row['tanggal_panen']); ?>" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Berat Panen (kg)</label>
-                            <input type="number" step="0.01" name="berat_panen" class="form-control" value="<?= htmlspecialchars($row['berat_panen']); ?>" required>
+                            <label class="form-label">Berat Panen Per Plot (kg)</label>
+                            <input type="number" step="0.01" name="berat_plot" class="form-control" value="<?= htmlspecialchars($row['berat_plot']); ?>">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Status</label>

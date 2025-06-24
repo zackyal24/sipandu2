@@ -127,7 +127,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Tanggal Panen</label>
+        <label class="form-label">Tanggal Ubinan</label>
         <input type="date" name="tanggal_panen" class="form-control" required>
       </div>
 
