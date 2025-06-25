@@ -11,22 +11,26 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
 // Ambil data panen
 $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
 
-// Query rata-rata
-$q_avg = mysqli_query($conn, "SELECT 
-    AVG(ku) AS avg_ku, 
-    AVG(gkg) AS avg_gkg, 
-    AVG(gkp) AS avg_gkp, 
-    AVG(berat_plot) AS avg_berat_plot 
-    FROM monitoring_data_panen
-    WHERE ku IS NOT NULL AND gkg IS NOT NULL AND gkp IS NOT NULL AND berat_plot IS NOT NULL
-");
+// Query rata-rata ubinan (berat_plot)
+$q_avg = mysqli_query($conn, "SELECT AVG(berat_plot) AS avg_berat_plot FROM monitoring_data_panen WHERE berat_plot IS NOT NULL AND berat_plot != ''");
 $avg = mysqli_fetch_assoc($q_avg);
-
-$avg_ku = $avg['avg_ku'] !== null ? number_format($avg['avg_ku'], 2) : 'Belum terdata';
-$avg_gkg = $avg['avg_gkg'] !== null ? number_format($avg['avg_gkg'], 2) : 'Belum terdata';
-$avg_gkp = $avg['avg_gkp'] !== null ? number_format($avg['avg_gkp'], 2) : 'Belum terdata';
 $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_berat_plot'], 2) : 'Belum terdata';
 
+// Hitung jumlah per status
+$q_status = mysqli_query($conn, "
+    SELECT status, COUNT(*) as jumlah
+    FROM monitoring_data_panen
+    WHERE status IN ('selesai', 'belum selesai', 'tidak bisa')
+    GROUP BY status
+");
+$status_count = [
+    'selesai' => 0,
+    'belum selesai' => 0,
+    'tidak bisa' => 0
+];
+while ($row = mysqli_fetch_assoc($q_status)) {
+    $status_count[strtolower($row['status'])] = $row['jumlah'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -67,14 +71,17 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
         .sidebar {
             width: 240px;
         }
+        .navbar-brand {
+            font-weight: bold;
+        }
         @media (min-width: 992px) {
             #mainContent {
-                margin-left: 240px;
+                margin-left: 240px !important;
             }
         }
         @media (max-width: 991.98px) {
             #mainContent {
-                margin-left: 0;
+                margin-left: 0 !important;
             }
         }
         footer {
@@ -114,6 +121,11 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                         </a>
                     </li>
                     <li class="nav-item mb-2">
+                        <a href="monitoring.php" class="nav-link">
+                            <i class="bi bi-list-task me-2"></i> Monitoring
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
                         <a href="monitoring_panen.php" class="nav-link active">
                             <i class="bi bi-basket-fill me-2"></i> Data Ubinan
                         </a>
@@ -134,7 +146,7 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
         </nav>
 
         <!-- Main Content -->
-        <main id="mainContent" class="col-lg-10 ms-auto px-4">
+        <main id="mainContent" class="col-lg-10 ms-auto px-4 pt-4">
             <h2 class="mb-4">Data Ubinan</h2>
             <!-- Card Statistik Ubinan -->
             <div class="row g-4 mb-4">
@@ -142,7 +154,7 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
                         <div class="fs-5 text-muted mb-1">Rata-rata ubinan</div>
-                        <div class="fs-3 fw-bold"><?= $avg_ku; ?></div>
+                        <div class="fs-3 fw-bold"><?= $avg_berat_plot; ?></div>
                         <div class="small text-muted">kuintal beras</div>
                         </div>
                     </div>
@@ -150,27 +162,27 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Rata-rata GKG</div>
-                        <div class="fs-3 fw-bold"><?= $avg_gkg ?? 0; ?></div>
-                        <div class="small text-muted">ku/ha</div>
+                        <div class="fs-5 text-muted mb-1">Selesai</div>
+                        <div class="fs-3 fw-bold"><?= $status_count['selesai'];; ?></div>
+                        <div class="small text-muted">Data ubinan yang sudah selesai</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Rata-rata GKP</div>
-                        <div class="fs-3 fw-bold"><?= $avg_gkp ?? 0; ?></div>
-                        <div class="small text-muted">ku/ha</div>
+                        <div class="fs-5 text-muted mb-1">Belum Selesai</div>
+                        <div class="fs-3 fw-bold"><?= $status_count['belum selesai'];; ?></div>
+                        <div class="small text-muted">Data ubinan yang belum selesai diinput</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Rata-rata Berat Plot</div>
-                        <div class="fs-3 fw-bold"><?= $avg_berat_plot ?? 0; ?></div>
-                        <div class="small text-muted">kg</div>
+                        <div class="fs-5 text-muted mb-1">Tidak Bisa</div>
+                        <div class="fs-3 fw-bold"><?= $status_count['tidak bisa'];; ?></div>
+                        <div class="small text-muted">Data ubinan yang tidak dapat dilakukan</div>
                         </div>
                     </div>
                 </div>
@@ -203,7 +215,7 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                                     <th class="text-center align-middle">Tanggal Panen</th>
                                     <th class="text-center align-middle">Nama Petani</th>
                                     <th class="text-center align-middle">Lokasi</th>
-                                    <th class="text-center align-middle">Hasil Ubinan (kuintal)</th>
+                                    <th class="text-center align-middle">Berat Ubinan (kuintal)</th>
                                     <th class="text-center align-middle">Status</th>
                                     <th class="text-center align-middle" style="width:60px;"></th>
                                 </tr>
@@ -221,7 +233,7 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                                             <td class="text-center">
                                                 <?php
                                                 if (!empty($row['ku']) && $row['ku'] != 0) {
-                                                    echo '<span class="fw-bold">' . htmlspecialchars($row['ku']) . '</span>';
+                                                    echo '<span class="fw-bold">' . htmlspecialchars($row['berat_plot']) . '</span>';
                                                 } else {
                                                     echo '<span class="text-muted">Belum terdata</span>';
                                                 }
@@ -233,7 +245,7 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                                                 if ($status === 'selesai') {
                                                     echo '<span class="badge bg-success">Selesai</span>';
                                                 } elseif ($status === 'belum selesai') {
-                                                    echo '<span class="badge bg-warning text-dark">Belum Selesai</span>';
+                                                    echo '<span class="badge bg-warning text-dark">Belum </span>';
                                                 } elseif ($status === 'tidak bisa') {
                                                     echo '<span class="badge bg-danger">Tidak Bisa</span>';
                                                 } elseif ($status === 'sudah') {

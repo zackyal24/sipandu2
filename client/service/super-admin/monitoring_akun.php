@@ -37,10 +37,10 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
       font-family: 'Poppins', sans-serif;
     }
     .btn-custom { border-radius: 8px; }
-    @media (min-width: 992px) {
-    #mainContent {
-      margin-left: 240px !important; /* Lebar sidebar */
-    }
+      @media (min-width: 992px) {
+      #mainContent {
+        margin-left: 240px !important; /* Lebar sidebar */
+      }
     }
     @media (max-width: 991.98px) {
       #mainContent {
@@ -84,6 +84,11 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
             </a>
           </li>
           <li class="nav-item mb-2">
+              <a href="monitoring.php" class="nav-link">
+                  <i class="bi bi-list-task me-2"></i> Monitoring
+              </a>
+          </li>
+          <li class="nav-item mb-2">
             <a href="monitoring_panen.php" class="nav-link text-primary">
               <i class="bi bi-basket-fill me-2"></i> Data Ubinan
             </a>
@@ -102,14 +107,14 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
     </nav>
 
     <!-- Main Content -->
-    <main id="mainContent" class="col-lg-10 ms-auto px-4" style="padding-top:70px;">
+    <main id="mainContent" class="col-lg-10 ms-auto px-4 pt-4">
       <h2 class="mb-4">Manajemen User</h2>
       <!-- Card Statistik User -->
-      <div class="row g-4 mb-4">
+      <div class="row g-4 mb-4 d-flex justify-content-center flex-wrap">
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="card shadow-sm border-0 text-center h-100">
             <div class="card-body">
-              <div class="fs-5 text-muted mb-1">Jumlah User</div>
+              <div class="fs-5 text-muted mb-1">Jumlah PCL</div>
               <div class="fs-3 fw-bold"><?= $jumlah_user ?? 0; ?></div>
               <div class="small text-muted">Total user terdaftar</div>
             </div>
@@ -118,7 +123,7 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="card shadow-sm border-0 text-center h-100">
             <div class="card-body">
-              <div class="fs-5 text-muted mb-1">Jumlah Admin</div>
+              <div class="fs-5 text-muted mb-1">Jumlah PML</div>
               <div class="fs-3 fw-bold"><?= $jumlah_admin ?? 0; ?></div>
               <div class="small text-muted">Total user terdaftar</div>
             </div>
@@ -127,7 +132,7 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="card shadow-sm border-0 text-center h-100">
             <div class="card-body">
-              <div class="fs-5 text-muted mb-1">Jumlah Superadmin</div>
+              <div class="fs-5 text-muted mb-1">Jumlah Supervisor</div>
               <div class="fs-3 fw-bold"><?= $jumlah_superadmin ?? 0; ?></div>
               <div class="small text-muted">Total user terdaftar</div>
             </div>

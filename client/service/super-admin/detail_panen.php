@@ -29,6 +29,8 @@ if (!$data) {
     <title>Detail Panen - Superadmin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
         background-color: #f8f9fc;
@@ -60,6 +62,19 @@ if (!$data) {
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 5px;
+        }
+        #detail-panen table, #detail-panen tr, #detail-panen td, #detail-panen th {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+        
+        #detail-panen img {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0;
         }
     </style>
 </head>
@@ -93,6 +108,11 @@ if (!$data) {
                         </a>
                     </li>
                     <li class="nav-item mb-2">
+                        <a href="monitoring.php" class="nav-link">
+                            <i class="bi bi-list-task me-2"></i> Monitoring
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
                         <a href="monitoring_panen.php" class="nav-link active">
                             <i class="bi bi-basket-fill me-2"></i> Data Ubinan
                         </a>
@@ -121,99 +141,101 @@ if (!$data) {
                         <i class="bi bi-arrow-left"></i> Kembali
                         </a>
                         <div class="d-flex justify-content-end mb-3">
-                            <a href="export_pdf_panen.php?id=<?= $row['id']; ?>" target="_blank" class="btn btn-outline-secondary">
+                            <button id="exportPDF" class="btn btn-outline-secondary mb-3">
                                 <i class="bi bi-file-earmark-pdf"></i> Export PDF
-                            </a>
+                            </button>
                         </div>
-                        <h3 class="fw-bold mb-4">Detail Data Panen</h3>
-                        <table class="table table-bordered">
-                            <tr><th>Nama Petani</th><td><?= htmlspecialchars($data['nama_petani']); ?></td></tr>
-                            <tr><th>Desa</th><td><?= htmlspecialchars($data['desa']); ?></td></tr>
-                            <tr><th>Kecamatan</th><td><?= htmlspecialchars($data['kecamatan']); ?></td></tr>
-                            <tr><th>Tanggal Panen</th><td><?= htmlspecialchars($data['tanggal_panen']); ?></td></tr>
-                            <tr><th>Nomor Sub Segmen</th><td><?= htmlspecialchars($data['nomor_sub_segmen']); ?></td></tr>
-                            <tr><th>Status</th>
-                                <td>
-                                    <?php
-                                    $status = strtolower($data['status'] ?? '');
-                                    if ($status === 'selesai') {
-                                        echo '<span class="badge bg-success">Selesai</span>';
-                                    } elseif ($status === 'belum selesai') {
-                                        echo '<span class="badge bg-warning text-dark">Belum Selesai</span>';
-                                    } elseif ($status === 'tidak bisa') {
-                                        echo '<span class="badge bg-danger">Tidak Bisa</span>';
-                                    } elseif ($status === 'sudah') {
-                                        echo '<span class="badge bg-primary">Sudah</span>';
-                                    } else {
-                                        echo '<span class="badge bg-secondary">-</span>';
-                                    }
-                                    ?>
-                                </td>
-                            </tr>
-                            <tr><th>Berat Plot (kg)</th>
-                                <td>
-                                    <?php if (!empty($data['berat_plot']) && $data['berat_plot'] != 0): ?>
-                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['berat_plot']); ?></span>
-                                    <?php else: ?>
-                                        <span class="text-muted">Belum terdata</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr><th>GKP</th>
-                                <td>
-                                    <?php if (!empty($data['gkp']) && $data['gkp'] != 0): ?>
-                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['gkp']); ?></span>
-                                    <?php else: ?>
-                                        <span class="text-muted">Belum terdata</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr><th>GKG</th>
-                                <td>
-                                    <?php if (!empty($data['gkg']) && $data['gkg'] != 0): ?>
-                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['gkg']); ?></span>
-                                    <?php else: ?>
-                                        <span class="text-muted">Belum terdata</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr><th>Hasil Ubinan (kuintal)</th>
-                                <td>
-                                    <?php if (!empty($data['ku']) && $data['ku'] != 0): ?>
-                                        <span class="fw-bold text-primary"><?= htmlspecialchars($data['ku']); ?></span>
-                                    <?php else: ?>
-                                        <span class="text-muted">Belum terdata</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr><th>Foto Petani</th>
-                                <td>
-                                    <?php if (!empty($data['foto_petani'])): ?>
-                                        <img src="../../<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview">
-                                    <?php else: ?>
-                                        <span class="text-muted">Belum terdata</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr><th>Foto Potong</th>
-                                <td>
-                                    <?php if (!empty($data['foto_potong'])): ?>
-                                        <img src="../../<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview">
-                                    <?php else: ?>
-                                        <span class="text-muted">Belum terdata</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <tr><th>Foto Timbangan</th>
-                                <td>
-                                    <?php if (!empty($data['foto_timbangan'])): ?>
-                                        <img src="../../<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview">
-                                    <?php else: ?>
-                                        <span class="text-muted">Belum terdata</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        </table>
+                        <div id="detail-panen">
+                            <h3 class="fw-bold mb-4">Detail Data Panen</h3>
+                            <table class="table table-bordered">
+                                <tr><th>Nama Petani</th><td><?= htmlspecialchars($data['nama_petani']); ?></td></tr>
+                                <tr><th>Desa</th><td><?= htmlspecialchars($data['desa']); ?></td></tr>
+                                <tr><th>Kecamatan</th><td><?= htmlspecialchars($data['kecamatan']); ?></td></tr>
+                                <tr><th>Tanggal Panen</th><td><?= htmlspecialchars($data['tanggal_panen']); ?></td></tr>
+                                <tr><th>Nomor Sub Segmen</th><td><?= htmlspecialchars($data['nomor_sub_segmen']); ?></td></tr>
+                                <tr><th>Status</th>
+                                    <td>
+                                        <?php
+                                        $status = strtolower($data['status'] ?? '');
+                                        if ($status === 'selesai') {
+                                            echo '<span class="badge bg-success">Selesai</span>';
+                                        } elseif ($status === 'belum selesai') {
+                                            echo '<span class="badge bg-warning text-dark">Belum Selesai</span>';
+                                        } elseif ($status === 'tidak bisa') {
+                                            echo '<span class="badge bg-danger">Tidak Bisa</span>';
+                                        } elseif ($status === 'sudah') {
+                                            echo '<span class="badge bg-primary">Sudah</span>';
+                                        } else {
+                                            echo '<span class="badge bg-secondary">-</span>';
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                                <tr><th>Berat Ubinan (kg)</th>
+                                    <td>
+                                        <?php if (!empty($data['berat_plot']) && $data['berat_plot'] != 0): ?>
+                                            <span class="fw-bold text-primary"><?= htmlspecialchars($data['berat_plot']); ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted">Belum terdata</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <tr><th>Gabah Kering Panen (Kuintal)</th>
+                                    <td>
+                                        <?php if (!empty($data['gkp']) && $data['gkp'] != 0): ?>
+                                            <span class="fw-bold text-primary"><?= htmlspecialchars($data['gkp']); ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted">Belum terdata</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <tr><th>Gabah Kering Giling (Kuintal)</th>
+                                    <td>
+                                        <?php if (!empty($data['gkg']) && $data['gkg'] != 0): ?>
+                                            <span class="fw-bold text-primary"><?= htmlspecialchars($data['gkg']); ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted">Belum terdata</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <tr><th>Produksi Beras (Kuintal Beras)</th>
+                                    <td>
+                                        <?php if (!empty($data['ku']) && $data['ku'] != 0): ?>
+                                            <span class="fw-bold text-primary"><?= htmlspecialchars($data['ku']); ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted">Belum terdata</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <tr><th>Foto Petani</th>
+                                    <td>
+                                        <?php if (!empty($data['foto_petani'])): ?>
+                                            <img src="../../<?= htmlspecialchars($data['foto_petani']); ?>" alt="Foto Petani" class="img-fluid preview">
+                                        <?php else: ?>
+                                            <span class="text-muted">Belum terdata</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <tr><th>Foto Potong</th>
+                                    <td>
+                                        <?php if (!empty($data['foto_potong'])): ?>
+                                            <img src="../../<?= htmlspecialchars($data['foto_potong']); ?>" alt="Foto Potong" class="img-fluid preview">
+                                        <?php else: ?>
+                                            <span class="text-muted">Belum terdata</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <tr><th>Foto Timbangan</th>
+                                    <td>
+                                        <?php if (!empty($data['foto_timbangan'])): ?>
+                                            <img src="../../<?= htmlspecialchars($data['foto_timbangan']); ?>" alt="Foto Timbangan" class="img-fluid preview">
+                                        <?php else: ?>
+                                            <span class="text-muted">Belum terdata</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <!-- Tombol Hapus -->
@@ -251,15 +273,20 @@ if (!$data) {
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script>
-    $(document).ready(function () {
-        // Tampilkan modal hapus
-        $('.deleteButton').on('click', function (e) {
-            e.preventDefault();
-            var id = $(this).data('id');
-            $('#deleteConfirmButton').attr('href', 'hapus_panen.php?id=' + id);
-            $('#confirmDeleteModal').modal('show');
-        });
+    document.getElementById('exportPDF').addEventListener('click', function () {
+        var element = document.getElementById('detail-panen');
+        nama = "<?= preg_replace('/[^a-zA-Z0-9_\-]/', '', $data['nama_petani']); ?>";
+        var id = "<?= $data['id']; ?>";
+        var filename = nama + '-' + id + '.pdf';
+        html2pdf().from(element).set({
+            margin: 0.5,
+            filename: filename,
+            html2canvas: { scale: 2 },
+            jsPDF: { orientation: 'portrait', unit: 'cm', format: 'a4' }
+        }).save();
     });
 </script>
 

@@ -89,7 +89,7 @@ $q_user = mysqli_query($conn, "
         .sidebar {
           width: 240px;
         }
-        /* Warna lebih tegas untuk status deadline */
+        /* Warna status deadline */
         .tr-deadline-lewat td {
             background-color: rgb(255, 146, 142) !important;
             color: blank;
@@ -135,6 +135,11 @@ $q_user = mysqli_query($conn, "
             </a>
           </li>
           <li class="nav-item mb-2">
+              <a href="monitoring.php" class="nav-link">
+                  <i class="bi bi-list-task me-2"></i> Monitoring
+              </a>
+          </li>
+          <li class="nav-item mb-2">
             <a href="monitoring_panen.php" class="nav-link text-primary">
               <i class="bi bi-basket-fill me-2"></i> Data Ubinan
             </a>
@@ -154,7 +159,7 @@ $q_user = mysqli_query($conn, "
 
     <!-- Main Content -->
     <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-5 px-3" style="margin-left:240px;">
-      <h2 class="mb-4 p-2 pt-4">Dashboard Monitoring Panen</h2>
+      <h2 class="mb-4 p-2 pt-4">Dashboard Monitoring Ubinan</h2>
       <div class="row g-4">
         <!-- Card 1: Total Panen Ubinan -->
         <div class="col-sm-6 col-xl-3">
@@ -274,7 +279,7 @@ $q_user = mysqli_query($conn, "
             <div class="card shadow-sm h-100 d-flex flex-column">
               <div class="text-nowrap d-flex justify-content-between card-header bg-primary text-white">
                 <h5 class="mb-0">Belum Isi Form Ubinan</h5>
-                <a href="monitoring_akun.php" class="btn btn-outline-light btn-sm">Lihat Semua</a>
+                <a href="monitoring.php" class="btn btn-outline-light btn-sm">Lihat Semua</a>
               </div>
               <div class="card-body flex-grow-1">
                 <table class="table table-sm table-hover mb-0">
