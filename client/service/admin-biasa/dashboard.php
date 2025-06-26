@@ -11,22 +11,26 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
 // Query untuk mengambil data dari tabel monitoring_data_panen
 $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
 
-// Query rata-rata
-$q_avg = mysqli_query($conn, "SELECT 
-    AVG(ku) AS avg_ku, 
-    AVG(gkg) AS avg_gkg, 
-    AVG(gkp) AS avg_gkp, 
-    AVG(berat_plot) AS avg_berat_plot 
-    FROM monitoring_data_panen
-    WHERE ku IS NOT NULL AND gkg IS NOT NULL AND gkp IS NOT NULL AND berat_plot IS NOT NULL
-");
+// Query rata-rata ubinan (berat_plot)
+$q_avg = mysqli_query($conn, "SELECT AVG(berat_plot) AS avg_berat_plot FROM monitoring_data_panen WHERE berat_plot IS NOT NULL AND berat_plot != ''");
 $avg = mysqli_fetch_assoc($q_avg);
-
-$avg_ku = $avg['avg_ku'] !== null ? number_format($avg['avg_ku'], 2) : 'Belum terdata';
-$avg_gkg = $avg['avg_gkg'] !== null ? number_format($avg['avg_gkg'], 2) : 'Belum terdata';
-$avg_gkp = $avg['avg_gkp'] !== null ? number_format($avg['avg_gkp'], 2) : 'Belum terdata';
 $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_berat_plot'], 2) : 'Belum terdata';
 
+// Hitung jumlah per status
+$q_status = mysqli_query($conn, "
+    SELECT status, COUNT(*) as jumlah
+    FROM monitoring_data_panen
+    WHERE status IN ('selesai', 'belum selesai', 'tidak bisa')
+    GROUP BY status
+");
+$status_count = [
+    'selesai' => 0,
+    'belum selesai' => 0,
+    'tidak bisa' => 0
+];
+while ($row = mysqli_fetch_assoc($q_status)) {
+    $status_count[strtolower($row['status'])] = $row['jumlah'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -95,7 +99,7 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
                         <div class="fs-5 text-muted mb-1">Rata-rata ubinan</div>
-                        <div class="fs-3 fw-bold"><?= $avg_ku; ?></div>
+                        <div class="fs-3 fw-bold"><?= $avg_berat_plot; ?></div>
                         <div class="small text-muted">kuintal beras</div>
                         </div>
                     </div>
@@ -103,27 +107,27 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Rata-rata GKG</div>
-                        <div class="fs-3 fw-bold"><?= $avg_gkg ?? 0; ?></div>
-                        <div class="small text-muted">ku/ha</div>
+                        <div class="fs-5 text-muted mb-1">Selesai</div>
+                        <div class="fs-3 fw-bold"><?= $status_count['selesai'];; ?></div>
+                        <div class="small text-muted">Data ubinan yang sudah selesai</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Rata-rata GKP</div>
-                        <div class="fs-3 fw-bold"><?= $avg_gkp ?? 0; ?></div>
-                        <div class="small text-muted">ku/ha</div>
+                        <div class="fs-5 text-muted mb-1">Belum Selesai</div>
+                        <div class="fs-3 fw-bold"><?= $status_count['belum selesai'];; ?></div>
+                        <div class="small text-muted">Data ubinan yang belum selesai diinput</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                        <div class="fs-5 text-muted mb-1">Rata-rata Berat Plot</div>
-                        <div class="fs-3 fw-bold"><?= $avg_berat_plot ?? 0; ?></div>
-                        <div class="small text-muted">kg</div>
+                        <div class="fs-5 text-muted mb-1">Tidak Bisa</div>
+                        <div class="fs-3 fw-bold"><?= $status_count['tidak bisa'];; ?></div>
+                        <div class="small text-muted">Data ubinan yang tidak dapat dilakukan</div>
                         </div>
                     </div>
                 </div>
