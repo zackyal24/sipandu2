@@ -16,11 +16,11 @@ if ($data && password_verify($password, $data['password'])) {
     $_SESSION['username'] = $data['username'];
     $_SESSION['role'] = $data['role'];
 
-    if ($data['role'] === 'superadmin') {
-        $_SESSION['superadmin'] = $data['username'];
+    if ($data['role'] === 'supervisor') {
+        $_SESSION['supervisor'] = $data['username'];
         header("Location: ../service/super-admin/super_admin.php");
-    } else if ($data['role'] === 'admin') {
-        $_SESSION['admin'] = $data['username'];
+    } else if ($data['role'] === 'pml') {
+        $_SESSION['pml'] = $data['username'];
         header("Location: ../service/admin-biasa/dashboard.php");
     } else {
         $_SESSION['user_id'] = $data['id']; // Simpan user_id ke sesi

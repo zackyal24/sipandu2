@@ -2,8 +2,8 @@
 session_start();
 include '../../../server/config/koneksi.php';
 
-// Validasi akses hanya untuk superadmin
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+// Validasi akses hanya untuk supervisor
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }
@@ -26,7 +26,7 @@ if (!$data) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Detail Panen - Superadmin</title>
+    <title>Detail Panen - Supervisor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -98,7 +98,7 @@ if (!$data) {
         <nav class="col-md-3 col-lg-2 d-md-block bg-white border-end shadow-sm sidebar py-4 position-fixed" style="height:100vh; z-index:1030;">
             <div class="position-sticky">
                 <a href="#" class="d-flex align-items-center mb-3 text-primary text-decoration-none px-3">
-                    <span class="fs-5 fw-bold">Superadmin</span>
+                    <span class="fs-5 fw-bold">Supervisor</span>
                 </a>
                 <hr>
                 <ul class="nav nav-pills flex-column mb-auto px-2">
@@ -251,7 +251,7 @@ if (!$data) {
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-4">
-    &copy; <?= date('Y'); ?> Monitoring Panen | Superadmin
+    &copy; <?= date('Y'); ?> Monitoring Panen | Supervisor
 </footer>
 
 <!-- Modal Konfirmasi Hapus -->

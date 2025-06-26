@@ -3,7 +3,7 @@ session_start();
 include '../../../server/config/koneksi.php'; // Koneksi ke database
 
 // Cek login
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pcl') {
     header("Location: ../index.php");
     exit;
 }

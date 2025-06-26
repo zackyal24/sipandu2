@@ -4,7 +4,7 @@ session_start();
 include '../../../server/config/koneksi.php';
 
 // Cek login & role
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }

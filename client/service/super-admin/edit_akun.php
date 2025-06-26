@@ -2,8 +2,8 @@
 session_start();
 include '../../../server/config/koneksi.php';
 
-// Cek apakah user login dan superadmin
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+// Cek apakah user login dan supervisor
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <select name="role" class="form-select" required>
                     <option value="user" <?= $user['role'] === 'user' ? 'selected' : '' ?>>User</option>
                     <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
-                    <option value="superadmin" <?= $user['role'] === 'superadmin' ? 'selected' : '' ?>>Superadmin</option>
+                    <option value="supervisor" <?= $user['role'] === 'supervisor' ? 'selected' : '' ?>>Supervisor</option>
                 </select>
             </div>
 

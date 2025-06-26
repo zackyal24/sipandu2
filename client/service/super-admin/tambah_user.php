@@ -2,8 +2,8 @@
 session_start();
 include '../../../server/config/koneksi.php';
 
-// Cek login dan role superadmin
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+// Cek login dan role supervisor
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }
@@ -100,9 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label>Role</label>
                 <select name="role" class="form-select" required>
                     <option value="">-- Pilih Role --</option>
-                    <option value="admin" <?= isset($_POST['role']) && $_POST['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
-                    <option value="superadmin" <?= isset($_POST['role']) && $_POST['role'] == 'superadmin' ? 'selected' : '' ?>>Superadmin</option>
-                    <option value="user" <?= isset($_POST['role']) && $_POST['role'] == 'user' ? 'selected' : '' ?>>User</option>
+                    <option value="pml" <?= isset($_POST['role']) && $_POST['role'] == 'pml' ? 'selected' : '' ?>>PML</option>
+                    <option value="supervisor" <?= isset($_POST['role']) && $_POST['role'] == 'supervisor' ? 'selected' : '' ?>>Supervisor</option>
+                    <option value="pcl" <?= isset($_POST['role']) && $_POST['role'] == 'pcl' ? 'selected' : '' ?>>PCL</option>
                 </select>
             </div>
 

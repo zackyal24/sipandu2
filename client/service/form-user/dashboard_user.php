@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'pcl') {
     echo "Sesi tidak valid. user_id: " . ($_SESSION['user_id'] ?? 'tidak ada') . ", role: " . ($_SESSION['role'] ?? 'tidak ada');
     exit;
 }
@@ -25,7 +25,7 @@ $result = mysqli_stmt_get_result($stmt);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard User | Monitoring Panen</title>
+  <title>Dashboard PCL | Monitoring Panen</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -64,7 +64,7 @@ $result = mysqli_stmt_get_result($stmt);
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
   <div class="container">
-    <a class="navbar-brand" href="#">Dashboard User</a>
+    <a class="navbar-brand" href="#">Dashboard PCL</a>
     <div class="d-flex align-items-center">
       <span class="text-white me-3"><strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
       <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>

@@ -2,8 +2,8 @@
 session_start();
 include '../../../server/config/koneksi.php';
 
-// Hanya bisa diakses oleh superadmin
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+// Hanya bisa diakses oleh supervisor
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }
@@ -12,9 +12,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
 $data = mysqli_query($conn, "SELECT * FROM users ORDER BY role ASC, created_at DESC");
 
 // Hitung jumlah user berdasarkan role
-$jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='user'"))['total'] ?? 0;
-$jumlah_admin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='admin'"))['total'] ?? 0;
-$jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='superadmin'"))['total'] ?? 0;
+$jumlah_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='pcl'"))['total'] ?? 0;
+$jumlah_admin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='pml'"))['total'] ?? 0;
+$jumlah_supervisor = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='supervisor'"))['total'] ?? 0;
 
 ?>
 
@@ -74,7 +74,7 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
     <nav class="col-md-3 col-lg-2 d-md-block bg-white border-end shadow-sm sidebar py-4 position-fixed" style="height:100vh; z-index:1030;">
       <div class="position-sticky">
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-primary text-decoration-none px-3">
-          <span class="fs-5 fw-bold">Superadmin</span>
+          <span class="fs-5 fw-bold">Supervisor</span>
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto px-2">
@@ -133,7 +133,7 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
           <div class="card shadow-sm border-0 text-center h-100">
             <div class="card-body">
               <div class="fs-5 text-muted mb-1">Jumlah Supervisor</div>
-              <div class="fs-3 fw-bold"><?= $jumlah_superadmin ?? 0; ?></div>
+              <div class="fs-3 fw-bold"><?= $jumlah_supervisor ?? 0; ?></div>
               <div class="small text-muted">Total user terdaftar</div>
             </div>
           </div>
@@ -153,9 +153,9 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
             <div class="col-md-4 mb-2 mb-md-0">
               <select id="roleFilter" class="form-select">
                 <option value="">Semua Role</option>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-                <option value="superadmin">Superadmin</option>
+                <option value="pcl">pcl</option>
+                <option value="pml">pml</option>
+                <option value="supervisor">Supervisor</option>
               </select>
             </div>
           </div>
@@ -184,12 +184,12 @@ $jumlah_superadmin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
                     <td class="text-center">
                       <?php
                         $role = strtolower($row['role']);
-                        if ($role === 'superadmin') {
-                          echo '<span class="badge bg-danger">Superadmin</span>';
-                        } elseif ($role === 'admin') {
-                          echo '<span class="badge bg-primary">Admin</span>';
+                        if ($role === 'supervisor') {
+                          echo '<span class="badge bg-danger">supervisor</span>';
+                        } elseif ($role === 'pml') {
+                          echo '<span class="badge bg-primary">PML</span>';
                         } else {
-                          echo '<span class="badge bg-secondary">User</span>';
+                          echo '<span class="badge bg-secondary">PCL</span>';
                         }
                       ?>
                     </td>

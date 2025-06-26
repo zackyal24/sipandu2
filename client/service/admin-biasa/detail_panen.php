@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin'])) {
+if (!isset($_SESSION['pml'])) {
     header("Location: login.php");
     exit;
 }
@@ -69,9 +69,9 @@ if (!$data) {
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="dashboard.php">Admin Panel</a>
+        <a class="navbar-brand" href="dashboard.php">PML Panel</a>
         <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['admin']); ?></strong></span>
+            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['pml']); ?></strong></span>
             <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
         </div>
     </div>

@@ -3,7 +3,7 @@ session_start();
 include '../../../server/config/koneksi.php';
 
 // Cek login & role
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }
@@ -42,7 +42,7 @@ $q_user = mysqli_query($conn, "
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Superadmin | Monitoring Panen</title>
+    <title>Dashboard Supervisor | Monitoring Panen</title>
 
     <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -125,7 +125,7 @@ $q_user = mysqli_query($conn, "
     <nav class="col-lg-2 d-none d-lg-block sidebar position-fixed bg-white border-end shadow-sm py-4" style="height:100vh; z-index:1030;">
       <div class="position-sticky">
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-primary text-decoration-none px-3">
-          <span class="fs-5 fw-bold">Superadmin</span>
+          <span class="fs-5 fw-bold">Supervisor</span>
         </a>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto px-2">

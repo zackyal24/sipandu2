@@ -3,8 +3,8 @@
 session_start();
 include '../../../server/config/koneksi.php';
 
-// Hanya superadmin yang boleh hapus
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+// Hanya supervisor yang boleh hapus
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }

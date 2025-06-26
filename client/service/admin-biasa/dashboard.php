@@ -3,7 +3,7 @@ session_start();
 include '../../../server/config/koneksi.php';
 
 // Cek login
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pml') {
     header("Location: ../index.php");
     exit;
 }
@@ -14,7 +14,7 @@ $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY create
 // Query rata-rata ubinan (berat_plot)
 $q_avg = mysqli_query($conn, "SELECT AVG(berat_plot) AS avg_berat_plot FROM monitoring_data_panen WHERE berat_plot IS NOT NULL AND berat_plot != ''");
 $avg = mysqli_fetch_assoc($q_avg);
-$avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_berat_plot'], 2) : 'Belum terdata';
+$avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_berat_plot'], 2) : '-';
 
 // Hitung jumlah per status
 $q_status = mysqli_query($conn, "
@@ -38,7 +38,7 @@ while ($row = mysqli_fetch_assoc($q_status)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin | Monitoring Panen</title>
+    <title>Dashboard PML | Monitoring Panen</title>
 
     <!-- Fonts & Styles -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -81,10 +81,10 @@ while ($row = mysqli_fetch_assoc($q_status)) {
     <div class="container">
         <a class="navbar-brand" href="#">
             <img src="../../assets/logo.png" alt="Logo" width="40" class="me-2">
-            Admin Panel
+            PML Panel
         </a>
         <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['admin']); ?></strong></span>
+            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['pml']); ?></strong></span>
             <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
         </div>
     </div>
@@ -209,10 +209,6 @@ while ($row = mysqli_fetch_assoc($q_status)) {
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted">Belum ada data panen.</td>
-                                    </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -349,7 +345,10 @@ $(document).on('click', '.revisiButton', function () {
 <script>
 $(document).ready(function () {
     var t = $('#tabelPanen').DataTable({
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+        language: { 
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' ,
+            emptyTable: "Belum ada data panen."
+    },
         responsive: true,
         pageLength: 10,
         columnDefs: [{ targets: 0, searchable: false, orderable: false }],

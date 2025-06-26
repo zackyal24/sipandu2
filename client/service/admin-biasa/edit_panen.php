@@ -4,7 +4,7 @@ session_start();
 include '../../../server/config/koneksi.php';
 
 // Cek login dan role
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pml') {
     header("Location: ../index.php");
     exit;
 }
