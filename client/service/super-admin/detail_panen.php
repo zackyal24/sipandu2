@@ -76,6 +76,15 @@ if (!$data) {
             display: block;
             margin: 0;
         }
+        .modal-content {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .modal-body textarea {
+            resize: vertical;
+        }
     </style>
 </head>
 <body>
@@ -117,10 +126,26 @@ if (!$data) {
                             <i class="bi bi-basket-fill me-2"></i> Data Ubinan
                         </a>
                     </li>
+                    <!-- Dropdown Manajemen -->
                     <li class="nav-item mb-2">
-                        <a href="monitoring_akun.php" class="nav-link text-primary">
-                            <i class="bi bi-person-gear me-2"></i> Manajemen User
+                        <a class="nav-link text-primary d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenu" role="button" aria-expanded="false" aria-controls="manajemenMenu">
+                        <span><i class="bi bi-gear me-2"></i> Manajemen</span>
+                        <i class="bi bi-chevron-down"></i>
                         </a>
+                        <div class="collapse ps-4" id="manajemenMenu">
+                        <ul class="nav flex-column">
+                            <li class="nav-item mb-1">
+                            <a href="monitoring_akun.php" class="nav-link text-primary">
+                                <i class="bi bi-person-gear me-2"></i> User
+                            </a>
+                            </li>
+                            <li class="nav-item mb-1">
+                            <a href="manage_segmen.php" class="nav-link text-primary">
+                                <i class="bi bi-123 me-2"></i> Segmen
+                            </a>
+                            </li>
+                        </ul>
+                        </div>
                     </li>
                 </ul>
                 <hr>
@@ -137,7 +162,7 @@ if (!$data) {
             <div class="container my-5">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <a href="monitoring_panen.php" class="btn btn-outline-primary btn-custom mb-3">
+                        <a href="javascript:history.back()" class="btn btn-outline-primary btn-custom mb-3">
                         <i class="bi bi-arrow-left"></i> Kembali
                         </a>
                         <div class="d-flex justify-content-end mb-3">
@@ -146,7 +171,39 @@ if (!$data) {
                             </button>
                         </div>
                         <div id="detail-panen">
-                            <h3 class="fw-bold mb-4">Detail Data Panen</h3>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="fw-bold mb-0">Detail Data Panen</h3>
+                                <div class="dropdown">
+                                    <button class="btn btn-link p-0 border-0 text-secondary" type="button" id="aksiDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:1.7rem;">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="aksiDropdown">
+                                        <li>
+                                            <a class="dropdown-item" href="edit_panen.php?id=<?= $data['id']; ?>">
+                                                <i class="bi bi-pencil-square me-2"></i> Edit Data
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button 
+                                                class="dropdown-item" 
+                                                type="button"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#revisiModal"
+                                                data-id="<?= $data['id']; ?>"
+                                                data-nama="<?= htmlspecialchars($data['nama_petani']); ?>"
+                                                id="btnRevisiDropdown"
+                                            >
+                                                <i class="bi bi-journal-arrow-up me-2"></i> Revisi Data
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item text-danger" type="button" data-bs-toggle="modal" data-bs-target="#modalHapusPanen">
+                                                <i class="bi bi-trash me-2"></i> Hapus Data
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                             <table class="table table-bordered">
                                 <tr><th>Nama Petani</th><td><?= htmlspecialchars($data['nama_petani']); ?></td></tr>
                                 <tr><th>Desa</th><td><?= htmlspecialchars($data['desa']); ?></td></tr>
@@ -238,21 +295,10 @@ if (!$data) {
                         </div>
                     </div>
                 </div>
-                <!-- Tombol Hapus -->
-                <div class="mt-4 d-flex justify-content-end">
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalHapusPanen">
-                        <i class="bi bi-trash"></i> Hapus Data
-                    </button>
-                </div>
             </div>
         </main>
     </div>
 </div>
-
-<!-- Footer -->
-<footer class="text-center mt-5 mb-4">
-    &copy; <?= date('Y'); ?> Monitoring Panen | Supervisor
-</footer>
 
 <!-- Modal Konfirmasi Hapus -->
 <div class="modal fade" id="modalHapusPanen" tabindex="-1" aria-labelledby="modalHapusPanenLabel" aria-hidden="true">
@@ -273,6 +319,41 @@ if (!$data) {
   </div>
 </div>
 
+<!-- Modal Revisi-->
+<div class="modal fade" id="revisiModal" tabindex="-1" aria-labelledby="revisiModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form id="formRevisi" method="post" action="revisi_panen.php">
+        <div class="modal-header">
+          <h5 class="modal-title" id="revisiModalLabel">Catatan Revisi Data Panen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" id="revisiId">
+          <div class="mb-3">
+            <label class="form-label">Nama Petani</label>
+            <input type="text" class="form-control" id="revisiNama" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Catatan Revisi</label>
+            <textarea name="note" class="form-control" rows="4" required placeholder="Tulis catatan revisi di sini..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-info">Kirim Revisi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="text-center mt-5 mb-4">
+    &copy; <?= date('Y'); ?> Monitoring Panen | Supervisor
+</footer>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
@@ -288,6 +369,18 @@ if (!$data) {
             jsPDF: { orientation: 'portrait', unit: 'cm', format: 'a4' }
         }).save();
     });
+    document.addEventListener('DOMContentLoaded', function () {
+    // Untuk tombol revisi
+    var btnRevisi = document.getElementById('btnRevisiDropdown');
+    if (btnRevisi) {
+        btnRevisi.addEventListener('click', function () {
+            var id = this.getAttribute('data-id');
+            var nama = this.getAttribute('data-nama');
+            document.getElementById('revisiId').value = id;
+            document.getElementById('revisiNama').value = nama;
+        });
+    }
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

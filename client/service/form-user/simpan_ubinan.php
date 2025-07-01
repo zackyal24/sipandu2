@@ -15,7 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $desa = htmlspecialchars($_POST['desa']);
     $kecamatan = htmlspecialchars($_POST['kecamatan']);
     $tanggal_panen = $_POST['tanggal_panen'];
+    $subround = $_POST['subround'];
     $berat_plot = $_POST['berat_plot'];
+    $nomor_segmen = $_POST['nomor_segmen'];
     $nomor_sub_segmen = $_POST['nomor_sub_segmen'];
     // Hitung nilai GKP, GKG, dan KU
     $gkp = ($berat_plot / 100) / (6.25 / 10000);
@@ -34,12 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Update data di database
     $query = "UPDATE monitoring_data_panen 
-    SET nama_petani = ?, desa = ?, kecamatan = ?, tanggal_panen = ?, berat_plot = ?,
-        nomor_sub_segmen = ?, foto_petani = ?, foto_potong = ?, foto_timbangan = ?, 
+    SET nama_petani = ?, desa = ?, kecamatan = ?, tanggal_panen = ?, subround = ?, berat_plot = ?,
+        nomor_segmen = ?, nomor_sub_segmen = ?, foto_petani = ?, foto_potong = ?, foto_timbangan = ?, 
         gkp = ?, gkg = ?, ku = ?, status = 'selesai' 
     WHERE id = ?";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "ssssssssssddi", $nama_petani, $desa, $kecamatan, $tanggal_panen, $berat_plot, $nomor_sub_segmen, $foto_petani, $foto_potong, $foto_timbangan, $gkp, $gkg, $ku, $id);
+    mysqli_stmt_bind_param($stmt, "ssssssssssssddi", $nama_petani, $desa, $kecamatan, $tanggal_panen, $subround, $berat_plot, $nomor_segmen, $nomor_sub_segmen, $foto_petani, $foto_potong, $foto_timbangan, $gkp, $gkg, $ku, $id);
 
     if (mysqli_stmt_execute($stmt)) {
         echo "<!DOCTYPE html>

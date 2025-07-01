@@ -159,16 +159,18 @@ $isCompleted = $data['status'] === 'selesai';
       </div>
 
       <div class="mb-3">
+        <label class="form-label">Subround</label>
+        <input type="text" name="subround" class="form-control" value="<?= htmlspecialchars($data['subround']); ?>" readonly required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nomor Segmen</label>
+        <input type="text" name="nomor_segmen" class="form-control" value="<?= htmlspecialchars($data['nomor_segmen']); ?>" readonly>
+      </div>
+
+      <div class="mb-3">
         <label class="form-label">Nomor Sub Segmen</label>
-        <input type="text"
-               name="nomor_sub_segmen"
-               class="form-control"
-               placeholder="Masukkan maksimal 11 karakter"
-               value="<?= htmlspecialchars($data['nomor_sub_segmen'] ?? ''); ?>"
-               pattern="[A-Za-z0-9]{1,11}"
-               maxlength="11"
-               readonly
-               required>
+        <input type="text" name="nomor_sub_segmen" class="form-control" value="<?= htmlspecialchars($data['nomor_sub_segmen']); ?>" readonly>
       </div>
 
       <div class="mb-3">

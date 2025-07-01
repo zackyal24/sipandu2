@@ -12,7 +12,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pcl') {
 $nama_petani = $_POST['nama_petani'];
 // $lokasi = $_POST['lokasi'];
 $tanggal_panen = $_POST['tanggal_panen'];
+$subround = $_POST['subround'];
 $user_id = $_SESSION['user_id'];
+$nomor_segmen = $_POST['nomor_segmen'];
 $nomor_sub_segmen = $_POST['nomor_sub_segmen'];
 $status = $_POST['status'];
 
@@ -31,9 +33,11 @@ $desa = mysqli_fetch_assoc($qDesa);
 $nama_desa = $desa['nama_desa'] ?? '';
 
 // Simpan data ke database (desa dan kecamatan dipisah)
-$query = "INSERT INTO monitoring_data_panen (user_id, nama_petani, desa, kecamatan, tanggal_panen, nomor_sub_segmen, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+$query = "INSERT INTO monitoring_data_panen 
+    (user_id, nama_petani, desa, kecamatan, tanggal_panen, subround, nomor_segmen, nomor_sub_segmen, status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "issssss", $user_id, $nama_petani, $nama_desa, $nama_kecamatan, $tanggal_panen, $nomor_sub_segmen, $status);
+mysqli_stmt_bind_param($stmt, "issssssss", $user_id, $nama_petani, $nama_desa, $nama_kecamatan, $tanggal_panen, $subround, $nomor_segmen, $nomor_sub_segmen, $status);
 
 if (mysqli_stmt_execute($stmt)) {
     echo "<!DOCTYPE html>

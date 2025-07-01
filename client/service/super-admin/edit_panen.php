@@ -4,7 +4,7 @@ session_start();
 include '../../../server/config/koneksi.php';
 
 // Cek login dan role
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'superadmin') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
     header("Location: ../index.php");
     exit;
 }
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </select>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <a href="monitoring_panen.php" class="btn btn-secondary btn-custom">
+                            <a href="javascript:history.back()" class="btn btn-secondary btn-custom">
                                 <i class="bi bi-arrow-left"></i> Batal
                             </a>
                             <button type="submit" class="btn btn-primary btn-custom">

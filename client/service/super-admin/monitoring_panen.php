@@ -20,13 +20,14 @@ $avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_bera
 $q_status = mysqli_query($conn, "
     SELECT status, COUNT(*) as jumlah
     FROM monitoring_data_panen
-    WHERE status IN ('selesai', 'belum selesai', 'tidak bisa')
+    WHERE status IN ('selesai', 'belum selesai', 'tidak bisa', 'sudah')
     GROUP BY status
 ");
 $status_count = [
     'selesai' => 0,
     'belum selesai' => 0,
-    'tidak bisa' => 0
+    'tidak bisa' => 0,
+    'sudah' => 0
 ];
 while ($row = mysqli_fetch_assoc($q_status)) {
     $status_count[strtolower($row['status'])] = $row['jumlah'];
@@ -130,10 +131,26 @@ while ($row = mysqli_fetch_assoc($q_status)) {
                             <i class="bi bi-basket-fill me-2"></i> Data Ubinan
                         </a>
                     </li>
+                    <!-- Dropdown Manajemen -->
                     <li class="nav-item mb-2">
-                        <a href="monitoring_akun.php" class="nav-link text-primary">
-                            <i class="bi bi-person-gear me-2"></i> Manajemen User
+                        <a class="nav-link text-primary d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenu" role="button" aria-expanded="false" aria-controls="manajemenMenu">
+                        <span><i class="bi bi-gear me-2"></i> Manajemen</span>
+                        <i class="bi bi-chevron-down"></i>
                         </a>
+                        <div class="collapse ps-4" id="manajemenMenu">
+                        <ul class="nav flex-column">
+                            <li class="nav-item mb-1">
+                            <a href="monitoring_akun.php" class="nav-link text-primary">
+                                <i class="bi bi-person-gear me-2"></i> User
+                            </a>
+                            </li>
+                            <li class="nav-item mb-1">
+                            <a href="manage_segmen.php" class="nav-link text-primary">
+                                <i class="bi bi-123 me-2"></i> Segmen
+                            </a>
+                            </li>
+                        </ul>
+                        </div>
                     </li>
                 </ul>
                 <hr>
@@ -172,7 +189,7 @@ while ($row = mysqli_fetch_assoc($q_status)) {
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
                         <div class="fs-5 text-muted mb-1">Belum Selesai</div>
-                        <div class="fs-3 fw-bold"><?= $status_count['belum selesai'];; ?></div>
+                        <div class="fs-3 fw-bold"><?= $status_count['belum selesai'] + $status_count['sudah']; ?></div>
                         <div class="small text-muted">Data ubinan yang belum selesai diinput</div>
                         </div>
                     </div>
@@ -313,7 +330,8 @@ $(document).ready(function () {
     // Custom filter status
     $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
         var selected = $('#statusFilter').val().toLowerCase();
-        var rowStatus = (data[5] || '').toLowerCase();
+        var row = settings.aoData[dataIndex].nTr; // get the <tr> element
+        var rowStatus = $(row).data('status') || '';
 
         if (!selected) return true;
         if (selected === rowStatus) return true;

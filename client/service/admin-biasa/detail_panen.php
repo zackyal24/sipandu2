@@ -30,6 +30,8 @@ if (!$data) {
 
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -69,9 +71,12 @@ if (!$data) {
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="dashboard.php">PML Panel</a>
+        <a class="navbar-brand" href="#">
+            <img src="../../assets/logo.png" alt="Logo" width="40" class="me-2">
+            PML Panel
+        </a>
         <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['pml']); ?></strong></span>
+            <span class="text-white me-3"><strong><?= htmlspecialchars($_SESSION['pml']); ?></strong></span>
             <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
         </div>
     </div>
@@ -81,7 +86,7 @@ if (!$data) {
 <div class="container my-5">
     <div class="card shadow-sm">
         <div class="card-body">
-            <a href="dashboard.php" class="btn btn-outline-primary btn-custom mb-3">
+            <a href="javascript:history.back()" class="btn btn-outline-primary btn-custom mb-3">
             <i class="bi bi-arrow-left"></i> Kembali
             </a>
             <div class="d-flex justify-content-end mb-3">
@@ -182,10 +187,10 @@ if (!$data) {
             </div>
         </div>
     </div>
-    <!-- Tombol Hapus -->
+    <!-- Tombol Revisi -->
     <div class="mt-4 d-flex justify-content-end">
-        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalHapusPanen">
-            <i class="bi bi-trash"></i> Hapus Data
+        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modalRevisiPanen">
+            <i class="bi bi-journal-arrow-up"></i> Revisi Data
         </button>
     </div>
 </div>
@@ -194,6 +199,31 @@ if (!$data) {
 <footer class="text-center mt-5 mb-3">
     &copy; <?= date('Y'); ?> Monitoring Panen
 </footer>
+
+<!-- Modal Konfirmasi Revisi -->
+<div class="modal fade" id="modalRevisiPanen" tabindex="-1" aria-labelledby="modalRevisiPanenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="revisi_panen.php">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRevisiPanenLabel">Ajukan Revisi Data</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" value="<?= $data['id']; ?>">
+          <div class="mb-3">
+            <label class="form-label">Catatan Revisi</label>
+            <textarea name="note" class="form-control" rows="3" required placeholder="Tulis catatan revisi di sini..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning">Kirim Revisi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

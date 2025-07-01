@@ -71,6 +71,15 @@ while ($row = mysqli_fetch_assoc($q_status)) {
         .sidebar {
             width: 240px;
         }
+        .modal-content {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .modal-body textarea {
+            resize: vertical;
+        }
     </style>
 </head>
 
@@ -84,7 +93,7 @@ while ($row = mysqli_fetch_assoc($q_status)) {
             PML Panel
         </a>
         <div class="d-flex align-items-center">
-            <span class="text-white me-3">👋 Halo, <strong><?= htmlspecialchars($_SESSION['pml']); ?></strong></span>
+            <span class="text-white me-3"><strong><?= htmlspecialchars($_SESSION['pml']); ?></strong></span>
             <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
         </div>
     </div>
@@ -201,10 +210,10 @@ while ($row = mysqli_fetch_assoc($q_status)) {
                                                 ?>
                                             </td>
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-sm btn-outline-info revisiButton" 
+                                                <button type="button" class="btn btn-sm btn-outline-warning revisiButton" 
                                                     data-id="<?= $row['id']; ?>" 
                                                     data-nama="<?= htmlspecialchars($row['nama_petani']); ?>">
-                                                    <i class="bi bi-pencil-square"></i> Revisi
+                                                    <i class="bi bi-journal-arrow-up"></i> Revisi
                                                 </button>
                                             </td>
                                         </tr>
@@ -237,11 +246,11 @@ while ($row = mysqli_fetch_assoc($q_status)) {
 </div>
 
 
-<!-- Modal Revisi -->
+<!-- Modal Revisi-->
 <div class="modal fade" id="revisiModal" tabindex="-1" aria-labelledby="revisiModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="formRevisi" method="post" action="revisi_panen.php">
-      <div class="modal-content">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form id="formRevisi" method="post" action="revisi_panen.php">
         <div class="modal-header">
           <h5 class="modal-title" id="revisiModalLabel">Catatan Revisi Data Panen</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
@@ -254,15 +263,15 @@ while ($row = mysqli_fetch_assoc($q_status)) {
           </div>
           <div class="mb-3">
             <label class="form-label">Catatan Revisi</label>
-            <textarea name="note" class="form-control" rows="3" required placeholder="Tulis catatan revisi di sini..."></textarea>
+            <textarea name="note" class="form-control" rows="4" required placeholder="Tulis catatan revisi di sini..."></textarea>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
           <button type="submit" class="btn btn-info">Kirim Revisi</button>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 

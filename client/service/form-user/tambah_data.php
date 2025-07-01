@@ -125,22 +125,49 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pcl') {
           
         </select>
       </div>
-
+      
       <div class="mb-3">
         <label class="form-label">Tanggal Ubinan</label>
         <input type="date" name="tanggal_panen" class="form-control" required>
       </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Subround</label>
+        <select name="subround" class="form-control" required>
+          <option value="">-- Pilih Subround --</option>
+          <option value="1">Subround 1</option>
+          <option value="2">Subround 2</option>
+          <option value="3">Subround 3</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nomor Segmen</label>
+        <select name="nomor_segmen" id="nomor_segmen" class="form-control" required>
+          <option value="">-- Pilih Nomor Segmen --</option>
+          <?php
+            $result = mysqli_query($conn, 'SELECT nomor_segmen FROM segmen ORDER BY nomor_segmen ASC');
+            while($segmen = mysqli_fetch_assoc($result)) {
+              echo '<option value="'.$segmen['nomor_segmen'].'">'.htmlspecialchars($segmen['nomor_segmen']).'</option>';
+            }
+          ?>
+        </select>
+      </div>
 
       <div class="mb-3">
         <label class="form-label">Nomor Sub Segmen</label>
-        <input type="text"
-         name="nomor_sub_segmen"
-         class="form-control"
-         placeholder="Masukkan maksimal 11 karakter"
-         value="<?= htmlspecialchars($data['nomor_sub_segmen'] ?? ''); ?>"
-         pattern="[A-Za-z0-9]{1,11}"
-         maxlength="11"
-         required>
+        <select name="nomor_sub_segmen" class="form-control" required>
+          <option value="">-- Pilih Nomor Sub Segmen --</option>
+          <option value="A1">A1</option>
+          <option value="A2">A2</option>
+          <option value="A3">A3</option>
+          <option value="B1">B1</option>
+          <option value="B2">B2</option>
+          <option value="B3">B3</option>
+          <option value="C1">C1</option>
+          <option value="C2">C2</option>
+          <option value="C3">C3</option>
+        </select>
       </div>
 
       <div class="mb-3">

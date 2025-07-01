@@ -131,10 +131,26 @@ while ($row = mysqli_fetch_assoc($q_user_all)) {
                             <i class="bi bi-basket-fill me-2"></i> Data Ubinan
                         </a>
                     </li>
+                    <!-- Dropdown Manajemen -->
                     <li class="nav-item mb-2">
-                        <a href="monitoring_akun.php" class="nav-link text-primary">
-                            <i class="bi bi-person-gear me-2"></i> Manajemen User
+                        <a class="nav-link text-primary d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenu" role="button" aria-expanded="false" aria-controls="manajemenMenu">
+                        <span><i class="bi bi-gear me-2"></i> Manajemen</span>
+                        <i class="bi bi-chevron-down"></i>
                         </a>
+                        <div class="collapse ps-4" id="manajemenMenu">
+                        <ul class="nav flex-column">
+                            <li class="nav-item mb-1">
+                            <a href="monitoring_akun.php" class="nav-link text-primary">
+                                <i class="bi bi-person-gear me-2"></i> User
+                            </a>
+                            </li>
+                            <li class="nav-item mb-1">
+                            <a href="manage_segmen.php" class="nav-link text-primary">
+                                <i class="bi bi-123 me-2"></i> Segmen
+                            </a>
+                            </li>
+                        </ul>
+                        </div>
                     </li>
                 </ul>
                 <hr>
@@ -162,8 +178,8 @@ while ($row = mysqli_fetch_assoc($q_user_all)) {
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body">
-                            <div class="fs-5 text-muted mb-1 fw-bold">Terlewat</div>
-                            <div class="fs-3 fw-bold text-danger"><?= $terlewat; ?></div>
+                            <div class="fs-5 text-muted mb-1 fw-bold">Segera</div>
+                            <div class="fs-3 fw-bold text-warning"><?= $segera; ?></div>
                             <div class="small text-muted">melewati tanggal deadline</div>
                         </div>
                     </div>
@@ -248,6 +264,8 @@ while ($row = mysqli_fetch_assoc($q_user_all)) {
         </main>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
