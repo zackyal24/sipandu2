@@ -99,7 +99,7 @@ while ($row = mysqli_fetch_assoc($q_status)) {
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="monitoring_panen.php">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            Data Ubinan
+            UBINANKU
         </a>
     </div>
 </nav>

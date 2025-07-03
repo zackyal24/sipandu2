@@ -13,6 +13,7 @@ $result = mysqli_stmt_get_result($stmt);
 $data = mysqli_fetch_assoc($result);
 
 if ($data && password_verify($password, $data['password'])) {
+    $_SESSION['user_id'] = $data['id']; 
     $_SESSION['username'] = $data['username'];
     $_SESSION['role'] = $data['role'];
 
@@ -23,9 +24,6 @@ if ($data && password_verify($password, $data['password'])) {
         $_SESSION['pml'] = $data['username'];
         header("Location: ../service/admin-biasa/dashboard.php");
     } else {
-        $_SESSION['user_id'] = $data['id']; // Simpan user_id ke sesi
-        $_SESSION['username'] = $data['username'];
-        $_SESSION['role'] = $data['role']; // Pastikan role juga disimpan
         header("Location: ../service/form-user/dashboard_user.php");
     }
     exit;

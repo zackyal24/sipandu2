@@ -30,6 +30,9 @@ $result = mysqli_stmt_get_result($stmt);
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -64,10 +67,29 @@ $result = mysqli_stmt_get_result($stmt);
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
   <div class="container">
-    <a class="navbar-brand" href="#">Dashboard PCL</a>
+    <a class="navbar-brand" href="#">
+      <img src="../../assets/logo.png" alt="Logo" width="40" class="me-2">
+      UBINANKU
+    </a>
     <div class="d-flex align-items-center">
-      <span class="text-white me-3"><strong><?= htmlspecialchars($_SESSION['username']); ?></strong></span>
-      <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
+      <div class="dropdown">
+        <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <?= htmlspecialchars($_SESSION['username']); ?>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li>
+            <a class="dropdown-item" href="../../auth/ganti_password.php">
+              <i class="bi bi-key me-2"></i>Ganti Password
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item text-danger" href="../../auth/logout.php">
+              <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>
@@ -128,7 +150,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-  &copy; <?= date('Y'); ?> Monitoring Panen Ubinan
+  &copy; <?= date('Y'); ?> Ubinanku
 </footer>
 
 <!-- Scripts -->

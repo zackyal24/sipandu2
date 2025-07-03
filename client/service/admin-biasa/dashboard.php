@@ -87,16 +87,32 @@ while ($row = mysqli_fetch_assoc($q_status)) {
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="../../assets/logo.png" alt="Logo" width="40" class="me-2">
-            PML Panel
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <img src="../../assets/logo.png" alt="Logo" width="40" class="me-2">
+      UBINANKU
+    </a>
+    <div class="d-flex align-items-center">
+      <div class="dropdown">
+        <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <?= htmlspecialchars($_SESSION['username']); ?>
         </a>
-        <div class="d-flex align-items-center">
-            <span class="text-white me-3"><strong><?= htmlspecialchars($_SESSION['pml']); ?></strong></span>
-            <a href="../../auth/logout.php" class="btn btn-outline-light btn-sm btn-custom">Logout</a>
-        </div>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li>
+            <a class="dropdown-item" href="../../auth/ganti_password.php">
+              <i class="bi bi-key me-2"></i>Ganti Password
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item text-danger" href="../../auth/logout.php">
+              <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
+  </div>
 </nav>
 
 <!-- Main Content -->
@@ -281,6 +297,11 @@ while ($row = mysqli_fetch_assoc($q_status)) {
 </footer>
 
 <!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 $(document).ready(function () {
     // Custom filter status
@@ -294,7 +315,19 @@ $(document).ready(function () {
     });
 
     var t = $('#tabelPanen').DataTable({
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Berikutnya",
+                previous: "Sebelumnya"
+            },
+            zeroRecords: "Data tidak ditemukan",
+            emptyTable: "Belum ada data panen."
+        },
         responsive: true,
         pageLength: 10,
         columnDefs: [{ targets: 0, searchable: false, orderable: false }],
@@ -302,68 +335,6 @@ $(document).ready(function () {
     });
 
     // Nomor otomatis
-    t.on('draw.dt', function () {
-        t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
-            cell.innerHTML = i + 1;
-        });
-    });
-    t.draw();
-
-    // Tampilkan modal hapus
-    $('.deleteButton').on('click', function (e) {
-        e.preventDefault();
-        var id = $(this).data('id');
-        $('#deleteConfirmButton').attr('href', 'hapus_panen.php?id=' + id);
-        $('#confirmDeleteModal').modal('show');
-    });
-
-    // Klik baris tabel ke detail
-    $('#tabelPanen').on('click', '.table-row-link', function(e) {
-        if (!$(e.target).closest('a').length) {
-            window.location.href = $(this).data('href');
-        }
-    });
-
-    // Efek hover baris
-    $('#tabelPanen').on('mouseenter', '.table-row-link', function() {
-        $(this).css('background', 'linear-gradient(90deg, #e0f7fa 0%, #e3f2fd 100%)');
-    }).on('mouseleave', '.table-row-link', function() {
-        $(this).css('background', '');
-    });
-
-    // Filter
-    $('#statusFilter').on('change', function() {
-        t.draw();
-    });
-});
-
-$(document).on('click', '.revisiButton', function () {
-    var id = $(this).data('id');
-    var nama = $(this).data('nama');
-    $('#revisiId').val(id);
-    $('#revisiNama').val(nama);
-    $('#revisiModal').modal('show');
-});
-</script>
-
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-$(document).ready(function () {
-    var t = $('#tabelPanen').DataTable({
-        language: { 
-            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' ,
-            emptyTable: "Belum ada data panen."
-    },
-        responsive: true,
-        pageLength: 10,
-        columnDefs: [{ targets: 0, searchable: false, orderable: false }],
-        order: [[1, 'desc']]
-    });
-
     t.on('draw.dt', function () {
         t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
             cell.innerHTML = i + 1;
@@ -380,7 +351,7 @@ $(document).ready(function () {
 
     // Modal revisi
     $(document).on('click', '.revisiButton', function (e) {
-        e.stopPropagation(); // <-- Tambahkan ini agar event baris tidak ikut jalan
+        e.stopPropagation();
         var id = $(this).data('id');
         var nama = $(this).data('nama');
         $('#revisiId').val(id);
@@ -400,6 +371,13 @@ $(document).ready(function () {
     // Filter status
     $('#statusFilter').on('change', function() {
         t.draw();
+    });
+
+    // Efek hover baris
+    $('#tabelPanen').on('mouseenter', '.table-row-link', function() {
+        $(this).css('background', 'linear-gradient(90deg, #e0f7fa 0%, #e3f2fd 100%)');
+    }).on('mouseleave', '.table-row-link', function() {
+        $(this).css('background', '');
     });
 });
 </script>

@@ -12,6 +12,7 @@ echo "<tr>
 <th>Desa</th>
 <th>Kecamatan</th>
 <th>Tanggal Panen</th>
+<th>Nomor Segmen</th>
 <th>Nomor Sub Segmen</th>
 <th>Berat Plot (kg)</th>
 <th>GKP</th>
@@ -29,6 +30,7 @@ while($row = mysqli_fetch_assoc($q)) {
     echo "<td>".htmlspecialchars($row['desa'])."</td>";
     echo "<td>".htmlspecialchars($row['kecamatan'])."</td>";
     echo "<td>".htmlspecialchars($row['tanggal_panen'])."</td>";
+    echo "<td>".htmlspecialchars($row['nomor_segmen'])."</td>";
     echo "<td>".htmlspecialchars($row['nomor_sub_segmen'])."</td>";
     echo "<td>".htmlspecialchars($row['berat_plot'])."</td>";
     echo "<td>".htmlspecialchars($row['gkp'])."</td>";

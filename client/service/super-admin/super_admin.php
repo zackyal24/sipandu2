@@ -113,7 +113,7 @@ $q_user = mysqli_query($conn, "
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="#">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            Dashboard
+            UBINANKU
         </a>
     </div>
 </nav>

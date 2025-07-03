@@ -124,7 +124,7 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="super_admin.php">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            Manajemen Segmen
+            UBINANKU
         </a>
     </div>
 </nav>
@@ -156,11 +156,11 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
                     </li>
                     <!-- Dropdown Manajemen -->
                     <li class="nav-item mb-2">
-                        <a class="nav-link text-primary d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenu" role="button" aria-expanded="false" aria-controls="manajemenMenu">
+                        <a class="nav-link text-primary d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenu" role="button" aria-expanded="true" aria-controls="manajemenMenu">
                         <span><i class="bi bi-gear me-2"></i> Manajemen</span>
                         <i class="bi bi-chevron-down"></i>
                         </a>
-                        <div class="collapse ps-4" id="manajemenMenu">
+                        <div class="collapse show ps-4" id="manajemenMenu">
                         <ul class="nav flex-column">
                             <li class="nav-item mb-1">
                             <a href="monitoring_akun.php" class="nav-link text-primary">
@@ -168,7 +168,7 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
                             </a>
                             </li>
                             <li class="nav-item mb-1">
-                            <a href="manage_segmen.php" class="nav-link text-primary">
+                            <a href="manage_segmen.php" class="nav-link active">
                                 <i class="bi bi-123 me-2"></i> Segmen
                             </a>
                             </li>

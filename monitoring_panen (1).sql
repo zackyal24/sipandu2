@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 26 Jun 2025 pada 05.17
+-- Waktu pembuatan: 03 Jul 2025 pada 09.31
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.0.30
 
@@ -278,6 +278,7 @@ CREATE TABLE `monitoring_data_panen` (
   `desa` varchar(100) NOT NULL,
   `kecamatan` varchar(100) NOT NULL,
   `tanggal_panen` date NOT NULL,
+  `subround` int(11) NOT NULL,
   `foto_petani` varchar(255) NOT NULL,
   `foto_potong` varchar(255) NOT NULL,
   `foto_timbangan` varchar(255) NOT NULL,
@@ -287,7 +288,8 @@ CREATE TABLE `monitoring_data_panen` (
   `ku` decimal(10,2) DEFAULT NULL,
   `status` enum('selesai','belum selesai','tidak bisa','sudah') DEFAULT NULL,
   `user_id` int(11) NOT NULL,
-  `nomor_sub_segmen` varchar(11) NOT NULL,
+  `nomor_segmen` varchar(9) NOT NULL,
+  `nomor_sub_segmen` varchar(2) NOT NULL,
   `note` varchar(500) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL
@@ -297,14 +299,140 @@ CREATE TABLE `monitoring_data_panen` (
 -- Dumping data untuk tabel `monitoring_data_panen`
 --
 
-INSERT INTO `monitoring_data_panen` (`id`, `nama_petani`, `desa`, `kecamatan`, `tanggal_panen`, `foto_petani`, `foto_potong`, `foto_timbangan`, `berat_plot`, `gkp`, `gkg`, `ku`, `status`, `user_id`, `nomor_sub_segmen`, `note`, `created_at`, `updated_at`) VALUES
-(39, 'coaba ', 'coba', '', '2025-05-30', 'uploads/petani/foto_petani_682571c206db0.jpeg', 'uploads/potong/foto_potong_682571c2075be.jpeg', 'uploads/timbangan/foto_timbangan_682571c207d37.jpeg', 4.06, 0.00, 0.00, 0.00, 'selesai', 3, '777777777', '', '2025-05-15 03:58:11', '2025-05-15 04:46:58'),
-(48, 'vvv', 'Sumbersari', 'Pebayuran', '2025-06-02', '', '', '', NULL, 0.00, 0.00, 0.00, 'selesai', 3, '88888888888', '', '2025-05-20 02:16:59', NULL),
-(49, 'update', 'Pantai Mekar', 'Muaragembong', '2025-06-02', 'uploads/petani/foto_petani_682c0686c95db.jpeg', 'uploads/potong/foto_potong_682c0686c9c45.jpeg', 'uploads/timbangan/foto_timbangan_682c0686ca23c.jpeg', 5.00, 0.00, 0.00, 0.00, 'selesai', 3, '999999999aa', '', '2025-05-20 03:25:50', '2025-05-20 04:35:18'),
-(54, 'bintang', 'Kalijaya', 'Cikarang Barat', '2025-06-10', 'uploads/petani/foto_petani_685a288c02bde.jpeg', 'uploads/potong/foto_potong_685a288c02f3f.jpeg', 'uploads/timbangan/foto_timbangan_685a288c0331e.jpeg', 4.98, 79.68, 68.54, 68.54, 'selesai', 3, '819273892A1', '', '2025-06-10 07:41:19', '2025-06-22 15:37:35'),
-(57, 'jasjsajas', 'Sumberreja', 'Pebayuran', '2025-06-23', 'uploads/petani/foto_petani_685a298df2d0a.jpeg', 'uploads/potong/foto_potong_685a298df3080.jpeg', 'uploads/timbangan/foto_timbangan_685a298df3670.jpeg', 4.46, 71.36, 61.38, 38.51, 'selesai', 3, '819273892A1', '', '2025-06-22 15:03:52', NULL),
-(59, 'jajam22', 'Pantai Sederhana', 'Muaragembong', '2025-06-26', 'uploads/petani/foto_petani_685a29b04d351.jpeg', 'uploads/potong/foto_potong_685a29b04d675.jpeg', 'uploads/timbangan/foto_timbangan_685a29b04d97b.jpeg', 4.98, 79.68, 68.54, 43.00, 'selesai', 3, '819273892Aa', '', '2025-06-24 00:54:57', NULL),
-(60, 'adsjadslkj', 'Babelan Kota', 'Babelan', '2025-07-22', '', '', '', NULL, 0.00, 0.00, 0.00, 'belum selesai', 3, '819273892A1', 'halo', '2025-06-24 01:00:30', NULL);
+INSERT INTO `monitoring_data_panen` (`id`, `nama_petani`, `desa`, `kecamatan`, `tanggal_panen`, `subround`, `foto_petani`, `foto_potong`, `foto_timbangan`, `berat_plot`, `gkp`, `gkg`, `ku`, `status`, `user_id`, `nomor_segmen`, `nomor_sub_segmen`, `note`, `created_at`, `updated_at`) VALUES
+(63, 'riza', 'Karangmekar', 'Kdgwaringin', '2025-07-01', 0, 'uploads/petani/foto_petani_685cff516c77b.jpeg', 'uploads/potong/foto_potong_685cff516cdec.jpeg', 'uploads/timbangan/foto_timbangan_685cff516d3cc.jpeg', 4.42, 70.72, 60.83, 38.17, 'sudah', 16, '', '81', 'salah berat plot typo', '2025-06-26 08:01:09', NULL),
+(64, 'jajang', 'Sarimukti', 'Cibitung', '2025-07-01', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 16, '', '81', '', '2025-06-27 01:51:45', NULL),
+(65, 'iohjdas', 'Bahagia', 'Babelan', '2025-07-03', 2, 'uploads/petani/foto_petani_685dffe780bbf.jpeg', 'uploads/potong/foto_potong_685dffe780f6f.jpeg', 'uploads/timbangan/foto_timbangan_685dffe7812d0.jpeg', 5.67, 90.72, 78.04, 48.96, 'selesai', 16, '', '81', '', '2025-06-27 01:53:01', NULL),
+(66, 'ihhad', 'Labansari', 'Cikarang Timur', '2025-07-02', 1, 'uploads/petani/foto_petani_686249171d1a7.jpeg', 'uploads/potong/foto_potong_686249171d581.jpeg', 'uploads/timbangan/foto_timbangan_686249171d908.jpeg', 5.42, 86.72, 74.60, 46.80, 'selesai', 16, '32160315', 'B1', '', '2025-06-30 07:56:13', NULL),
+(67, 'coba baru', 'Babelan Kota', 'Babelan', '2025-07-02', 1, 'uploads/petani/foto_petani_68624962ec93e.jpeg', 'uploads/potong/foto_potong_68624962ecf83.jpeg', 'uploads/timbangan/foto_timbangan_68624962ed44c.jpeg', 4.82, 77.12, 66.34, 41.62, 'selesai', 16, '321602206', 'B2', '', '2025-06-30 08:22:22', NULL),
+(68, 'yty', 'Bojongmangu', 'Bojongmangu', '0025-02-07', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 17, '321602103', 'A1', '', '2025-07-01 01:19:38', NULL),
+(69, 'dodit', 'Pantai Harapanjaya', 'Muaragembong', '2025-06-30', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 16, '321602306', 'B2', '', '2025-07-01 02:43:44', NULL),
+(70, 'mail', 'Tanjungsari', 'Cikarang Utara', '2025-07-12', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 18, '321601009', 'C1', '', '2025-07-03 00:39:19', NULL),
+(71, 'jajang', 'Pantai Harapanjaya', 'Muaragembong', '2025-07-06', 1, 'uploads/petani/foto_petani_6865d1961d44d.jpeg', 'uploads/potong/foto_potong_6865d1961dd35.jpeg', 'uploads/timbangan/foto_timbangan_6865d1961e410.jpeg', 4.03, 64.48, 55.47, 34.80, 'selesai', 18, '321603005', 'B3', '', '2025-07-03 00:40:12', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `segmen`
+--
+
+CREATE TABLE `segmen` (
+  `id` int(11) NOT NULL,
+  `nomor_segmen` varchar(9) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `segmen`
+--
+
+INSERT INTO `segmen` (`id`, `nomor_segmen`) VALUES
+(51, '321601007'),
+(52, '321601008'),
+(53, '321601009'),
+(54, '321601010'),
+(55, '321602101'),
+(56, '321602103'),
+(57, '321602105'),
+(1, '321602206'),
+(2, '321602207'),
+(3, '321602306'),
+(4, '321602309'),
+(5, '321602310'),
+(6, '321603004'),
+(7, '321603005'),
+(8, '321603006'),
+(9, '321603007'),
+(10, '321603110'),
+(11, '321603154'),
+(12, '321603155'),
+(13, '321603156'),
+(14, '321603157'),
+(15, '321604103'),
+(16, '321604104'),
+(17, '321604105'),
+(18, '321604107'),
+(19, '321605002'),
+(20, '321605004'),
+(21, '321605005'),
+(22, '321605006'),
+(23, '321606107'),
+(24, '321606109'),
+(25, '321606110'),
+(26, '321606201'),
+(27, '321606202'),
+(28, '321606203'),
+(29, '321606208'),
+(30, '321606209'),
+(31, '321607003'),
+(32, '321607005'),
+(33, '321607007'),
+(34, '321607112'),
+(35, '321607115'),
+(36, '321608101'),
+(37, '321608105'),
+(38, '321608204'),
+(39, '321608205'),
+(40, '321608206'),
+(41, '321609001'),
+(42, '321609007'),
+(43, '321609008'),
+(44, '321609009'),
+(45, '321609010'),
+(46, '321610007'),
+(47, '321610008'),
+(48, '321610009'),
+(49, '321610010'),
+(50, '321610011'),
+(58, '321611001'),
+(59, '321611002'),
+(60, '321611003'),
+(61, '321611004'),
+(62, '321611005'),
+(63, '321611006'),
+(64, '321611101'),
+(65, '321611102'),
+(66, '321611105'),
+(67, '321611107'),
+(68, '321611120'),
+(69, '321611121'),
+(70, '321611122'),
+(71, '321611123'),
+(72, '321611124'),
+(73, '321612001'),
+(74, '321612002'),
+(75, '321612005'),
+(76, '321612006'),
+(77, '321612103'),
+(78, '321612106'),
+(79, '321612107'),
+(80, '321612108'),
+(81, '321612109'),
+(82, '321612110'),
+(83, '321613001'),
+(84, '321613002'),
+(85, '321613003'),
+(86, '321613004'),
+(87, '321613005'),
+(88, '321613006'),
+(89, '321613007'),
+(90, '321613008'),
+(91, '321613030'),
+(92, '321613031'),
+(93, '321613032'),
+(94, '321613033'),
+(95, '321614001'),
+(96, '321614004'),
+(97, '321614008'),
+(98, '321614009'),
+(99, '321614011'),
+(100, '321614013'),
+(101, '321614014'),
+(102, '321615001'),
+(103, '321615004'),
+(104, '321615005'),
+(105, '321615007'),
+(106, '321615008'),
+(107, '321615009');
 
 -- --------------------------------------------------------
 
@@ -319,7 +447,7 @@ CREATE TABLE `users` (
   `nama_lengkap` varchar(100) DEFAULT NULL,
   `no_hp` varchar(20) NOT NULL,
   `email` varchar(50) NOT NULL,
-  `role` enum('admin','superadmin','user') DEFAULT 'admin',
+  `role` enum('pcl','pml','supervisor') DEFAULT 'pcl',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -329,12 +457,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `no_hp`, `email`, `role`, `created_at`, `updated_at`) VALUES
-(1, 'superadmin', '$2y$10$U8U9yP9l5tDeJIlqrII8y.W7VnJL0oqKyrEF3yX57wfzKGgLdbuFu', 'Administrator Utama', '', '', 'superadmin', '2025-04-30 01:18:49', NULL),
-(3, 'user', '$2y$10$7lJVUuIm4Rt6xB7KB2Hix.zF2mQnYSiIYOm7AhqBdglChsb5Mlf0K', 'user', '0895393690365', 'gilang@sda', 'user', '2025-05-01 13:25:09', '2025-06-25 03:11:45'),
-(6, 'admin', '$2y$10$ytTrQQzZZX3vliRTDxgbm.GGX8rIRL7BkmQQmjbVjIEgilnOFoUmS', 'admin', '', '', 'admin', '2025-05-01 13:44:59', NULL),
-(8, 'zacky', '$2y$10$TVjvYVxzUKi.dydnnKwv2.62sOw7aKmZpKmQIhzTuPqy5wtAniRqS', 'azacky', '', '', 'user', '2025-06-18 04:53:02', '2025-06-20 22:57:02'),
-(10, 'baba', '$2y$10$OwbE7qh9gm64snRwtTmf2.vy/k29LY.djGqgvY/TgUMqR1TQiwn6S', 'bibi', '', '', 'admin', '2025-06-21 22:57:48', NULL),
-(12, 'gaga', '$2y$10$upX2JuNBzu5957ade6IkIOpvJaM3uMtLXCpGQrMqNBINbcoFpJGNu', 'gggg', '08237423', 'klaskhd@asd', 'admin', '2025-06-22 13:39:15', NULL);
+(1, 'superadmin', '$2y$10$U8U9yP9l5tDeJIlqrII8y.W7VnJL0oqKyrEF3yX57wfzKGgLdbuFu', 'Administrator Utama', '', '', 'supervisor', '2025-04-30 01:18:49', NULL),
+(14, 'jajang', '$2y$10$V3lo.5PCVOEJgPHM.yi2Ve4fTlW5.6ibwnEKasnClc8UbbrXi.XCm', 'jajang', '0897123', 'jajang@asd', 'pcl', '2025-06-26 03:55:53', NULL),
+(15, 'wei', '$2y$10$6IZIiMTXH1AtQ188AXMZs.KGDjTs6FxBgz02/p5xIV3wR.9EAjsce', 'wei', '0891237', 'wei@123', 'pml', '2025-06-26 04:15:19', '2025-07-03 03:49:36'),
+(16, 'riza', '$2y$10$qx987KNk3qXCrSAHKx/u2ubDnOnHbimHUDeQ2yHQ/GRU9tNRec07.', 'riza', '0891723892', 'riza@asdas', 'pcl', '2025-06-26 07:56:17', NULL),
+(17, 'imaduddin', '$2y$10$woj0158R8eK1y.21NVR4pu7UKtMcw2HDyVQDwqNk7V15FMTQmVwRe', 'Muhammad Ikhwan Imaduddin', '8239382', 'ikhwanimaduddin908@gmail.com', 'pcl', '2025-07-01 01:17:49', NULL),
+(18, 'zacky', '$2y$10$57pwpoaAd3O2wh0RGfwLYeNtOfJMBSeGwSiD/YG4uE2NHMxSbBgnO', 'zacky', '0891273', 'zacky@asd', 'pcl', '2025-07-03 00:38:29', '2025-07-03 03:48:27');
 
 --
 -- Indexes for dumped tables
@@ -361,6 +489,13 @@ ALTER TABLE `monitoring_data_panen`
   ADD KEY `fk_user_id` (`user_id`);
 
 --
+-- Indeks untuk tabel `segmen`
+--
+ALTER TABLE `segmen`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `no_segmen` (`nomor_segmen`);
+
+--
 -- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
@@ -375,13 +510,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `monitoring_data_panen`
 --
 ALTER TABLE `monitoring_data_panen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+
+--
+-- AUTO_INCREMENT untuk tabel `segmen`
+--
+ALTER TABLE `segmen`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
