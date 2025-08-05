@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 07 Jul 2025 pada 14.01
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.0.30
+-- Generation Time: Jul 15, 2025 at 09:19 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `desa`
+-- Table structure for table `desa`
 --
 
 CREATE TABLE `desa` (
@@ -34,7 +34,7 @@ CREATE TABLE `desa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `desa`
+-- Dumping data for table `desa`
 --
 
 INSERT INTO `desa` (`id`, `id_kecamatan`, `nama_desa`) VALUES
@@ -229,7 +229,7 @@ INSERT INTO `desa` (`id`, `id_kecamatan`, `nama_desa`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `kecamatan`
+-- Table structure for table `kecamatan`
 --
 
 CREATE TABLE `kecamatan` (
@@ -238,7 +238,7 @@ CREATE TABLE `kecamatan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `kecamatan`
+-- Dumping data for table `kecamatan`
 --
 
 INSERT INTO `kecamatan` (`id`, `nama_kecamatan`) VALUES
@@ -269,7 +269,7 @@ INSERT INTO `kecamatan` (`id`, `nama_kecamatan`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `monitoring_data_panen`
+-- Table structure for table `monitoring_data_panen`
 --
 
 CREATE TABLE `monitoring_data_panen` (
@@ -279,9 +279,9 @@ CREATE TABLE `monitoring_data_panen` (
   `kecamatan` varchar(100) NOT NULL,
   `tanggal_panen` date NOT NULL,
   `subround` int(11) NOT NULL,
-  `foto_petani` varchar(255) NOT NULL,
-  `foto_potong` varchar(255) NOT NULL,
-  `foto_timbangan` varchar(255) NOT NULL,
+  `foto_serah_terima` varchar(255) NOT NULL,
+  `foto_bukti_plot_ubinan` varchar(255) NOT NULL,
+  `foto_berat_timbangan` varchar(255) NOT NULL,
   `berat_plot` decimal(10,2) DEFAULT NULL,
   `gkp` decimal(10,2) DEFAULT NULL,
   `gkg` decimal(10,2) DEFAULT NULL,
@@ -295,25 +295,10 @@ CREATE TABLE `monitoring_data_panen` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `monitoring_data_panen`
---
-
-INSERT INTO `monitoring_data_panen` (`id`, `nama_petani`, `desa`, `kecamatan`, `tanggal_panen`, `subround`, `foto_petani`, `foto_potong`, `foto_timbangan`, `berat_plot`, `gkp`, `gkg`, `ku`, `status`, `user_id`, `nomor_segmen`, `nomor_sub_segmen`, `note`, `created_at`, `updated_at`) VALUES
-(63, 'riza', 'Karangmekar', 'Kdgwaringin', '2025-07-01', 0, 'uploads/petani/foto_petani_685cff516c77b.jpeg', 'uploads/potong/foto_potong_685cff516cdec.jpeg', 'uploads/timbangan/foto_timbangan_685cff516d3cc.jpeg', 4.42, 70.72, 60.83, 38.17, 'sudah', 16, '', '81', 'salah berat plot typo', '2025-06-26 08:01:09', NULL),
-(64, 'jajang', 'Sarimukti', 'Cibitung', '2025-07-01', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 16, '', '81', '', '2025-06-27 01:51:45', NULL),
-(65, 'iohjdas', 'Bahagia', 'Babelan', '2025-07-03', 2, 'uploads/petani/foto_petani_685dffe780bbf.jpeg', 'uploads/potong/foto_potong_685dffe780f6f.jpeg', 'uploads/timbangan/foto_timbangan_685dffe7812d0.jpeg', 5.67, 90.72, 78.04, 48.96, 'selesai', 16, '', '81', '', '2025-06-27 01:53:01', NULL),
-(66, 'ihhad', 'Labansari', 'Cikarang Timur', '2025-07-02', 1, 'uploads/petani/foto_petani_686249171d1a7.jpeg', 'uploads/potong/foto_potong_686249171d581.jpeg', 'uploads/timbangan/foto_timbangan_686249171d908.jpeg', 5.42, 86.72, 74.60, 46.80, 'selesai', 16, '32160315', 'B1', '', '2025-06-30 07:56:13', NULL),
-(67, 'coba baru', 'Babelan Kota', 'Babelan', '2025-07-02', 1, 'uploads/petani/foto_petani_68624962ec93e.jpeg', 'uploads/potong/foto_potong_68624962ecf83.jpeg', 'uploads/timbangan/foto_timbangan_68624962ed44c.jpeg', 4.82, 77.12, 66.34, 41.62, 'selesai', 16, '321602206', 'B2', '', '2025-06-30 08:22:22', NULL),
-(68, 'yty', 'Bojongmangu', 'Bojongmangu', '0025-02-07', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 17, '321602103', 'A1', '', '2025-07-01 01:19:38', NULL),
-(69, 'dodit', 'Pantai Harapanjaya', 'Muaragembong', '2025-06-30', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 16, '321602306', 'B2', '', '2025-07-01 02:43:44', NULL),
-(70, 'mail', 'Tanjungsari', 'Cikarang Utara', '2025-07-12', 1, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 18, '321601009', 'C1', '', '2025-07-03 00:39:19', NULL),
-(71, 'jajang', 'Pantai Harapanjaya', 'Muaragembong', '2025-07-06', 1, 'uploads/petani/foto_petani_6865d1961d44d.jpeg', 'uploads/potong/foto_potong_6865d1961dd35.jpeg', 'uploads/timbangan/foto_timbangan_6865d1961e410.jpeg', 4.03, 64.48, 55.47, 34.80, 'selesai', 18, '321603005', 'B3', '', '2025-07-03 00:40:12', NULL);
-
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `segmen`
+-- Table structure for table `segmen`
 --
 
 CREATE TABLE `segmen` (
@@ -322,7 +307,7 @@ CREATE TABLE `segmen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `segmen`
+-- Dumping data for table `segmen`
 --
 
 INSERT INTO `segmen` (`id`, `nomor_segmen`) VALUES
@@ -437,7 +422,7 @@ INSERT INTO `segmen` (`id`, `nomor_segmen`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -453,89 +438,89 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `no_hp`, `email`, `role`, `created_at`, `updated_at`) VALUES
-(1, 'superadmin', '$2y$10$U8U9yP9l5tDeJIlqrII8y.W7VnJL0oqKyrEF3yX57wfzKGgLdbuFu', 'Administrator Utama', '', '', 'supervisor', '2025-04-30 01:18:49', NULL),
+(1, 'superadmin', '$2y$10$RfqDxPrQhT0M8H6dUcGO6uokpyN3MpL5tysmfXbd0H1XIVIwUqvyy', 'Administrator Utama', '089237483', 'admin@gmail.com', 'supervisor', '2025-04-30 01:18:49', '2025-07-13 13:45:03'),
 (14, 'jajang', '$2y$10$V3lo.5PCVOEJgPHM.yi2Ve4fTlW5.6ibwnEKasnClc8UbbrXi.XCm', 'jajang', '0897123', 'jajang@asd', 'pcl', '2025-06-26 03:55:53', NULL),
 (15, 'wei', '$2y$10$6IZIiMTXH1AtQ188AXMZs.KGDjTs6FxBgz02/p5xIV3wR.9EAjsce', 'wei', '0891237', 'wei@123', 'pml', '2025-06-26 04:15:19', '2025-07-03 03:49:36'),
-(16, 'riza', '$2y$10$qx987KNk3qXCrSAHKx/u2ubDnOnHbimHUDeQ2yHQ/GRU9tNRec07.', 'riza', '0891723892', 'riza@asdas', 'pcl', '2025-06-26 07:56:17', NULL),
+(16, 'riza', '$2y$10$lVLD5TQ9lKezmbQfgZxi5eaKU9qXiOAq48vk9Bvkt1sYSyyZqgl.C', 'riza', '0891723892', 'riza@asdas', '', '2025-06-26 07:56:17', '2025-07-10 04:28:25'),
 (17, 'imaduddin', '$2y$10$woj0158R8eK1y.21NVR4pu7UKtMcw2HDyVQDwqNk7V15FMTQmVwRe', 'Muhammad Ikhwan Imaduddin', '8239382', 'ikhwanimaduddin908@gmail.com', 'pcl', '2025-07-01 01:17:49', NULL),
-(18, 'zacky', '$2y$10$57pwpoaAd3O2wh0RGfwLYeNtOfJMBSeGwSiD/YG4uE2NHMxSbBgnO', 'zacky', '0891273', 'zacky@asd', 'pcl', '2025-07-03 00:38:29', '2025-07-03 03:48:27');
+(18, 'zacky', '$2y$10$jevoR8YtKyHV898XZyL5se.JAxldpGcx5GYstRkvi3S5FXO63QOsm', 'zacky', '0891273', 'zacky@asd', 'pcl', '2025-07-03 00:38:29', '2025-07-13 14:03:35');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indeks untuk tabel `desa`
+-- Indexes for table `desa`
 --
 ALTER TABLE `desa`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_kecamatan` (`id_kecamatan`);
 
 --
--- Indeks untuk tabel `kecamatan`
+-- Indexes for table `kecamatan`
 --
 ALTER TABLE `kecamatan`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `monitoring_data_panen`
+-- Indexes for table `monitoring_data_panen`
 --
 ALTER TABLE `monitoring_data_panen`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_user_id` (`user_id`);
 
 --
--- Indeks untuk tabel `segmen`
+-- Indexes for table `segmen`
 --
 ALTER TABLE `segmen`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `no_segmen` (`nomor_segmen`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `monitoring_data_panen`
+-- AUTO_INCREMENT for table `monitoring_data_panen`
 --
 ALTER TABLE `monitoring_data_panen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
--- AUTO_INCREMENT untuk tabel `segmen`
+-- AUTO_INCREMENT for table `segmen`
 --
 ALTER TABLE `segmen`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
--- AUTO_INCREMENT untuk tabel `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `desa`
+-- Constraints for table `desa`
 --
 ALTER TABLE `desa`
   ADD CONSTRAINT `desa_ibfk_1` FOREIGN KEY (`id_kecamatan`) REFERENCES `kecamatan` (`id`);
 
 --
--- Ketidakleluasaan untuk tabel `monitoring_data_panen`
+-- Constraints for table `monitoring_data_panen`
 --
 ALTER TABLE `monitoring_data_panen`
   ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
