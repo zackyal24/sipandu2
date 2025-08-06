@@ -39,35 +39,102 @@ if (!$data) {
         body {
             background-color: #f8f9fc;
             font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
         }
-        
         .navbar-brand {
             font-weight: bold;
             font-size: 20px;
         }
-        
         .card {
             border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        
         .btn-custom {
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
         .btn-custom:hover {
-            transform: translateY(-2px);
+            transform: scale(1.05);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 0.9rem;
+            }
+            
+            .navbar-brand img {
+                height: 30px !important;
+            }
+            
+            h2, h3 {
+                font-size: 1.3rem;
+            }
+            
+            h5 {
+                font-size: 1rem;
+            }
+            
+            .card {
+                margin-bottom: 0.75rem;
+            }
+            
+            .card-body {
+                padding: 0.75rem !important;
+            }
+            
+            .table-responsive {
+                font-size: 0.8rem;
+            }
+            
+            .btn-sm {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+            
+            .badge {
+                font-size: 0.65rem;
+            }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 576px) {
+            .container {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            .table th, .table td {
+                padding: 0.3rem !important;
+                font-size: 0.75rem;
+            }
         }
         
         img.preview {
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 180px;
             object-fit: cover;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 5px;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        /* Mobile optimizations for images */
+        @media (max-width: 768px) {
+            img.preview {
+                width: 150px !important;
+                height: 120px !important;
+                max-width: 100%;
+            }
+        }
+        
+        /* Extra small devices for images */
+        @media (max-width: 576px) {
+            img.preview {
+                width: 120px !important;
+                height: 100px !important;
+            }
         }
         
         #detail-panen table, #detail-panen tr, #detail-panen td, #detail-panen th {
@@ -78,12 +145,12 @@ if (!$data) {
         #detail-panen img {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
-            max-width: 100%;
-            height: auto;
+            max-width: 200px !important;
+            height: 150px !important;
+            object-fit: cover;
             display: block;
-            margin: 0;
+            margin: 0 auto;
         }
-        
         .modal-content {
             width: 100%;
             max-width: 600px;
@@ -98,33 +165,33 @@ if (!$data) {
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm no-print">
-  <div class="container">
-    <a class="navbar-brand" href="#">
-      <img src="../../assets/logo.png" alt="Logo" width="40" class="me-2">
-      UBINANKU
-    </a>
-    <div class="d-flex align-items-center">
-      <div class="dropdown">
-        <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <?= htmlspecialchars($_SESSION['username']); ?>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
+            <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
+            UBINANKU
         </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-          <li>
-            <a class="dropdown-item" href="../../auth/ganti_password.php">
-              <i class="bi bi-key me-2"></i>Ganti Password
-            </a>
-          </li>
-          <li><hr class="dropdown-divider"></li>
-          <li>
-            <a class="dropdown-item text-danger" href="../../auth/logout.php">
-              <i class="bi bi-box-arrow-right me-2"></i>Logout
-            </a>
-          </li>
-        </ul>
-      </div>
+        <div class="d-flex align-items-center">
+            <div class="dropdown">
+                <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <?= htmlspecialchars($_SESSION['username']); ?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li>
+                        <a class="dropdown-item" href="../../auth/ganti_password.php">
+                            <i class="bi bi-key me-2"></i>Ganti Password
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="../../auth/logout.php">
+                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
 </nav>
 
 <!-- Main Content -->
@@ -144,7 +211,7 @@ if (!$data) {
 
             <div id="detail-panen">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="fw-bold mb-0">Detail Data Panen</h3>
+                    <h3 class="fw-bold mb-0">Data Ubinan</h3>
                     <div class="dropdown">
                         <button class="btn btn-link p-0 border-0 text-secondary" type="button" id="aksiDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:1.7rem;">
                             <i class="bi bi-three-dots-vertical"></i>
@@ -264,7 +331,7 @@ if (!$data) {
 </div>
 
 <!-- Footer -->
-<footer class="text-center mt-5 mb-3 no-print">
+<footer class="text-center mt-5 mb-3">
     <p class="text-muted">&copy; <?= date('Y'); ?> Monitoring Panen</p>
 </footer>
 

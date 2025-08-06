@@ -33,36 +33,134 @@ if (!$data) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-        background-color: #f8f9fc;
-        font-family: 'Poppins', sans-serif;
-        }
-        .btn-custom { border-radius: 8px; }
-        @media (min-width: 992px) {
-        #mainContent {
-        margin-left: 240px !important; /* Lebar sidebar */
-        }
-        }
-        @media (max-width: 991.98px) {
-        #mainContent {
-            margin-left: 0 !important;
-        }
-        }
-        .sidebar {
-        width: 240px;
+            background-color: #f8f9fc;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
         }
         .navbar-brand {
-        font-weight: bold;
+            font-weight: bold;
+            font-size: 20px;
         }
-        .card { border-radius: 12px; }
-        .btn-custom { border-radius: 8px; }
+        .card {
+            border-radius: 12px;
+        }
+        .btn-custom {
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: scale(1.05);
+        }
+        .sidebar {
+            width: 240px;
+        }
+        
+        /* Desktop layout */
+        @media (min-width: 992px) {
+            #mainContent {
+                margin-left: 240px !important;
+            }
+            .sidebar {
+                width: 240px;
+            }
+        }
+        
+        /* Tablet and mobile layout */
+        @media (max-width: 991.98px) {
+            #mainContent {
+                margin-left: 0 !important;
+            }
+            .sidebar {
+                display: none !important;
+            }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 0.9rem;
+            }
+            
+            .navbar-brand img {
+                height: 30px !important;
+            }
+            
+            h2, h3 {
+                font-size: 1.3rem;
+            }
+            
+            h5 {
+                font-size: 1rem;
+            }
+            
+            .card {
+                margin-bottom: 0.75rem;
+            }
+            
+            .card-body {
+                padding: 0.75rem !important;
+            }
+            
+            .table-responsive {
+                font-size: 0.8rem;
+            }
+            
+            .btn-sm {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+            
+            .badge {
+                font-size: 0.65rem;
+            }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 576px) {
+            .container-fluid {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            #mainContent {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            .table th, .table td {
+                padding: 0.3rem !important;
+                font-size: 0.75rem;
+            }
+        }
+        
         img.preview {
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 180px;
             object-fit: cover;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 5px;
+            display: block;
+            margin: 0 auto;
         }
+        
+        /* Mobile optimizations for images */
+        @media (max-width: 768px) {
+            img.preview {
+                width: 150px !important;
+                height: 120px !important;
+                max-width: 100%;
+            }
+        }
+        
+        /* Extra small devices for images */
+        @media (max-width: 576px) {
+            img.preview {
+                width: 120px !important;
+                height: 100px !important;
+            }
+        }
+        
         #detail-panen table, #detail-panen tr, #detail-panen td, #detail-panen th {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
@@ -71,10 +169,11 @@ if (!$data) {
         #detail-panen img {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
-            max-width: 100%;
-            height: auto;
+            max-width: 200px !important;
+            height: 150px !important;
+            object-fit: cover;
             display: block;
-            margin: 0;
+            margin: 0 auto;
         }
         .modal-content {
             width: 100%;
@@ -96,6 +195,11 @@ if (!$data) {
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
             Data Ubinan
         </a>
+        
+        <!-- Mobile menu button -->
+        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
     </div>
 </nav>
 
@@ -103,8 +207,8 @@ if (!$data) {
 <div class="container-fluid" style="padding-top:70px;">
     <div class="row">
         
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-white border-end shadow-sm sidebar py-4 position-fixed" style="height:100vh; z-index:1030;">
+        <!-- Desktop Sidebar -->
+        <nav class="col-lg-2 d-none d-lg-block bg-white border-end shadow-sm sidebar py-4 position-fixed" style="height:100vh; z-index:1030;">
             <div class="position-sticky">
                 <a href="#" class="d-flex align-items-center mb-3 text-primary text-decoration-none px-3">
                     <span class="fs-5 fw-bold">Supervisor</span>
@@ -157,9 +261,65 @@ if (!$data) {
             </div>
         </nav>
 
+        <!-- Mobile Sidebar (Offcanvas) -->
+        <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+            <div class="offcanvas-header bg-primary text-white">
+                <h5 class="offcanvas-title" id="mobileSidebarLabel">
+                    <i class="bi bi-person-circle me-2"></i>Supervisor
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item mb-2">
+                        <a href="super_admin.php" class="nav-link text-primary">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="monitoring.php" class="nav-link">
+                            <i class="bi bi-list-task me-2"></i> Monitoring
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="monitoring_panen.php" class="nav-link active">
+                            <i class="bi bi-basket-fill me-2"></i> Data Ubinan
+                        </a>
+                    </li>
+                    <!-- Dropdown Manajemen Mobile -->
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-primary d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenuMobile" role="button" aria-expanded="false" aria-controls="manajemenMenuMobile">
+                        <span><i class="bi bi-gear me-2"></i> Manajemen</span>
+                        <i class="bi bi-chevron-down"></i>
+                        </a>
+                        <div class="collapse ps-4" id="manajemenMenuMobile">
+                        <ul class="nav flex-column">
+                            <li class="nav-item mb-1">
+                            <a href="monitoring_akun.php" class="nav-link text-primary">
+                                <i class="bi bi-person-gear me-2"></i> User
+                            </a>
+                            </li>
+                            <li class="nav-item mb-1">
+                            <a href="manage_segmen.php" class="nav-link text-primary">
+                                <i class="bi bi-123 me-2"></i> Segmen
+                            </a>
+                            </li>
+                        </ul>
+                        </div>
+                    </li>
+                </ul>
+                <hr>
+                <div>
+                    <a href="../../auth/logout.php" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content -->
-        <main id="mainContent" class="col-lg-10 ms-auto px-4">
-            <div class="container my-5">
+        <main id="mainContent" class="col-12 col-lg-10 px-2 px-md-4 pt-3 pt-md-4" style="margin-left:240px;">
+            <div class="container-fluid py-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <a href="javascript:history.back()" class="btn btn-outline-primary btn-custom mb-3">
@@ -172,7 +332,7 @@ if (!$data) {
                         </div>
                         <div id="detail-panen">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h3 class="fw-bold mb-0">Detail Data Panen</h3>
+                                <h3 class="fw-bold mb-0">Data Ubinan</h3>
                                 <div class="dropdown">
                                     <button class="btn btn-link p-0 border-0 text-secondary" type="button" id="aksiDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:1.7rem;">
                                         <i class="bi bi-three-dots-vertical"></i>
@@ -380,6 +540,29 @@ if (!$data) {
             document.getElementById('revisiNama').value = nama;
         });
     }
+    
+    // Responsive sidebar handling - sama dengan monitoring_panen.php
+    function handleSidebarResponsive() {
+        const mainContent = document.getElementById('mainContent');
+        
+        if (window.innerWidth >= 992) {
+            // Desktop: show sidebar, add margin to content
+            if (mainContent) {
+                mainContent.style.marginLeft = '240px';
+            }
+        } else {
+            // Mobile/Tablet: hide sidebar, remove margin
+            if (mainContent) {
+                mainContent.style.marginLeft = '0';
+            }
+        }
+    }
+    
+    // Initial call
+    handleSidebarResponsive();
+    
+    // Listen for window resize
+    window.addEventListener('resize', handleSidebarResponsive);
 });
 </script>
 
