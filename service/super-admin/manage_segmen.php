@@ -216,6 +216,11 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
                 font-size: 0.8rem !important;
             }
         }
+        footer {
+            margin-top: 60px;
+            font-size: 14px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -488,6 +493,10 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
         </div>
     </div>
 </div>
+
+<footer class="text-center mt-5 mb-3">
+    &copy; <?= date('Y'); ?> UBINANKU
+</footer>
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

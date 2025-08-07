@@ -168,6 +168,11 @@ $jumlah_supervisor = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
         font-size: 0.7rem !important;
       }
     }
+    footer {
+            margin-top: 60px;
+            font-size: 14px;
+            color: #888;
+    }
   </style>
 </head>
 <body>
@@ -433,6 +438,10 @@ $jumlah_supervisor = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS 
         </div>
     </div>
 </div>
+
+<footer class="text-center mt-5 mb-3">
+    &copy; <?= date('Y'); ?> UBINANKU
+</footer>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

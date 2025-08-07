@@ -180,7 +180,11 @@ $q_user = mysqli_query($conn, "
             background-color: rgb(179, 252, 157) !important;
             color: black;
         }
-
+        footer {
+            margin-top: 60px;
+            font-size: 14px;
+            color: #888;
+        }
     </style>
 </head>
 
@@ -496,8 +500,8 @@ $q_user = mysqli_query($conn, "
 </div>
 
 <!-- Footer -->
-<footer class="text-center mt-5 mb-4 text-muted">
-    &copy; <?= date('Y'); ?> Monitoring Panen Kabupaten Bekasi
+<footer class="text-center mt-5 mb-3">
+    &copy; <?= date('Y'); ?> UBINANKU
 </footer>
 
 <!-- Bootstrap JS -->

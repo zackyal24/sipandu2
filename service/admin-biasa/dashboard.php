@@ -382,61 +382,75 @@ while ($row = mysqli_fetch_assoc($q_status)) {
 
 <script>
 $(document).ready(function () {
-    // DataTable initialization
-    var table = $('#tabelPanen').DataTable({
-        responsive: true,
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
-        },
-        pageLength: 10,
-        columnDefs: [
-            { targets: 0, searchable: false, orderable: false },
-            { targets: -1, orderable: false }
-        ],
-        order: [[1, 'desc']]
-    });
-
-    // Nomor otomatis
-    table.on('draw.dt', function () {
-        var pageInfo = table.page.info();
-        table.column(0, { search: 'applied', order: 'applied', page: 'current' }).nodes().each(function (cell, i) {
-            cell.innerHTML = i + 1 + pageInfo.start;
-        });
-    });
-
-    // Klik baris ke detail, kecuali klik tombol revisi
-    $('#tabelPanen').on('click', '.table-row-link', function(e) {
-        if ($(e.target).closest('.revisiButton').length) return;
-        var href = $(this).data('href');
-        if (href) window.location.href = href;
-    });
-
-    // Modal revisi
-    $(document).on('click', '.revisiButton', function (e) {
-        e.stopPropagation();
-        var id = $(this).data('id');
-        var nama = $(this).data('nama');
-        $('#revisiId').val(id);
-        $('#revisiNama').val(nama);
-        $('#revisiModal').modal('show');
-    });
-
-    // Status filter
-    $('#statusFilter').on('change', function() {
-        var selectedStatus = this.value;
-        if (selectedStatus) {
-            table.column(5).search('^' + selectedStatus + '$', true, false).draw();
-        } else {
-            table.column(5).search('').draw();
+    try {
+        // Cek apakah DataTable sudah ada, jika ya maka destroy dulu
+        if ($.fn.DataTable.isDataTable('#tabelPanen')) {
+            $('#tabelPanen').DataTable().destroy();
         }
-    });
+        
+        // DataTable initialization
+        var table = $('#tabelPanen').DataTable({
+            responsive: true,
+            language: { 
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+                emptyTable: "Belum ada data panen."
+            },
+            pageLength: 10,
+            columnDefs: [
+                { targets: 0, searchable: false, orderable: false },
+                { targets: -1, orderable: false }
+            ],
+            order: [[1, 'desc']],
+            destroy: true // Tambahan option untuk memungkinkan reinisialisasi
+        });
 
-    // Efek hover baris
-    $('#tabelPanen').on('mouseenter', '.table-row-link', function() {
-        $(this).css('background', 'linear-gradient(90deg, #e0f7fa 0%, #e3f2fd 100%)');
-    }).on('mouseleave', '.table-row-link', function() {
-        $(this).css('background', '');
-    });
+        // Nomor otomatis
+        table.on('draw.dt', function () {
+            var pageInfo = table.page.info();
+            table.column(0, { search: 'applied', order: 'applied', page: 'current' }).nodes().each(function (cell, i) {
+                cell.innerHTML = i + 1 + pageInfo.start;
+            });
+        });
+
+        // Klik baris ke detail, kecuali klik tombol revisi
+        $('#tabelPanen').on('click', '.table-row-link', function(e) {
+            if ($(e.target).closest('.revisiButton').length) return;
+            var href = $(this).data('href');
+            if (href) window.location.href = href;
+        });
+
+        // Modal revisi
+        $(document).on('click', '.revisiButton', function (e) {
+            e.stopPropagation();
+            var id = $(this).data('id');
+            var nama = $(this).data('nama');
+            $('#revisiId').val(id);
+            $('#revisiNama').val(nama);
+            $('#revisiModal').modal('show');
+        });
+
+        // Status filter
+        $('#statusFilter').on('change', function() {
+            var selectedStatus = this.value;
+            if (selectedStatus) {
+                table.column(5).search('^' + selectedStatus + '$', true, false).draw();
+            } else {
+                table.column(5).search('').draw();
+            }
+        });
+
+        // Efek hover baris
+        $('#tabelPanen').on('mouseenter', '.table-row-link', function() {
+            $(this).css('background', 'linear-gradient(90deg, #e0f7fa 0%, #e3f2fd 100%)');
+        }).on('mouseleave', '.table-row-link', function() {
+            $(this).css('background', '');
+        });
+        
+    } catch (error) {
+        console.error('Error initializing DataTable:', error);
+        // Fallback jika DataTables gagal
+        $('#tabelPanen').show();
+    }
 });
 </script>
 

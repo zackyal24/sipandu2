@@ -157,13 +157,9 @@ $noteRevisi = $data['note_revisi'] ?? '';
     }
 
     footer {
-      text-align: center;
-      margin-top: auto;
-      font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-      color: #6c757d;
-      padding: 1rem 0;
-      border-top: 1px solid #dee2e6;
-      background: linear-gradient(to right, #f8f9fa, #e9ecef);
+        margin-top: 60px;
+        font-size: 14px;
+        color: #888;
     }
 
     .file-info {
@@ -503,8 +499,8 @@ $noteRevisi = $data['note_revisi'] ?? '';
   </div>
 </div>
 
-<footer>
-  &copy; <?php echo date("Y"); ?> Ubinanku
+<footer class="text-center mt-5 mb-3">
+    &copy; <?= date('Y'); ?> UBINANKU
 </footer>
 
 <!-- Bootstrap JS -->

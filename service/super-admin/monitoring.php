@@ -178,6 +178,11 @@ while ($row = mysqli_fetch_assoc($q_user_all)) {
                 padding: 0.2rem 0.4rem !important;
             }
         }
+        footer {
+            margin-top: 60px;
+            font-size: 14px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -452,6 +457,10 @@ while ($row = mysqli_fetch_assoc($q_user_all)) {
         </main>
     </div>
 </div>
+
+<footer class="text-center mt-5 mb-3">
+    &copy; <?= date('Y'); ?> UBINANKU
+</footer>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

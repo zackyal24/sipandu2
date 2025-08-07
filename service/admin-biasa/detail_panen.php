@@ -160,6 +160,11 @@ if (!$data) {
         .modal-body textarea {
             resize: vertical;
         }
+        footer {
+            margin-top: 60px;
+            font-size: 14px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -270,7 +275,7 @@ if (!$data) {
                             <?php endif; ?>
                         </td>
                     </tr>
-                    <tr><th>Gabah Kering Panen</th>
+                    <tr><th>Estimasi Gabah Kering Panen</th>
                         <td>
                             <?php if (!empty($data['gkp']) && $data['gkp'] != 0): ?>
                                 <span class="fw-bold text-primary"><?= number_format($data['gkp'], 2); ?> ku/ha</span>
@@ -279,7 +284,7 @@ if (!$data) {
                             <?php endif; ?>
                         </td>
                     </tr>
-                    <tr><th>Gabah Kering Giling</th>
+                    <tr><th>Estimasi Gabah Kering Giling</th>
                         <td>
                             <?php if (!empty($data['gkg']) && $data['gkg'] != 0): ?>
                                 <span class="fw-bold text-primary"><?= number_format($data['gkg'], 2); ?> ku/ha</span>
@@ -288,7 +293,7 @@ if (!$data) {
                             <?php endif; ?>
                         </td>
                     </tr>
-                    <tr><th>Produksi Beras</th>
+                    <tr><th>Estimasi Produksi Beras</th>
                         <td>
                             <?php if (!empty($data['ku']) && $data['ku'] != 0): ?>
                                 <span class="fw-bold text-primary"><?= number_format($data['ku'], 2); ?> kuintal</span>
@@ -332,7 +337,7 @@ if (!$data) {
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-    <p class="text-muted">&copy; <?= date('Y'); ?> Monitoring Panen</p>
+    <p class="text-muted">&copy; <?= date('Y'); ?>UBINANKU</p>
 </footer>
 
 <!-- Modal Revisi -->

@@ -460,7 +460,7 @@ while ($row = mysqli_fetch_assoc($q_status)) {
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> Monitoring Panen
+    &copy; <?= date('Y'); ?> UBINANKU
 </footer>
 
 <!-- Scripts -->

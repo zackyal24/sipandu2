@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 15, 2025 at 09:19 AM
+-- Generation Time: Aug 06, 2025 at 04:35 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -286,14 +286,26 @@ CREATE TABLE `monitoring_data_panen` (
   `gkp` decimal(10,2) DEFAULT NULL,
   `gkg` decimal(10,2) DEFAULT NULL,
   `ku` decimal(10,2) DEFAULT NULL,
-  `status` enum('selesai','belum selesai','tidak bisa','sudah') DEFAULT NULL,
+  `status` enum('belum selesai','selesai','tidak bisa','revisi','sudah') DEFAULT 'belum selesai',
   `user_id` int(11) NOT NULL,
   `nomor_segmen` varchar(9) NOT NULL,
   `nomor_sub_segmen` varchar(2) NOT NULL,
   `note` varchar(500) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `note_revisi` text DEFAULT NULL,
+  `revised_at` timestamp NULL DEFAULT NULL,
+  `revised_by` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `monitoring_data_panen`
+--
+
+INSERT INTO `monitoring_data_panen` (`id`, `nama_petani`, `desa`, `kecamatan`, `tanggal_panen`, `subround`, `foto_serah_terima`, `foto_bukti_plot_ubinan`, `foto_berat_timbangan`, `berat_plot`, `gkp`, `gkg`, `ku`, `status`, `user_id`, `nomor_segmen`, `nomor_sub_segmen`, `note`, `created_at`, `updated_at`, `note_revisi`, `revised_at`, `revised_by`) VALUES
+(79, 'zacky', 'Kertasari', 'Pebayuran', '2025-07-31', 2, 'uploads/serah_terima/foto_serah_terima_688a188093fd7.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_6882ff93a982f.jpg', 'uploads/berat_timbangan/foto_berat_timbangan_6882ff93a9c01.jpg', 4.90, 78.40, 67.44, 42.31, 'selesai', 18, '321603004', 'B3', 'salah beratnya', '2025-07-25 03:50:45', '2025-07-30 13:05:04', NULL, NULL, NULL),
+(80, 'jkasd', 'Pantai Mekar', 'Muaragembong', '2025-07-27', 1, 'uploads/serah_terima/foto_serah_terima_6889f7b471ed9.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_6889f7b472272.jpg', 'uploads/berat_timbangan/foto_berat_timbangan_6889f7b4725ad.jpg', 4.80, 76.80, 66.06, 41.45, 'selesai', 18, '321602309', 'C2', '', '2025-07-25 03:55:53', '2025-07-30 10:45:08', NULL, NULL, NULL),
+(81, 'yo', 'Lenggahjaya', 'Cabangbungin', '2025-09-09', 3, 'uploads/serah_terima/foto_serah_terima_688a18b8e4856.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_688a18b8e4ce6.jpg', '6889f58bb5282_1753871755.jpeg', 4.60, 73.60, 63.31, 39.72, 'selesai', 18, '321602310', 'B3', '', '2025-07-30 10:35:27', '2025-07-30 13:06:00', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -495,7 +507,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `monitoring_data_panen`
 --
 ALTER TABLE `monitoring_data_panen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
 
 --
 -- AUTO_INCREMENT for table `segmen`
