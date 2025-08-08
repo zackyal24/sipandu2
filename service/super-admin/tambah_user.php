@@ -11,6 +11,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
 $error = '';
 $success = '';
 
+// Ambil daftar PML untuk dropdown
+$pml_list = mysqli_query($conn, "SELECT id, nama_lengkap, username FROM users WHERE role = 'pml' ORDER BY nama_lengkap ASC");
+
 // Proses form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
@@ -19,11 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
     $role = $_POST['role'];
+    $pml_id = isset($_POST['pml_id']) && !empty($_POST['pml_id']) ? intval($_POST['pml_id']) : null;
 
     // Validasi form
     if ($username === '' || $nama === '' || $no_hp === '' || $email === '' || $password === '' || $role === '') {
         $error = 'Semua field wajib diisi.';
-    } else {
+    } 
+    // Validasi khusus untuk PCL - harus ada PML
+    elseif ($role === 'pcl' && $pml_id === null) {
+        $error = 'PCL harus memilih PML yang mengawasi.';
+    }
+    // Validasi untuk PML dan Supervisor - tidak boleh ada PML ID
+    elseif (($role === 'pml' || $role === 'supervisor') && $pml_id !== null) {
+        $pml_id = null; // Force null untuk PML dan Supervisor
+    }
+    else {
         // Cek apakah username sudah digunakan
         $cek = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username'");
         if (mysqli_num_rows($cek) > 0) {
@@ -32,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Hash password
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            // Insert ke database
-            $stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, nama_lengkap, no_hp, email, role) VALUES (?, ?, ?, ?, ?, ?)");
-            mysqli_stmt_bind_param($stmt, "ssssss", $username, $passwordHash, $nama, $no_hp, $email, $role);
+            // Insert ke database dengan pml_id
+            $stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, nama_lengkap, no_hp, email, role, pml_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt, "ssssssi", $username, $passwordHash, $nama, $no_hp, $email, $role, $pml_id);
 
             if (mysqli_stmt_execute($stmt)) {
                 $success = "Akun berhasil ditambahkan.";
@@ -165,6 +178,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #dc3545;
         }
         
+        /* Field PML ID - Hidden by default */
+        #pml-field {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        #pml-field.show {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .text-muted {
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+        
         /* Mobile optimizations */
         @media (max-width: 768px) {
             body {
@@ -253,64 +286,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 margin-bottom: 0.8rem !important;
             }
         }
-        
-        /* Landscape mobile optimization */
-        @media (max-height: 600px) and (orientation: landscape) {
-            body {
-                padding: 0.5rem;
-            }
-            
-            .card-body {
-                padding: 1rem;
-            }
-            
-            h4 {
-                font-size: 1.1rem;
-                margin-bottom: 0.8rem;
-            }
-            
-            .form-control, .form-select {
-                padding: 0.5rem 0.7rem;
-            }
-            
-            .btn-custom {
-                padding: 0.5rem 1rem;
-            }
-            
-            .mb-3 {
-                margin-bottom: 0.8rem !important;
-            }
-        }
-        
-        /* Tablet optimization */
-        @media (min-width: 768px) and (max-width: 991px) {
-            .card {
-                max-width: 550px;
-            }
-            
-            .card-body {
-                padding: 1.75rem;
-            }
-            
-            .form-control, .form-select {
-                font-size: 0.95rem;
-            }
-            
-            .btn-custom {
-                font-size: 0.95rem;
-            }
-        }
-        
-        /* Large screen optimization */
-        @media (min-width: 1200px) {
-            .card {
-                max-width: 650px;
-            }
-            
-            .card-body {
-                padding: 2.5rem;
-            }
-        }
     </style>
 </head>
 <body>
@@ -383,12 +358,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label class="form-label">
                                 <i class="bi bi-shield-check me-2"></i>Role <span class="required">*</span>
                             </label>
-                            <select name="role" class="form-select" required>
+                            <select name="role" id="role-select" class="form-select" required>
                                 <option value="">-- Pilih Role --</option>
                                 <option value="pcl" <?= isset($_POST['role']) && $_POST['role'] == 'pcl' ? 'selected' : '' ?>>PCL</option>
                                 <option value="pml" <?= isset($_POST['role']) && $_POST['role'] == 'pml' ? 'selected' : '' ?>>PML</option>
                                 <option value="supervisor" <?= isset($_POST['role']) && $_POST['role'] == 'supervisor' ? 'selected' : '' ?>>Supervisor</option>
                             </select>
+                        </div>
+
+                        <!-- Field PML (muncul hanya untuk PCL) -->
+                        <div class="mb-3" id="pml-field" <?= isset($_POST['role']) && $_POST['role'] == 'pcl' ? 'style="display: block;"' : '' ?>>
+                            <label class="form-label">
+                                <i class="bi bi-person-check me-2"></i>PML yang Mengawasi <span class="required">*</span>
+                            </label>
+                            <select name="pml_id" id="pml-select" class="form-select" <?= isset($_POST['role']) && $_POST['role'] == 'pcl' ? 'required' : '' ?>>
+                                <option value="">-- Pilih PML --</option>
+                                <?php while($pml = mysqli_fetch_assoc($pml_list)): ?>
+                                    <option value="<?= $pml['id'] ?>" <?= isset($_POST['pml_id']) && $_POST['pml_id'] == $pml['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($pml['nama_lengkap']) ?> (<?= htmlspecialchars($pml['username']) ?>)
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                            <div class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>PCL harus memilih PML yang akan mengawasi
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -408,6 +401,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role-select');
+    const pmlField = document.getElementById('pml-field');
+    const pmlSelect = document.getElementById('pml-select');
+    
+    // Handle role change
+    roleSelect.addEventListener('change', function() {
+        const selectedRole = this.value;
+        
+        if (selectedRole === 'pcl') {
+            // Show PML field for PCL
+            pmlField.style.display = 'block';
+            pmlField.classList.add('show');
+            pmlSelect.setAttribute('required', 'required');
+        } else {
+            // Hide PML field for PML and Supervisor
+            pmlField.style.display = 'none';
+            pmlField.classList.remove('show');
+            pmlSelect.removeAttribute('required');
+            pmlSelect.value = ''; // Clear selection
+        }
+    });
+    
+    // Initialize on page load
+    if (roleSelect.value === 'pcl') {
+        pmlField.style.display = 'block';
+        pmlField.classList.add('show');
+        pmlSelect.setAttribute('required', 'required');
+    }
+});
+</script>
 
 </body>
 </html>

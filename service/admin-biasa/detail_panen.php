@@ -1,23 +1,43 @@
 <?php
-// filepath: c:\xampp\htdocs\ubinanku-kab-bekasi\service\admin-biasa\detail_panen.php
 session_start();
-if (!isset($_SESSION['pml'])) {
-    header("Location: login.php");
+include '../../config/koneksi.php';
+
+// Cek login dan role
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pml') {
+    header("Location: ../index.php");
     exit;
 }
-
-include '../../config/koneksi.php';
 
 // Ambil ID dari parameter URL
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Query untuk mengambil data berdasarkan ID
-$query = mysqli_query($conn, "SELECT * FROM monitoring_data_panen WHERE id = $id");
+// Ambil ID PML yang sedang login
+$pml_username = $_SESSION['username'];
+$pml_query = mysqli_query($conn, "SELECT id FROM users WHERE username = '$pml_username' AND role = 'pml'");
+$pml_data = mysqli_fetch_assoc($pml_query);
+
+if (!$pml_data) {
+    echo "Error: User PML tidak ditemukan";
+    exit;
+}
+
+$pml_id = $pml_data['id'];
+
+// Query dengan filter PML - pastikan data ini dari PCL yang diawasi PML ini
+$query = mysqli_query($conn, "
+    SELECT mdp.* 
+    FROM monitoring_data_panen mdp
+    INNER JOIN users pcl ON mdp.user_id = pcl.id
+    WHERE mdp.id = $id AND pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+");
 $data = mysqli_fetch_assoc($query);
 
-// Jika data tidak ditemukan, redirect ke halaman dashboard
+// Jika data tidak ditemukan atau tidak berhak akses, redirect ke dashboard
 if (!$data) {
-    header("Location: dashboard.php");
+    echo "<script>
+        alert('Akses ditolak! Anda tidak memiliki akses ke data ini.');
+        window.location.href = 'dashboard.php';
+    </script>";
     exit;
 }
 ?>

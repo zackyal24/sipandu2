@@ -31,6 +31,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
     
+    // === TAMBAHAN SECURITY CHECK UNTUK PML ===
+    // Ambil ID PML yang sedang login
+    $pml_username = $_SESSION['username'];
+    $pml_query = mysqli_query($conn, "SELECT id FROM users WHERE username = '$pml_username' AND role = 'pml'");
+    $pml_data = mysqli_fetch_assoc($pml_query);
+    
+    if (!$pml_data) {
+        echo "<script>
+            alert('Error: User PML tidak ditemukan!');
+            window.location.href = 'dashboard.php';
+        </script>";
+        exit;
+    }
+    
+    $pml_id = $pml_data['id'];
+    
+    // Cek apakah PML berhak merevisi data ini (hanya PCL yang diawasi)
+    $check_access = mysqli_query($conn, "
+        SELECT mdp.id 
+        FROM monitoring_data_panen mdp
+        INNER JOIN users pcl ON mdp.user_id = pcl.id
+        WHERE mdp.id = '$id' AND pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+    ");
+    
+    if (mysqli_num_rows($check_access) === 0) {
+        echo "<script>
+            alert('Akses ditolak! Anda tidak memiliki akses untuk merevisi data ini.');
+            window.location.href = 'dashboard.php';
+        </script>";
+        exit;
+    }
+    // === END SECURITY CHECK ===
+    
     // Update status ke 'revisi' dan simpan note
     $query = "UPDATE monitoring_data_panen 
               SET status = 'revisi', 
@@ -187,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
             <script>
-                // Auto redirect setelah 3 detik jika user tidak klik button
+                // Auto redirect setelah 5 detik jika user tidak klik button
                 setTimeout(function() {
                     window.location.href = 'dashboard.php';
                 }, 5000);

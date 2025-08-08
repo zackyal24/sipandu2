@@ -8,16 +8,40 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pml') {
     exit;
 }
 
-// Query untuk mengambil data dari tabel monitoring_data_panen
-$data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
+// Ambil ID PML yang sedang login
+$pml_username = $_SESSION['username'];
+$pml_query = mysqli_query($conn, "SELECT id FROM users WHERE username = '$pml_username' AND role = 'pml'");
+$pml_data = mysqli_fetch_assoc($pml_query);
+$pml_id = $pml_data['id'];
 
-// Query untuk status count (yang kurang)
+// Query export dengan filter PML
+$query = "
+    SELECT mdp.* 
+    FROM monitoring_data_panen mdp
+    INNER JOIN users pcl ON mdp.user_id = pcl.id
+    WHERE pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+    ORDER BY mdp.created_at DESC
+";
+$data = mysqli_query($conn, $query);
+
+// Query untuk mengambil data HANYA dari PCL yang diawasi PML ini
+$data = mysqli_query($conn, "
+    SELECT mdp.* 
+    FROM monitoring_data_panen mdp
+    INNER JOIN users pcl ON mdp.user_id = pcl.id
+    WHERE pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+    ORDER BY mdp.created_at DESC
+");
+
+// Query untuk status count - HANYA PCL yang diawasi
 $status_query = mysqli_query($conn, "
     SELECT 
-        status,
+        mdp.status,
         COUNT(*) as count
-    FROM monitoring_data_panen 
-    GROUP BY status
+    FROM monitoring_data_panen mdp
+    INNER JOIN users pcl ON mdp.user_id = pcl.id
+    WHERE pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+    GROUP BY mdp.status
 ");
 
 $status_count = [];
@@ -31,23 +55,27 @@ $status_count['belum selesai'] = isset($status_count['belum selesai']) ? $status
 $status_count['tidak bisa'] = isset($status_count['tidak bisa']) ? $status_count['tidak bisa'] : 0;
 $status_count['sudah'] = isset($status_count['sudah']) ? $status_count['sudah'] : 0;
 
-// Query statistik yang diperlukan
+// Query statistik - HANYA PCL yang diawasi
 $q_stats = mysqli_query($conn, "
     SELECT 
-        AVG(berat_plot) AS avg_berat_plot,
-        COUNT(CASE WHEN berat_plot IS NOT NULL AND berat_plot != '' THEN 1 END) AS count_valid
-    FROM monitoring_data_panen 
-    WHERE berat_plot IS NOT NULL AND berat_plot != ''
+        AVG(mdp.berat_plot) AS avg_berat_plot,
+        COUNT(CASE WHEN mdp.berat_plot IS NOT NULL AND mdp.berat_plot != '' THEN 1 END) AS count_valid
+    FROM monitoring_data_panen mdp
+    INNER JOIN users pcl ON mdp.user_id = pcl.id
+    WHERE pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+    AND mdp.berat_plot IS NOT NULL AND mdp.berat_plot != ''
 ");
 $stats = mysqli_fetch_assoc($q_stats);
 $avg_berat_plot = $stats['avg_berat_plot'] !== null ? number_format($stats['avg_berat_plot'], 2) : '-';
 
-// Query untuk median
+// Query untuk median - HANYA PCL yang diawasi
 $q_median = mysqli_query($conn, "
-    SELECT berat_plot 
-    FROM monitoring_data_panen 
-    WHERE berat_plot IS NOT NULL AND berat_plot != '' 
-    ORDER BY berat_plot
+    SELECT mdp.berat_plot 
+    FROM monitoring_data_panen mdp
+    INNER JOIN users pcl ON mdp.user_id = pcl.id
+    WHERE pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+    AND mdp.berat_plot IS NOT NULL AND mdp.berat_plot != '' 
+    ORDER BY mdp.berat_plot
 ");
 $median_values = [];
 while($row = mysqli_fetch_assoc($q_median)) {
@@ -63,13 +91,15 @@ if (count($median_values) > 0) {
     }
 }
 
-// Query untuk modus
+// Query untuk modus - HANYA PCL yang diawasi
 $q_modus = mysqli_query($conn, "
-    SELECT berat_plot, COUNT(*) as frequency 
-    FROM monitoring_data_panen 
-    WHERE berat_plot IS NOT NULL AND berat_plot != '' 
-    GROUP BY berat_plot 
-    ORDER BY frequency DESC, berat_plot ASC 
+    SELECT mdp.berat_plot, COUNT(*) as frequency 
+    FROM monitoring_data_panen mdp
+    INNER JOIN users pcl ON mdp.user_id = pcl.id
+    WHERE pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
+    AND mdp.berat_plot IS NOT NULL AND mdp.berat_plot != '' 
+    GROUP BY mdp.berat_plot 
+    ORDER BY frequency DESC, mdp.berat_plot ASC 
     LIMIT 1
 ");
 $modus = '-';
@@ -78,7 +108,7 @@ if (mysqli_num_rows($q_modus) > 0) {
     $modus = number_format($modus_row['berat_plot'], 2);
 }
 
-// Jumlah selesai (sekarang sudah didefinisikan)
+// Jumlah selesai
 $jumlah_selesai = $status_count['selesai'];
 ?>
 
