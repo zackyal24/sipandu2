@@ -55,6 +55,44 @@ if (!$data) {
             width: 240px;
         }
         
+        /* Tabel dengan kolom kiri merapat */
+        .table th {
+            width: 30% !important; /* Kolom kiri hanya 30% - merapat */
+            white-space: nowrap; /* Mencegah text wrap pada header */
+            vertical-align: middle;
+            font-weight: 600;
+            background-color: #f8f9fa;
+            padding: 12px !important;
+        }
+        
+        .table td {
+            width: 70% !important; /* Kolom kanan 70% untuk konten */
+            vertical-align: middle;
+            padding: 12px !important;
+        }
+        
+        /* Gambar diperbesar untuk kejelasan */
+        img.preview {
+            width: 450px !important; /* Diperbesar untuk lebih jelas */
+            height: 320px !important; /* Proporsi yang lebih baik */
+            object-fit: cover;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 8px;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-width: 100%;
+        }
+        
+        /* Hover effect pada gambar */
+        img.preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            cursor: pointer;
+        }
+        
         /* Desktop layout */
         @media (min-width: 992px) {
             #mainContent {
@@ -113,6 +151,22 @@ if (!$data) {
             .badge {
                 font-size: 0.65rem;
             }
+            
+            .table th {
+                width: 35% !important; /* Sedikit lebih lebar di mobile */
+                font-size: 0.85rem;
+                padding: 8px !important;
+            }
+            
+            .table td {
+                width: 65% !important;
+                padding: 8px !important;
+            }
+            
+            img.preview {
+                width: 300px !important; /* Diperbesar di mobile juga */
+                height: 225px !important;
+            }
         }
         
         /* Extra small devices */
@@ -127,40 +181,45 @@ if (!$data) {
                 padding-right: 0.5rem !important;
             }
             
-            .table th, .table td {
-                padding: 0.3rem !important;
-                font-size: 0.75rem;
+            .table th {
+                width: 40% !important;
+                font-size: 0.8rem;
+                padding: 6px !important;
             }
-        }
-        
-        img.preview {
-            width: 250px;
-            height: 180px;
-            object-fit: cover;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 5px;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        /* Mobile optimizations for images */
-        @media (max-width: 768px) {
+            
+            .table td {
+                width: 60% !important;
+                font-size: 0.85rem;
+                padding: 6px !important;
+            }
+            
             img.preview {
-                width: 150px !important;
-                height: 120px !important;
-                max-width: 100%;
+                width: 260px !important; /* Tetap besar di mobile kecil */
+                height: 195px !important;
+                border-radius: 8px;
+                padding: 5px;
             }
         }
-        
-        /* Extra small devices for images */
-        @media (max-width: 576px) {
+
+        /* PDF print - ukuran optimal untuk export */
+        @media print {
+            .table th {
+                width: 30% !important;
+            }
+            
+            .table td {
+                width: 70% !important;
+            }
+            
             img.preview {
-                width: 120px !important;
-                height: 100px !important;
+                width: 350px !important;
+                height: 250px !important;
+                max-width: 100% !important;
+                break-inside: avoid !important;
             }
         }
         
+        /* PDF Export optimization */
         #detail-panen table, #detail-panen tr, #detail-panen td, #detail-panen th {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
@@ -169,12 +228,13 @@ if (!$data) {
         #detail-panen img {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
-            max-width: 200px !important;
-            height: 150px !important;
+            max-width: 350px !important; /* Sesuaikan dengan img.preview */
+            height: 250px !important;
             object-fit: cover;
             display: block;
             margin: 0 auto;
         }
+        
         .modal-content {
             width: 100%;
             max-width: 600px;
@@ -184,6 +244,7 @@ if (!$data) {
         .modal-body textarea {
             resize: vertical;
         }
+        
         footer {
             margin-top: 60px;
             font-size: 14px;
@@ -522,16 +583,34 @@ if (!$data) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
-    document.getElementById('exportPDF').addEventListener('click', function () {
+        document.getElementById('exportPDF').addEventListener('click', function () {
         var element = document.getElementById('detail-panen');
+        
+        // Force image sizes untuk PDF dengan ukuran yang lebih besar
+        var images = element.querySelectorAll('img.preview');
+        images.forEach(function(img) {
+            img.style.cssText = 'width: 300px !important; height: 200px !important; object-fit: cover !important; display: block !important; margin: 0 auto !important; max-width: 100% !important; border: 1px solid #ddd !important; border-radius: 8px !important; padding: 5px !important;';
+        });
+        
         nama = "<?= preg_replace('/[^a-zA-Z0-9_\-]/', '', $data['nama_petani']); ?>";
         var id = "<?= $data['id']; ?>";
         var filename = nama + '-' + id + '.pdf';
+        
         html2pdf().from(element).set({
             margin: 0.5,
             filename: filename,
-            html2canvas: { scale: 2 },
-            jsPDF: { orientation: 'portrait', unit: 'cm', format: 'a4' }
+            html2canvas: { 
+                scale: 2, // High quality untuk gambar yang lebih besar
+                useCORS: true,
+                allowTaint: true,
+                imageTimeout: 15000
+            },
+            jsPDF: { 
+                orientation: 'portrait', 
+                unit: 'cm', 
+                format: 'a4',
+                putOnlyUsedFonts: true
+            }
         }).save();
     });
     document.addEventListener('DOMContentLoaded', function () {

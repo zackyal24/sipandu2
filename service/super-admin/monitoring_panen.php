@@ -11,27 +11,61 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'supervisor') {
 // Ambil data panen
 $data = mysqli_query($conn, "SELECT * FROM monitoring_data_panen ORDER BY created_at DESC");
 
-// Query rata-rata ubinan (berat_plot)
-$q_avg = mysqli_query($conn, "SELECT AVG(berat_plot) AS avg_berat_plot FROM monitoring_data_panen WHERE berat_plot IS NOT NULL AND berat_plot != ''");
-$avg = mysqli_fetch_assoc($q_avg);
-$avg_berat_plot = $avg['avg_berat_plot'] !== null ? number_format($avg['avg_berat_plot'], 2) : '-';
-
-// Hitung jumlah per status
-$q_status = mysqli_query($conn, "
-    SELECT status, COUNT(*) as jumlah
-    FROM monitoring_data_panen
-    WHERE status IN ('selesai', 'belum selesai', 'tidak bisa', 'sudah')
-    GROUP BY status
+// Query statistik yang diperlukan
+$q_stats = mysqli_query($conn, "
+    SELECT 
+        AVG(berat_plot) AS avg_berat_plot,
+        COUNT(CASE WHEN berat_plot IS NOT NULL AND berat_plot != '' THEN 1 END) AS count_valid
+    FROM monitoring_data_panen 
+    WHERE berat_plot IS NOT NULL AND berat_plot != ''
 ");
-$status_count = [
-    'selesai' => 0,
-    'belum selesai' => 0,
-    'tidak bisa' => 0,
-    'sudah' => 0
-];
-while ($row = mysqli_fetch_assoc($q_status)) {
-    $status_count[strtolower($row['status'])] = $row['jumlah'];
+$stats = mysqli_fetch_assoc($q_stats);
+$avg_berat_plot = $stats['avg_berat_plot'] !== null ? number_format($stats['avg_berat_plot'], 2) : '-';
+
+// Query untuk median
+$q_median = mysqli_query($conn, "
+    SELECT berat_plot 
+    FROM monitoring_data_panen 
+    WHERE berat_plot IS NOT NULL AND berat_plot != '' 
+    ORDER BY berat_plot
+");
+$median_values = [];
+while($row = mysqli_fetch_assoc($q_median)) {
+    $median_values[] = $row['berat_plot'];
 }
+$median = '-';
+if (count($median_values) > 0) {
+    $count = count($median_values);
+    if ($count % 2 == 0) {
+        $median = number_format(($median_values[$count/2 - 1] + $median_values[$count/2]) / 2, 2);
+    } else {
+        $median = number_format($median_values[intval($count/2)], 2);
+    }
+}
+
+// Query untuk modus
+$q_modus = mysqli_query($conn, "
+    SELECT berat_plot, COUNT(*) as frequency 
+    FROM monitoring_data_panen 
+    WHERE berat_plot IS NOT NULL AND berat_plot != '' 
+    GROUP BY berat_plot 
+    ORDER BY frequency DESC, berat_plot ASC 
+    LIMIT 1
+");
+$modus = '-';
+if (mysqli_num_rows($q_modus) > 0) {
+    $modus_row = mysqli_fetch_assoc($q_modus);
+    $modus = number_format($modus_row['berat_plot'], 2);
+}
+
+// Hitung jumlah yang selesai saja
+$q_selesai = mysqli_query($conn, "
+    SELECT COUNT(*) as jumlah_selesai
+    FROM monitoring_data_panen
+    WHERE status = 'selesai'
+");
+$selesai_row = mysqli_fetch_assoc($q_selesai);
+$jumlah_selesai = $selesai_row['jumlah_selesai'];
 ?>
 
 <!DOCTYPE html>
@@ -307,42 +341,56 @@ while ($row = mysqli_fetch_assoc($q_status)) {
                 <h2 class="mb-0">Data Ubinan</h2>
             </div>
             
-            <!-- Card Statistik Ubinan - Layout seperti dashboard admin-biasa -->
+                        <!-- Card Statistik Ubinan - Updated dengan rata-rata, median, modus, selesai -->
             <div class="row g-2 g-md-3 g-lg-4 mb-3 mb-md-4">
-                <!-- Mobile: 1 card per baris (col-12), Desktop: 4 cards per baris (col-lg-3) -->
+                <!-- Card Rata-rata -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body p-2 p-md-3">
-                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">Rata-rata ubinan</div>
+                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">
+                                <i class="bi bi-calculator me-1"></i>Rata-rata
+                            </div>
                             <div class="fw-bold text-primary" style="font-size: clamp(1.2rem, 3vw, 1.75rem);"><?= $avg_berat_plot; ?></div>
                             <div class="small text-muted" style="font-size: clamp(0.7rem, 1.2vw, 0.875rem);">kuintal beras</div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Card Median -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body p-2 p-md-3">
-                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">Selesai</div>
-                            <div class="fw-bold text-success" style="font-size: clamp(1.2rem, 3vw, 1.75rem);"><?= $status_count['selesai']; ?></div>
-                            <div class="small text-muted" style="font-size: clamp(0.7rem, 1.2vw, 0.875rem);">Data ubinan yang sudah selesai</div>
+                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">
+                                <i class="bi bi-graph-up me-1"></i>Median
+                            </div>
+                            <div class="fw-bold text-info" style="font-size: clamp(1.2rem, 3vw, 1.75rem);"><?= $median; ?></div>
+                            <div class="small text-muted" style="font-size: clamp(0.7rem, 1.2vw, 0.875rem);">nilai tengah</div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Card Modus -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body p-2 p-md-3">
-                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">Belum Selesai</div>
-                            <div class="fw-bold text-warning" style="font-size: clamp(1.2rem, 3vw, 1.75rem);"><?= $status_count['belum selesai'] + $status_count['sudah']; ?></div>
-                            <div class="small text-muted" style="font-size: clamp(0.7rem, 1.2vw, 0.875rem);">Data ubinan yang belum selesai diinput</div>
+                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">
+                                <i class="bi bi-bar-chart me-1"></i>Modus
+                            </div>
+                            <div class="fw-bold text-warning" style="font-size: clamp(1.2rem, 3vw, 1.75rem);"><?= $modus; ?></div>
+                            <div class="small text-muted" style="font-size: clamp(0.7rem, 1.2vw, 0.875rem);">paling sering muncul</div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Card Selesai -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card shadow-sm border-0 text-center h-100">
                         <div class="card-body p-2 p-md-3">
-                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">Tidak Bisa</div>
-                            <div class="fw-bold text-danger" style="font-size: clamp(1.2rem, 3vw, 1.75rem);"><?= $status_count['tidak bisa']; ?></div>
-                            <div class="small text-muted" style="font-size: clamp(0.7rem, 1.2vw, 0.875rem);">Data ubinan yang tidak dapat dilakukan</div>
+                            <div class="text-muted mb-1" style="font-size: clamp(0.8rem, 1.5vw, 1rem);">
+                                <i class="bi bi-check-circle me-1"></i>Selesai
+                            </div>
+                            <div class="fw-bold text-success" style="font-size: clamp(1.2rem, 3vw, 1.75rem);"><?= $jumlah_selesai; ?></div>
+                            <div class="small text-muted" style="font-size: clamp(0.7rem, 1.2vw, 0.875rem);">data sudah selesai</div>
                         </div>
                     </div>
                 </div>
