@@ -104,7 +104,7 @@
       </form>
       
       <div class="text-center">
-        <a href="https://wa.me/6281280976144?text=Halo%2C%20saya%20lupa%20password%20akun%20UBINANKU.%20Username%20saya%3A%20[TULIS_USERNAME_ANDA]" 
+        <a href="https://wa.me/6281280976144?text=Halo%2C%20saya%20lupa%20password%20akun%20SIPANTAU.%20Username%20saya%3A%20[TULIS_USERNAME_ANDA]" 
            target="_blank" class="whatsapp-link">
           <i class="bi bi-key me-2"></i>Lupa Password?
         </a>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 06, 2025 at 04:35 AM
+-- Generation Time: Aug 14, 2025 at 08:26 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -290,7 +290,6 @@ CREATE TABLE `monitoring_data_panen` (
   `user_id` int(11) NOT NULL,
   `nomor_segmen` varchar(9) NOT NULL,
   `nomor_sub_segmen` varchar(2) NOT NULL,
-  `note` varchar(500) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL,
   `note_revisi` text DEFAULT NULL,
@@ -302,10 +301,13 @@ CREATE TABLE `monitoring_data_panen` (
 -- Dumping data for table `monitoring_data_panen`
 --
 
-INSERT INTO `monitoring_data_panen` (`id`, `nama_petani`, `desa`, `kecamatan`, `tanggal_panen`, `subround`, `foto_serah_terima`, `foto_bukti_plot_ubinan`, `foto_berat_timbangan`, `berat_plot`, `gkp`, `gkg`, `ku`, `status`, `user_id`, `nomor_segmen`, `nomor_sub_segmen`, `note`, `created_at`, `updated_at`, `note_revisi`, `revised_at`, `revised_by`) VALUES
-(79, 'zacky', 'Kertasari', 'Pebayuran', '2025-07-31', 2, 'uploads/serah_terima/foto_serah_terima_688a188093fd7.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_6882ff93a982f.jpg', 'uploads/berat_timbangan/foto_berat_timbangan_6882ff93a9c01.jpg', 4.90, 78.40, 67.44, 42.31, 'selesai', 18, '321603004', 'B3', 'salah beratnya', '2025-07-25 03:50:45', '2025-07-30 13:05:04', NULL, NULL, NULL),
-(80, 'jkasd', 'Pantai Mekar', 'Muaragembong', '2025-07-27', 1, 'uploads/serah_terima/foto_serah_terima_6889f7b471ed9.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_6889f7b472272.jpg', 'uploads/berat_timbangan/foto_berat_timbangan_6889f7b4725ad.jpg', 4.80, 76.80, 66.06, 41.45, 'selesai', 18, '321602309', 'C2', '', '2025-07-25 03:55:53', '2025-07-30 10:45:08', NULL, NULL, NULL),
-(81, 'yo', 'Lenggahjaya', 'Cabangbungin', '2025-09-09', 3, 'uploads/serah_terima/foto_serah_terima_688a18b8e4856.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_688a18b8e4ce6.jpg', '6889f58bb5282_1753871755.jpeg', 4.60, 73.60, 63.31, 39.72, 'selesai', 18, '321602310', 'B3', '', '2025-07-30 10:35:27', '2025-07-30 13:06:00', NULL, NULL, NULL);
+INSERT INTO `monitoring_data_panen` (`id`, `nama_petani`, `desa`, `kecamatan`, `tanggal_panen`, `subround`, `foto_serah_terima`, `foto_bukti_plot_ubinan`, `foto_berat_timbangan`, `berat_plot`, `gkp`, `gkg`, `ku`, `status`, `user_id`, `nomor_segmen`, `nomor_sub_segmen`, `created_at`, `updated_at`, `note_revisi`, `revised_at`, `revised_by`) VALUES
+(79, 'zacky', 'Kertasari', 'Pebayuran', '2025-07-31', 2, 'uploads/serah_terima/foto_serah_terima_688a188093fd7.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_6882ff93a982f.jpg', 'uploads/berat_timbangan/foto_berat_timbangan_6882ff93a9c01.jpg', 4.90, 78.40, 67.44, 42.31, 'selesai', 18, '321603004', 'B3', '2025-07-25 03:50:45', '2025-07-30 13:05:04', NULL, NULL, NULL),
+(80, 'jkasd', 'Pantai Mekar', 'Muaragembong', '2025-07-27', 1, 'uploads/serah_terima/foto_serah_terima_6889f7b471ed9.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_6889f7b472272.jpg', 'uploads/berat_timbangan/foto_berat_timbangan_6889f7b4725ad.jpg', 4.80, 76.80, 66.06, 41.45, 'selesai', 18, '321602309', 'C2', '2025-07-25 03:55:53', '2025-07-30 10:45:08', NULL, NULL, NULL),
+(81, 'yo', 'Lenggahjaya', 'Cabangbungin', '2025-09-09', 3, 'uploads/serah_terima/foto_serah_terima_688a18b8e4856.jpg', 'uploads/bukti_plot_ubinan/foto_bukti_plot_ubinan_688a18b8e4ce6.jpg', '6889f58bb5282_1753871755.jpeg', 4.60, 73.60, 63.31, 39.72, 'selesai', 18, '321602310', 'B3', '2025-07-30 10:35:27', '2025-07-30 13:06:00', NULL, NULL, NULL),
+(82, 'lkjdsa', 'Kedungwaringin', 'Kdgwaringin', '2025-04-29', 1, '', '', '', NULL, NULL, NULL, NULL, 'sudah', 18, '321602207', 'B3', '2025-08-07 06:55:14', NULL, NULL, NULL, NULL),
+(83, 'riza', 'Pasirgombong', 'Cikarang Utara', '2025-09-10', 3, '', '', '', NULL, NULL, NULL, NULL, 'revisi', 16, '321602206', 'C2', '2025-08-08 01:55:44', NULL, 'yaya', '2025-08-08 02:22:13', 'pml'),
+(84, 'budi', 'Kedungwaringin', 'Kdgwaringin', '2025-08-13', 2, '', '', '', NULL, NULL, NULL, NULL, 'belum selesai', 20, '321602207', 'C2', '2025-08-08 02:34:40', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -446,20 +448,24 @@ CREATE TABLE `users` (
   `email` varchar(50) NOT NULL,
   `role` enum('pcl','pml','supervisor') DEFAULT 'pcl',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `pml_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `no_hp`, `email`, `role`, `created_at`, `updated_at`) VALUES
-(1, 'superadmin', '$2y$10$RfqDxPrQhT0M8H6dUcGO6uokpyN3MpL5tysmfXbd0H1XIVIwUqvyy', 'Administrator Utama', '089237483', 'admin@gmail.com', 'supervisor', '2025-04-30 01:18:49', '2025-07-13 13:45:03'),
-(14, 'jajang', '$2y$10$V3lo.5PCVOEJgPHM.yi2Ve4fTlW5.6ibwnEKasnClc8UbbrXi.XCm', 'jajang', '0897123', 'jajang@asd', 'pcl', '2025-06-26 03:55:53', NULL),
-(15, 'wei', '$2y$10$6IZIiMTXH1AtQ188AXMZs.KGDjTs6FxBgz02/p5xIV3wR.9EAjsce', 'wei', '0891237', 'wei@123', 'pml', '2025-06-26 04:15:19', '2025-07-03 03:49:36'),
-(16, 'riza', '$2y$10$lVLD5TQ9lKezmbQfgZxi5eaKU9qXiOAq48vk9Bvkt1sYSyyZqgl.C', 'riza', '0891723892', 'riza@asdas', '', '2025-06-26 07:56:17', '2025-07-10 04:28:25'),
-(17, 'imaduddin', '$2y$10$woj0158R8eK1y.21NVR4pu7UKtMcw2HDyVQDwqNk7V15FMTQmVwRe', 'Muhammad Ikhwan Imaduddin', '8239382', 'ikhwanimaduddin908@gmail.com', 'pcl', '2025-07-01 01:17:49', NULL),
-(18, 'zacky', '$2y$10$jevoR8YtKyHV898XZyL5se.JAxldpGcx5GYstRkvi3S5FXO63QOsm', 'zacky', '0891273', 'zacky@asd', 'pcl', '2025-07-03 00:38:29', '2025-07-13 14:03:35');
+INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`, `no_hp`, `email`, `role`, `created_at`, `updated_at`, `pml_id`) VALUES
+(1, 'anang', '$2y$10$RfqDxPrQhT0M8H6dUcGO6uokpyN3MpL5tysmfXbd0H1XIVIwUqvyy', 'ahmad anang', '08555555555', 'pandu22@gmail.com', 'supervisor', '2025-04-30 01:18:49', '2025-08-13 01:23:49', NULL),
+(14, 'jajang', '$2y$10$V3lo.5PCVOEJgPHM.yi2Ve4fTlW5.6ibwnEKasnClc8UbbrXi.XCm', 'jajang', '08577777777', 'jajang13@gmail.com', 'pcl', '2025-06-26 03:55:53', '2025-08-13 01:24:19', 19),
+(15, 'mamat', '$2y$10$6IZIiMTXH1AtQ188AXMZs.KGDjTs6FxBgz02/p5xIV3wR.9EAjsce', 'mamat fadilah', '08599999999', 'mamat32@gmail.com', 'pml', '2025-06-26 04:15:19', '2025-08-13 01:23:35', NULL),
+(16, 'riza', '$2y$10$lVLD5TQ9lKezmbQfgZxi5eaKU9qXiOAq48vk9Bvkt1sYSyyZqgl.C', 'riza', '0891723892', 'riza@asdas', 'pcl', '2025-06-26 07:56:17', '2025-08-08 01:57:07', 19),
+(17, 'imaduddin', '$2y$10$woj0158R8eK1y.21NVR4pu7UKtMcw2HDyVQDwqNk7V15FMTQmVwRe', 'Muhammad Ikhwan Imaduddin', '8239382', 'ikhwanimaduddin908@gmail.com', 'pcl', '2025-07-01 01:17:49', '2025-08-08 01:13:35', 19),
+(18, 'zacky', '$2y$10$jevoR8YtKyHV898XZyL5se.JAxldpGcx5GYstRkvi3S5FXO63QOsm', 'zacky', '0891273', 'zacky@asd', 'pcl', '2025-07-03 00:38:29', '2025-08-08 01:24:01', 15),
+(20, 'budi', '$2y$10$9w4cSGvfDL1EJOPEVryBWOkN6zIeV2izcGDFZ7cDdW/myW7jUKIiC', 'budi tabudi', '08566666666', 'budi4@gmail.com', 'pcl', '2025-08-08 02:33:42', '2025-08-13 01:24:05', 19),
+(21, 'root', '$2y$10$35O/TGl5sSaOBvA0F3dhtOM0f31a7vm/44hrbGn69IEVUZQmZegtS', 'root', '+62 812-8097-6144', 'pandupermana230687@gmail.com', 'supervisor', '2025-08-14 06:22:01', NULL, NULL),
+(22, 'pandu', '$2y$10$NOd5MdsoABXT4kTNyXGSW.Us93972Y5RRij1.ou1B67CS9d0nYzhu', 'Pandu Permana', '+62 812-8097-6144', 'pandupermana230687@gmail.com', 'supervisor', '2025-08-14 06:22:26', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -507,7 +513,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `monitoring_data_panen`
 --
 ALTER TABLE `monitoring_data_panen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
 
 --
 -- AUTO_INCREMENT for table `segmen`
@@ -519,7 +525,7 @@ ALTER TABLE `segmen`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Constraints for dumped tables

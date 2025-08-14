@@ -17,9 +17,12 @@ $query = mysqli_query($conn, "SELECT * FROM users WHERE id = $id");
 $user = mysqli_fetch_assoc($query);
 
 if (!$user) {
-    header("Location: users.php");
+    header("Location: monitoring_akun.php");
     exit;
 }
+
+// Ambil daftar PML untuk dropdown
+$pml_list = mysqli_query($conn, "SELECT id, nama_lengkap, username FROM users WHERE role = 'pml' ORDER BY nama_lengkap ASC");
 
 // Proses update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,11 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $role = $_POST['role'];
     $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $pml_id = isset($_POST['pml_id']) && !empty($_POST['pml_id']) ? intval($_POST['pml_id']) : null;
 
     // Validasi
-    if ($username === '' || $nama_lengkap === '' || $role === '') {
+    if ($username === '' || $nama_lengkap === '' || $no_hp === '' || $email === '' || $role === '') {
         $error = 'Semua field wajib diisi.';
-    } else {
+    } 
+    // Validasi khusus untuk PCL - harus ada PML
+    elseif ($role === 'pcl' && $pml_id === null) {
+        $error = 'PCL harus memilih PML yang mengawasi.';
+    }
+    // Validasi untuk PML dan Supervisor - tidak boleh ada PML ID
+    elseif (($role === 'pml' || $role === 'supervisor') && $pml_id !== null) {
+        $pml_id = null; // Force null untuk PML dan Supervisor
+    }
+    else {
         // Cek apakah username sudah digunakan oleh user lain
         $cek = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username' AND id != $id");
         if (mysqli_num_rows($cek) > 0) {
@@ -42,12 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($password !== '') {
                 // Jika password diisi, update juga password
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, no_hp = ?, email = ?, role = ?, password = ? WHERE id = ?");
-                mysqli_stmt_bind_param($stmt, "ssssssi", $username, $nama_lengkap, $no_hp, $email, $role, $password_hash, $id);
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, no_hp = ?, email = ?, role = ?, password = ?, pml_id = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "ssssssii", $username, $nama_lengkap, $no_hp, $email, $role, $password_hash, $pml_id, $id);
             } else {
                 // Jika password kosong, update tanpa password
-                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, no_hp = ?, email = ?, role = ? WHERE id = ?");
-                mysqli_stmt_bind_param($stmt, "sssssi", $username, $nama_lengkap, $no_hp, $email, $role, $id);
+                $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, nama_lengkap = ?, no_hp = ?, email = ?, role = ?, pml_id = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "sssssii", $username, $nama_lengkap, $no_hp, $email, $role, $pml_id, $id);
             }
 
             if (mysqli_stmt_execute($stmt)) {
@@ -58,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user['no_hp'] = $no_hp;
                 $user['email'] = $email;
                 $user['role'] = $role;
+                $user['pml_id'] = $pml_id;
             } else {
                 $error = 'Gagal memperbarui data.';
             }
@@ -71,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit Akun | UBINANKU</title>
+    <title>Edit Akun | SIPANTAU</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -182,6 +196,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         .text-muted {
             font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        /* Field PML ID - Hidden by default */
+        #pml-field {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        #pml-field.show {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         /* Mobile optimizations */
@@ -364,7 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form method="post" autocomplete="off">
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-person me-2"></i>Username
+                                <i class="bi bi-person me-2"></i>Username <span class="required">*</span>
                             </label>
                             <input type="text" name="username" class="form-control" required 
                                    value="<?= htmlspecialchars($user['username']); ?>" 
@@ -373,7 +406,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-person-badge me-2"></i>Nama Lengkap
+                                <i class="bi bi-person-badge me-2"></i>Nama Lengkap <span class="required">*</span>
                             </label>
                             <input type="text" name="nama_lengkap" class="form-control" required 
                                    value="<?= htmlspecialchars($user['nama_lengkap']); ?>" 
@@ -382,7 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-telephone me-2"></i>No HP
+                                <i class="bi bi-telephone me-2"></i>No HP <span class="required">*</span>
                             </label>
                             <input type="text" name="no_hp" class="form-control" required 
                                    value="<?= htmlspecialchars($user['no_hp']); ?>" 
@@ -391,7 +424,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-envelope me-2"></i>Email
+                                <i class="bi bi-envelope me-2"></i>Email <span class="required">*</span>
                             </label>
                             <input type="email" name="email" class="form-control" required 
                                    value="<?= htmlspecialchars($user['email']); ?>" 
@@ -400,14 +433,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-shield-check me-2"></i>Role
+                                <i class="bi bi-shield-check me-2"></i>Role <span class="required">*</span>
                             </label>
-                            <select name="role" class="form-select" required>
+                            <select name="role" id="role-select" class="form-select" required>
                                 <option value="">-- Pilih Role --</option>
                                 <option value="pcl" <?= $user['role'] === 'pcl' ? 'selected' : '' ?>>PCL</option>
                                 <option value="pml" <?= $user['role'] === 'pml' ? 'selected' : '' ?>>PML</option>
                                 <option value="supervisor" <?= $user['role'] === 'supervisor' ? 'selected' : '' ?>>Supervisor</option>
                             </select>
+                        </div>
+
+                        <!-- Field PML (muncul hanya untuk PCL) -->
+                        <div class="mb-3" id="pml-field" <?= $user['role'] === 'pcl' ? 'style="display: block;"' : '' ?>>
+                            <label class="form-label">
+                                <i class="bi bi-person-check me-2"></i>PML yang Mengawasi <span class="required">*</span>
+                            </label>
+                            <select name="pml_id" id="pml-select" class="form-select" <?= $user['role'] === 'pcl' ? 'required' : '' ?>>
+                                <option value="">-- Pilih PML --</option>
+                                <?php 
+                                // Reset pointer untuk PML list
+                                mysqli_data_seek($pml_list, 0);
+                                while($pml = mysqli_fetch_assoc($pml_list)): 
+                                ?>
+                                    <option value="<?= $pml['id'] ?>" <?= $user['pml_id'] == $pml['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($pml['nama_lengkap']) ?> (<?= htmlspecialchars($pml['username']) ?>)
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                            <div class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>PCL harus memilih PML yang akan mengawasi
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -417,6 +472,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </label>
                             <input type="password" name="password" class="form-control" 
                                    placeholder="Masukkan password baru">
+                            <div class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>Minimal 6 karakter
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -436,6 +494,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role-select');
+    const pmlField = document.getElementById('pml-field');
+    const pmlSelect = document.getElementById('pml-select');
+    
+    // Handle role change
+    roleSelect.addEventListener('change', function() {
+        const selectedRole = this.value;
+        
+        if (selectedRole === 'pcl') {
+            // Show PML field for PCL
+            pmlField.style.display = 'block';
+            pmlField.classList.add('show');
+            pmlSelect.setAttribute('required', 'required');
+        } else {
+            // Hide PML field for PML and Supervisor
+            pmlField.style.display = 'none';
+            pmlField.classList.remove('show');
+            pmlSelect.removeAttribute('required');
+            pmlSelect.value = ''; // Clear selection
+        }
+    });
+    
+    // Initialize on page load
+    if (roleSelect.value === 'pcl') {
+        pmlField.style.display = 'block';
+        pmlField.classList.add('show');
+        pmlSelect.setAttribute('required', 'required');
+    }
+});
+</script>
 
 </body>
 </html>
