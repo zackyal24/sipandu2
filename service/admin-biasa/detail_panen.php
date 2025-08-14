@@ -265,6 +265,7 @@ if (!$data) {
                     <tr><th>Kecamatan</th><td><?= htmlspecialchars($data['kecamatan']); ?></td></tr>
                     <tr><th>Tanggal Panen</th><td><?= htmlspecialchars($data['tanggal_panen']); ?></td></tr>
                     <tr><th>Subround</th><td><?= htmlspecialchars($data['subround']); ?></td></tr>
+                    <tr><th>Nomor Segmen</th><td><?= htmlspecialchars($data['nomor_segmen']); ?></td></tr>
                     <tr><th>Nomor Sub Segmen</th><td><?= htmlspecialchars($data['nomor_sub_segmen']); ?></td></tr>
                     <tr><th>Status</th>
                         <td>
