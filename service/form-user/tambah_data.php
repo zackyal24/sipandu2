@@ -280,7 +280,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pcl') {
   <div class="container">
     <a class="navbar-brand" href="#">
       <img src="../../assets/logo.png" alt="Logo" class="me-2">
-      UBINANKU
+      SIPANTAU
     </a>
     <div class="d-flex align-items-center">
       <div class="dropdown">
@@ -437,7 +437,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pcl') {
 </div>
 
 <footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> UBINANKU
+    &copy; <?= date('Y'); ?> SIPANTAU
 </footer>
 
 <script>

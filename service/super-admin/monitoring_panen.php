@@ -211,7 +211,7 @@ $jumlah_selesai = $selesai_row['jumlah_selesai'];
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="monitoring_panen.php">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            UBINANKU
+            SIPANTAU
         </a>
         
         <!-- Mobile menu button -->
@@ -508,7 +508,7 @@ $jumlah_selesai = $selesai_row['jumlah_selesai'];
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> UBINANKU
+    &copy; <?= date('Y'); ?> SIPANTAU
 </footer>
 
 <!-- Scripts -->

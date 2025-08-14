@@ -195,7 +195,7 @@ $q_user = mysqli_query($conn, "
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="#">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            UBINANKU
+            SIPANTAU
         </a>
         
         <!-- Mobile menu button -->
@@ -501,7 +501,7 @@ $q_user = mysqli_query($conn, "
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> UBINANKU
+    &copy; <?= date('Y'); ?> SIPANTAU
 </footer>
 
 <!-- Bootstrap JS -->

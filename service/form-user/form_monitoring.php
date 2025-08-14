@@ -329,7 +329,7 @@ $noteRevisi = $data['note_revisi'] ?? '';
   <div class="container">
     <a class="navbar-brand" href="#">
       <img src="../../assets/logo.png" alt="Logo" class="me-2">
-      UBINANKU
+      SIPANTAU
     </a>
     <div class="d-flex align-items-center">
       <div class="dropdown">
@@ -500,7 +500,7 @@ $noteRevisi = $data['note_revisi'] ?? '';
 </div>
 
 <footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> UBINANKU
+    &copy; <?= date('Y'); ?> SIPANTAU
 </footer>
 
 <!-- Bootstrap JS -->

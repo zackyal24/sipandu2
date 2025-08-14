@@ -364,7 +364,7 @@ $result = mysqli_stmt_get_result($stmt);
   <div class="container">
     <a class="navbar-brand" href="#">
       <img src="../../assets/logo.png" alt="Logo" class="me-2">
-      UBINANKU
+      SIPANTAU
     </a>
     <div class="d-flex align-items-center">
       <div class="dropdown">
@@ -482,7 +482,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> UBINANKU
+    &copy; <?= date('Y'); ?> SIPANTAU
 </footer>
 
 <!-- Scripts -->

@@ -161,7 +161,7 @@ $numeric_stats = mysqli_fetch_assoc($numeric_query);
     <br>
     <div style="font-size: 12px; color: #666;">
         <strong>Keterangan:</strong><br>
-        - Data ini diekspor dari sistem UBINANKU Kabupaten Bekasi<br>
+        - Data ini diekspor dari sistem SIPANTAU Kabupaten Bekasi<br>
         - Export dilakukan pada: <?= date('d/m/Y H:i:s'); ?><br>
         - Total data yang diekspor: <?= number_format($stats['total_data']); ?> records<br>
         - GKP = Gabah Kering Panen, GKG = Gabah Kering Giling, ku = kuintal

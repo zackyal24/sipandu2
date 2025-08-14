@@ -229,7 +229,7 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="super_admin.php">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            UBINANKU
+            SIPANTAU
         </a>
         
         <!-- Mobile menu button -->
@@ -495,7 +495,7 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
 </div>
 
 <footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> UBINANKU
+    &copy; <?= date('Y'); ?> SIPANTAU
 </footer>
 
 <!-- Scripts -->

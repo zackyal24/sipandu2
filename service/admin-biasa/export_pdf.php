@@ -1,6 +1,4 @@
 <?php
-// filepath: c:\xampp\htdocs\ubinanku-kab-bekasi\service\admin-biasa\export_pdf_simple.php
-
 session_start();
 if (!isset($_SESSION['pml'])) {
     header("Location: login.php");

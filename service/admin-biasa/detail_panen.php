@@ -194,7 +194,7 @@ if (!$data) {
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
             <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            UBINANKU
+            SIPANTAU
         </a>
         <div class="d-flex align-items-center">
             <div class="dropdown">
@@ -358,7 +358,7 @@ if (!$data) {
 
 <!-- Footer -->
 <footer class="text-center mt-5 mb-3">
-    <p class="text-muted">&copy; <?= date('Y'); ?>UBINANKU</p>
+    <p class="text-muted">&copy; <?= date('Y'); ?>SIPANTAU</p>
 </footer>
 
 <!-- Modal Revisi -->

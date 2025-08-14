@@ -12,17 +12,13 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'pml') {
 $pml_username = $_SESSION['username'];
 $pml_query = mysqli_query($conn, "SELECT id FROM users WHERE username = '$pml_username' AND role = 'pml'");
 $pml_data = mysqli_fetch_assoc($pml_query);
-$pml_id = $pml_data['id'];
 
-// Query export dengan filter PML
-$query = "
-    SELECT mdp.* 
-    FROM monitoring_data_panen mdp
-    INNER JOIN users pcl ON mdp.user_id = pcl.id
-    WHERE pcl.pml_id = '$pml_id' AND pcl.role = 'pcl'
-    ORDER BY mdp.created_at DESC
-";
-$data = mysqli_query($conn, $query);
+if (!$pml_data) {
+    echo "Error: User PML tidak ditemukan";
+    exit;
+}
+
+$pml_id = $pml_data['id'];
 
 // Query untuk mengambil data HANYA dari PCL yang diawasi PML ini
 $data = mysqli_query($conn, "
@@ -242,7 +238,7 @@ $jumlah_selesai = $status_count['selesai'];
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="#">
       <img src="../../assets/logo.png" alt="Logo" width="40" class="me-2">
-      UBINANKU
+      SIPANTAU
     </a>
     <div class="d-flex align-items-center">
       <div class="dropdown">
