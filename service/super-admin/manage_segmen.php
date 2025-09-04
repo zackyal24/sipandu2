@@ -225,19 +225,7 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
 </head>
 <body>
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="super_admin.php">
-            <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            SIPANTAU
-        </a>
-        
-        <!-- Mobile menu button -->
-        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
+<?php include 'navbar_super_admin.php'; ?>
 
 <div class="container-fluid" style="padding-top:70px;">
     <div class="row">
@@ -494,9 +482,8 @@ $segmen = mysqli_query($conn, "SELECT * FROM segmen ORDER BY nomor_segmen ASC");
     </div>
 </div>
 
-<footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> SIPANTAU
-</footer>
+<!-- footer -->
+<?php include 'footer.php'; ?>
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

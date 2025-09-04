@@ -190,34 +190,7 @@ if (!$data) {
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="dashboard.php">
-            <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            SIPANTAU
-        </a>
-        <div class="d-flex align-items-center">
-            <div class="dropdown">
-                <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <?= htmlspecialchars($_SESSION['username']); ?>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li>
-                        <a class="dropdown-item" href="../../auth/ganti_password.php">
-                            <i class="bi bi-key me-2"></i>Ganti Password
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item text-danger" href="../../auth/logout.php">
-                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</nav>
+<?php include 'navbar_pml.php'; ?>
 
 <!-- Main Content -->
 <div class="container my-4" style="padding-top: 1rem;">
@@ -357,9 +330,7 @@ if (!$data) {
 </div>
 
 <!-- Footer -->
-<footer class="text-center mt-5 mb-3">
-    <p class="text-muted">&copy; <?= date('Y'); ?>SIPANTAU</p>
-</footer>
+<?php include 'footer_pml.php'; ?>
 
 <!-- Modal Revisi -->
 <div class="modal fade" id="revisiModal" tabindex="-1" aria-labelledby="revisiModalLabel" aria-hidden="true">

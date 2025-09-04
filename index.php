@@ -67,7 +67,7 @@
   <div class="d-flex align-items-center justify-content-center vh-100">
     <div class="main-box text-center">
       <img class="d-block mx-auto" src="assets/img/logo.png" alt="Logo">
-      <h4 class="text-center mb-4">LOGIN SIPANTAU</h4>
+      <h4 class="text-center mb-4">LOGIN SIPANDU</h4>
       
       <!-- Alert untuk notifikasi -->
       <?php if (isset($_GET['message'])): ?>

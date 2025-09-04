@@ -273,19 +273,7 @@ if (!$data) {
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="monitoring_panen.php">
-            <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            SIPANTAU
-        </a>
-        
-        <!-- Mobile menu button -->
-        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
+<?php include 'navbar_super_admin.php'; ?>
 
 <!-- Main Layout -->
 <div class="container-fluid" style="padding-top:70px;">
@@ -594,9 +582,7 @@ if (!$data) {
 </div>
 
 <!-- Footer -->
-<footer class="text-center mt-5 mb-4">
-    &copy; <?= date('Y'); ?> UBINANKU
-</footer>
+<?php include 'footer.php'; ?>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>

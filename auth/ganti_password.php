@@ -245,7 +245,7 @@ if (isset($_SESSION['role'])) {
         <div class="card-body">
             <div class="logo-container">
                 <img src="../assets/logo.png" alt="Logo" class="logo">
-                <div class="app-name">UBINANKU</div>
+                <div class="app-name">SIPANDU</div>
                 <div class="app-subtitle">Ganti Password</div>
             </div>
             

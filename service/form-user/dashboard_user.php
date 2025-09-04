@@ -47,14 +47,18 @@ $result = mysqli_stmt_get_result($stmt);
     }
 
     .navbar-brand {
-      font-weight: bold;
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-    }
+        font-weight: bold;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-    .navbar-brand img {
-      width: clamp(30px, 5vw, 40px);
-      height: auto;
-    }
+      .navbar-brand img {
+        width: 40px;
+        height: auto;
+        margin-right: 8px;
+      }
 
     .btn-custom {
       border-radius: 8px;
@@ -119,7 +123,6 @@ $result = mysqli_stmt_get_result($stmt);
       color: #2c3e50;
     }
 
-    /* STYLE UNTUK REVISI ALERT */
     .revisi-alert {
       background-color: #fff3cd;
       border: 1px solid #ffeaa7;
@@ -360,34 +363,7 @@ $result = mysqli_stmt_get_result($stmt);
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-  <div class="container">
-    <a class="navbar-brand" href="#">
-      <img src="../../assets/logo.png" alt="Logo" class="me-2">
-      SIPANTAU
-    </a>
-    <div class="d-flex align-items-center">
-      <div class="dropdown">
-        <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <?= htmlspecialchars($_SESSION['username']); ?>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-          <li>
-            <a class="dropdown-item" href="../../auth/ganti_password.php">
-              <i class="bi bi-key me-2"></i>Ganti Password
-            </a>
-          </li>
-          <li><hr class="dropdown-divider"></li>
-          <li>
-            <a class="dropdown-item text-danger" href="../../auth/logout.php">
-              <i class="bi bi-box-arrow-right me-2"></i>Logout
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</nav>
+<?php include 'navbar_user.php'; ?>
 
 <!-- Main Content -->
 <div class="container-fluid" style="padding-top: 1.5rem;">
@@ -481,9 +457,7 @@ $result = mysqli_stmt_get_result($stmt);
 </div>
 
 <!-- Footer -->
-<footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> SIPANTAU
-</footer>
+<?php include 'footer_user.php'; ?>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

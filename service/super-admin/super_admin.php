@@ -191,19 +191,7 @@ $q_user = mysqli_query($conn, "
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="../../assets/logo.png" alt="Logo BPS" height="40" class="me-2">
-            SIPANTAU
-        </a>
-        
-        <!-- Mobile menu button -->
-        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
+<?php include 'navbar_super_admin.php'; ?>
 
 <!-- Layout Wrapper -->
 <div class="container-fluid" style="padding-top:70px;">
@@ -500,9 +488,7 @@ $q_user = mysqli_query($conn, "
 </div>
 
 <!-- Footer -->
-<footer class="text-center mt-5 mb-3">
-    &copy; <?= date('Y'); ?> SIPANTAU
-</footer>
+<?php include 'footer.php'; ?>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
