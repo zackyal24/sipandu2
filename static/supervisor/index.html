@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Supervisor | SIPANDU (Static)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body { background:#f8f9fc; font-family:'Poppins',sans-serif; overflow-x:hidden; }
+    .navbar-brand { font-weight:bold; }
+    .card { border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:.3s; }
+    .card:hover { transform:translateY(-5px); }
+    @media(min-width:992px){ #mainContent{margin-left:240px !important;} .sidebar{width:240px;} }
+    @media(max-width:991.98px){ #mainContent{margin-left:0 !important;} .sidebar{display:none !important;} }
+    footer { margin-top:60px; font-size:14px; color:#888; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="../../assets/img/logo.png" alt="Logo" height="40" class="me-2" /> SIPANDU
+      </a>
+      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="d-flex align-items-center ms-auto">
+        <div class="dropdown">
+          <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">supervisor_demo</a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="../auth/ganti_password.html"><i class="bi bi-key me-2"></i>Ganti Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="../index.html"><i class="bi bi-box-arrow-right me-2"></i>Logout (Demo)</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid" style="padding-top:70px;">
+    <div class="row">
+      <nav class="col-lg-2 d-none d-lg-block sidebar position-fixed bg-white border-end shadow-sm py-4" style="height:100vh; z-index:1030;">
+        <div class="position-sticky">
+          <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-primary text-decoration-none px-3">
+            <span class="fs-5 fw-bold">Supervisor</span>
+          </a>
+          <hr />
+          <ul class="nav nav-pills flex-column mb-auto px-2">
+            <li class="nav-item mb-2"><a href="./index.html" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring.html" class="nav-link"><i class="bi bi-list-task me-2"></i>Monitoring</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring_panen.html" class="nav-link"><i class="bi bi-basket-fill me-2"></i>Data Ubinan</a></li>
+            <li class="nav-item mb-2">
+              <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenu" role="button">
+                <span><i class="bi bi-gear me-2"></i>Manajemen</span>
+                <i class="bi bi-chevron-down"></i>
+              </a>
+              <div class="collapse ps-4" id="manajemenMenu">
+                <ul class="nav flex-column">
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link"><i class="bi bi-123 me-2"></i>Segmen</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <hr />
+          <div class="px-2">
+            <a href="../index.html" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-2"></i>Logout (Demo)</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header bg-primary text-white">
+          <h5 class="offcanvas-title"><i class="bi bi-person-circle me-2"></i>Supervisor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item mb-2"><a href="./index.html" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring.html" class="nav-link"><i class="bi bi-list-task me-2"></i>Monitoring</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring_panen.html" class="nav-link"><i class="bi bi-basket-fill me-2"></i>Data Ubinan</a></li>
+            <li class="nav-item mb-2">
+              <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenuMobile" role="button">
+                <span><i class="bi bi-gear me-2"></i>Manajemen</span>
+                <i class="bi bi-chevron-down"></i>
+              </a>
+              <div class="collapse ps-4" id="manajemenMenuMobile">
+                <ul class="nav flex-column">
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link"><i class="bi bi-123 me-2"></i>Segmen</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <hr />
+          <div>
+            <a href="../index.html" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-2"></i>Logout (Demo)</a>
+          </div>
+        </div>
+      </div>
+
+      <main id="mainContent" class="col-12 col-lg-10 px-2 px-md-4" style="margin-left:240px;">
+        <div class="d-flex justify-content-between align-items-center mb-3 pt-3">
+          <h2 class="mb-0">Dashboard Monitoring Ubinan</h2>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <h3 class="text-success fw-bold mb-1">128</h3>
+                  <p class="mb-0 text-muted">Total Panen Ubinan</p>
+                </div>
+                <i class="bi bi-basket-fill text-success fs-2"></i>
+              </div>
+              <div class="card-footer bg-success text-white fw-semibold p-2">Data hasil panen masuk</div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <h3 class="text-warning fw-bold mb-1">6,42 Kg</h3>
+                  <p class="mb-0 text-muted">Rata-rata Ubinan</p>
+                </div>
+                <i class="bi bi-bar-chart-line-fill text-warning fs-2"></i>
+              </div>
+              <div class="card-footer bg-warning text-white fw-semibold p-2">Per hitungan luas ubinan</div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <h3 class="text-primary fw-bold mb-1">24</h3>
+                  <p class="mb-0 text-muted">Total User</p>
+                </div>
+                <i class="bi bi-people-fill text-primary fs-2"></i>
+              </div>
+              <div class="card-footer bg-primary text-white fw-semibold p-2">Jumlah pengguna sistem</div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+              <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <h3 class="text-danger fw-bold mb-1">7</h3>
+                  <p class="mb-0 text-muted">Belum Diubin</p>
+                </div>
+                <i class="bi bi-x-circle-fill text-danger fs-2"></i>
+              </div>
+              <div class="card-footer bg-danger text-white fw-semibold p-2">Lokasi belum ada data</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <div class="row g-3">
+            <div class="col-12 col-xl-8">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center p-3">
+                  <h5 class="mb-0">Ubinan Terbaru</h5>
+                  <a href="./monitoring_panen.html" class="btn btn-outline-light btn-sm">Lihat Semua</a>
+                </div>
+                <div class="card-body p-2">
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                      <thead class="table-light">
+                        <tr class="text-center">
+                          <th style="width: 8%;">#</th>
+                          <th style="width: 30%;">Nama Petani</th>
+                          <th class="d-none d-lg-table-cell" style="width: 30%;">Lokasi</th>
+                          <th style="width: 15%;">Status</th>
+                          <th style="width: 17%;">Deadline</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="text-center">1</td>
+                          <td class="text-center">Sutarman</td>
+                          <td class="text-center d-none d-lg-table-cell">Sukamaju, Cikarang</td>
+                          <td class="text-center"><span class="badge bg-success">selesai</span></td>
+                          <td class="text-center text-nowrap">2025-12-01</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+                  <h5 class="mb-0">Belum Isi Form Ubinan</h5>
+                </div>
+                <div class="card-body p-2">
+                  <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th class="text-center" style="width: 10%;">#</th>
+                          <th class="text-center" style="width: 35%;">Nama</th>
+                          <th class="text-center d-none d-md-table-cell" style="width: 25%;">SubSegmen</th>
+                          <th class="text-center" style="width: 30%;">Tanggal Ubinan</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="tr-deadline-segera">
+                          <td class="text-center">1</td>
+                          <td class="text-center">Budi Santoso</td>
+                          <td class="text-center d-none d-md-table-cell">SSG-013</td>
+                          <td class="text-center text-nowrap">2025-12-24</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="text-center small my-4">&copy; <span id="year"></span> SIPANDU - BPS Kabupaten Bekasi</footer>
+      </main>
+    </div>
+  </div>
+
+  <style>
+    .tr-deadline-lewat td { background-color: rgb(255, 146, 142) !important; }
+    .tr-deadline-segera td { background-color: rgb(247, 237, 108) !important; }
+    .tr-deadline-aman td { background-color: rgb(179, 252, 157) !important; }
+  </style>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

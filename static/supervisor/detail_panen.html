@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Panen | SIPANDU (Static)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body { background:#f8f9fc; font-family:'Poppins',sans-serif; }
+    img.preview { width:300px; height:300px; object-fit:cover; border:1px solid #ddd; border-radius:8px; padding:5px; margin:10px auto; display:block; }
+    @media(max-width:768px){ img.preview{ width:150px; height:150px; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="./monitoring_panen.html"><img src="../../assets/img/logo.png" alt="Logo" height="40" class="me-2" /> SIPANDU</a>
+    </div>
+  </nav>
+
+  <div class="container my-4" style="padding-top: 1rem;">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <a href="javascript:history.back()" class="btn btn-outline-primary btn-sm mb-3"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
+        <div class="d-flex justify-content-end mb-3">
+          <button id="exportPDF" class="btn btn-outline-secondary btn-sm"><i class="bi bi-file-earmark-pdf me-2"></i>Export PDF</button>
+        </div>
+        <div id="detail-panen">
+          <h3 class="fw-bold mb-4">Data Ubinan</h3>
+          <table class="table table-bordered">
+            <tr><th style="width:30%;">Nama Petani</th><td>Sutarman</td></tr>
+            <tr><th>Desa</th><td>Sukamaju</td></tr>
+            <tr><th>Kecamatan</th><td>Cikarang</td></tr>
+            <tr><th>Tanggal Panen</th><td>2025-12-01</td></tr>
+            <tr><th>Subround</th><td>2</td></tr>
+            <tr><th>Nomor Segmen</th><td>SG-101</td></tr>
+            <tr><th>Nomor Sub Segmen</th><td>SSG-013</td></tr>
+            <tr><th>Status</th><td><span class="badge bg-success">Selesai</span></td></tr>
+            <tr><th>Berat Ubinan</th><td><span class="fw-bold text-primary">6.10 kg</span></td></tr>
+            <tr><th>Estimasi Gabah Kering Panen</th><td><span class="text-muted">Belum terdata</span></td></tr>
+            <tr><th>Estimasi Gabah Kering Giling</th><td><span class="text-muted">Belum terdata</span></td></tr>
+            <tr><th>Estimasi Produksi Beras</th><td><span class="text-muted">Belum terdata</span></td></tr>
+            <tr><th>Foto Serah Terima</th><td><span class="text-muted">Belum terdata</span></td></tr>
+            <tr><th>Foto Bukti Plot Ubinan</th><td><span class="text-muted">Belum terdata</span></td></tr>
+            <tr><th>Foto Berat Timbangan</th><td><span class="text-muted">Belum terdata</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('exportPDF').addEventListener('click', function(){
+      html2pdf().from(document.getElementById('detail-panen')).set({margin:0.5, filename:'detail-panen.pdf'}).save();
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
