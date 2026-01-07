@@ -30,7 +30,7 @@
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="../auth/ganti_password.html"><i class="bi bi-key me-2"></i>Ganti Password</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="../index.html"><i class="bi bi-box-arrow-right me-2"></i>Logout (Demo)</a></li>
+            <li><a class="dropdown-item text-danger" href="javascript:logout('../index.html')"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
           </ul>
         </div>
       </div>
@@ -139,6 +139,17 @@
   </div>
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/auth.js"></script>
+  <script>
+    try {
+      requireRole('pml', '../index.html');
+      const u = getSipanduUser();
+      if (u) {
+        const el = document.querySelector('.dropdown-toggle');
+        if (el) el.textContent = u.name || u.username;
+      }
+    } catch (e) { console.warn('Auth script error', e); }
+  </script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>

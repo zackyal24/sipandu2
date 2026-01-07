@@ -14,6 +14,10 @@
   </style>
 </head>
 <body>
+  <script src="/assets/js/auth.js"></script>
+  <script>
+    try { requireRole('pcl', '/index.html'); } catch(e){}
+  </script>
   <nav class="navbar navbar-light bg-white border-bottom sticky-top">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center" href="./dashboard_user.html">

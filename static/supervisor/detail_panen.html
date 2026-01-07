@@ -51,7 +51,9 @@
     </div>
   </div>
 
+  <script src="/assets/js/auth.js"></script>
   <script>
+    try { requireRole('supervisor', '/index.html'); } catch(e){}
     document.getElementById('exportPDF').addEventListener('click', function(){
       html2pdf().from(document.getElementById('detail-panen')).set({margin:0.5, filename:'detail-panen.pdf'}).save();
     });

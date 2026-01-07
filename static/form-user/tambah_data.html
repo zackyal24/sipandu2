@@ -16,6 +16,10 @@
   </style>
 </head>
 <body>
+  <script src="/assets/js/auth.js"></script>
+  <script>
+    try { requireRole('pcl', '/index.html'); } catch(e){}
+  </script>
   <nav class="navbar navbar-dark bg-primary shadow-sm">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="./dashboard_user.html"><img src="../../assets/img/logo.png" alt="Logo" class="me-2"> SIPANDU</a>
