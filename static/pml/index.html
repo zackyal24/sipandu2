@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard PML | SIPANDU (Static)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    body { background:#f8f9fc; font-family:'Poppins',sans-serif; overflow-x:hidden; }
+    .navbar-brand { font-weight:bold; font-size:20px; }
+    .card { border-radius:12px; }
+    .btn-custom { border-radius:8px; transition:.3s; }
+    .btn-custom:hover { transform:scale(1.05); }
+    .table-row-link { cursor:pointer; }
+    footer { margin-top:60px; font-size:14px; color:#888; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="../../assets/img/logo.png" alt="Logo" width="40" class="me-2"> SIPANDU
+      </a>
+      <div class="d-flex align-items-center">
+        <div class="dropdown">
+          <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">pml_demo</a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="../auth/ganti_password.html"><i class="bi bi-key me-2"></i>Ganti Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="javascript:logout('../index.html')"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5" style="padding-top: 70px;">
+    <h2 class="mb-4">Data Ubinan</h2>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 text-center h-100"><div class="card-body">
+          <div class="text-muted mb-1"><i class="bi bi-calculator me-1"></i>Rata-rata</div>
+          <div class="fw-bold text-primary" id="avgKu">-</div>
+          <div class="small text-muted">kg</div>
+        </div></div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 text-center h-100"><div class="card-body">
+          <div class="text-muted mb-1"><i class="bi bi-graph-up me-1"></i>Median</div>
+          <div class="fw-bold text-info" id="medianKu">-</div>
+          <div class="small text-muted">kg</div>
+        </div></div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 text-center h-100"><div class="card-body">
+          <div class="text-muted mb-1"><i class="bi bi-bar-chart me-1"></i>Modus</div>
+          <div class="fw-bold text-warning" id="modusKu">-</div>
+          <div class="small text-muted">kg</div>
+        </div></div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 text-center h-100"><div class="card-body">
+          <div class="text-muted mb-1"><i class="bi bi-check-circle me-1"></i>Selesai</div>
+          <div class="fw-bold text-success" id="selesaiCount">0</div>
+          <div class="small text-muted">data selesai</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end align-items-center mt-4 mb-3">
+      <button id="exportExcelBtn" class="btn btn-success btn-sm btn-custom"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-4">Data Monitoring Ubinan</h5>
+        <div class="row mb-3">
+          <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <select id="statusFilter" class="form-select form-select-sm">
+              <option value="">Semua Status</option>
+              <option value="selesai">Selesai</option>
+              <option value="belum">Belum</option>
+              <option value="sudah">Sudah</option>
+              <option value="revisi">Revisi</option>
+              <option value="tidak bisa">Tidak Bisa</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table id="tabelPanen" class="table table-bordered align-middle table-hover">
+            <thead class="table-light text-center">
+              <tr>
+                <th style="width:40px;">No</th>
+                <th>Tanggal Panen</th>
+                <th>Nama Petani</th>
+                <th class="d-none d-md-table-cell">PCL</th>
+                <th class="d-none d-md-table-cell">Lokasi</th>
+                <th>Berat Plot</th>
+                <th>Status</th>
+                <th style="width:80px;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="ubinanTableBody">
+              <tr><td colspan="8" class="text-center text-muted">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center mt-4 mb-3">&copy; <span id="year"></span> SIPANDU - BPS Kabupaten Bekasi</footer>
+  </div>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:5000/api';
+    try {
+      requireRole('pml', '../index.html');
+      const u = getSipanduUser();
+      if (u) {
+        const el = document.querySelector('.dropdown-toggle');
+        if (el) el.textContent = u.name || u.username;
+      }
+    } catch (e) { console.warn('Auth script error', e); }
+  </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Revisi Modal -->
+  <div class="modal fade" id="revisiModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-journal-arrow-up me-2"></i>Kirim Revisi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2 text-muted" id="revisiModalSubtitle">Berikan catatan revisi untuk data ini.</div>
+          <label class="form-label">Catatan Revisi</label>
+          <textarea id="noteRevisi" class="form-control" rows="4" placeholder="Tulis catatan revisi yang jelas..."></textarea>
+          <div class="form-text">Catatan ini akan muncul pada dashboard PCL.</div>
+          <div class="text-danger small d-none" id="revisiError">Catatan revisi tidak boleh kosong.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-warning" id="submitRevisiBtn"><i class="bi bi-send me-1"></i>Kirim Revisi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="revisiToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          Revisi berhasil dikirim ke PCL.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+  <script>
+    let table;
+    let allData = [];
+    let selectedIdForRevisi = null;
+    let revisiModalInstance = null;
+
+    // Load data dari backend
+    async function loadData() {
+      try {
+        // cache buster untuk menghindari cache
+        const response = await fetchWithAuth(API_BASE + '/ubinan?ts=' + Date.now(), { cache: 'no-store' });
+        
+        if (!response.ok || !response.data || !response.data.success) {
+          $('#ubinanTableBody').html('<tr><td colspan="8" class="text-center text-muted">Gagal memuat data.</td></tr>');
+          return;
+        }
+
+        allData = response.data.data || [];
+        
+        if (allData.length === 0) {
+          $('#ubinanTableBody').html('<tr><td colspan="8" class="text-center text-muted">Belum ada data ubinan.</td></tr>');
+          updateStats([]);
+          return;
+        }
+
+        renderTable(allData);
+        updateStats(allData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        $('#ubinanTableBody').html('<tr><td colspan="8" class="text-center text-danger">Terjadi kesalahan.</td></tr>');
+      }
+    }
+
+    // Update statistik
+    function updateStats(data) {
+      const selesai = data.filter(d => (d.status || '').toLowerCase() === 'selesai').length;
+      
+      // Calculate from data with berat_plot
+      const completedData = data.filter(d => d.berat_plot && d.berat_plot > 0);
+      const beratValues = completedData.map(d => parseFloat(d.berat_plot)).sort((a, b) => a - b);
+      
+      // Rata-rata (Mean)
+      const avgBerat = beratValues.length > 0 
+        ? (beratValues.reduce((sum, val) => sum + val, 0) / beratValues.length).toFixed(2)
+        : '-';
+      
+      // Median
+      let medianBerat = '-';
+      if (beratValues.length > 0) {
+        const mid = Math.floor(beratValues.length / 2);
+        medianBerat = beratValues.length % 2 === 0
+          ? ((beratValues[mid - 1] + beratValues[mid]) / 2).toFixed(2)
+          : beratValues[mid].toFixed(2);
+      }
+      
+      // Modus (Mode)
+      let modusBerat = '-';
+      if (beratValues.length > 0) {
+        const frequency = {};
+        let maxFreq = 0;
+        let mode = null;
+        
+        beratValues.forEach(val => {
+          const roundedVal = val.toFixed(2);
+          frequency[roundedVal] = (frequency[roundedVal] || 0) + 1;
+          if (frequency[roundedVal] > maxFreq) {
+            maxFreq = frequency[roundedVal];
+            mode = roundedVal;
+          }
+        });
+        
+        modusBerat = maxFreq > 1 ? mode : '-';
+      }
+
+      $('#avgKu').text(avgBerat);
+      $('#medianKu').text(medianBerat);
+      $('#modusKu').text(modusBerat);
+      $('#selesaiCount').text(selesai);
+    }
+
+    // Render table
+    function renderTable(data) {
+      const tbody = $('#ubinanTableBody');
+      tbody.empty();
+
+      data.forEach((item, index) => {
+        const tanggal = new Date(item.tanggal_panen).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        const lokasi = [item.desa, item.kecamatan].filter(Boolean).join(', ');
+        const statusVal = (item.status || '').toLowerCase();
+        const beratPlot = item.berat_plot ? parseFloat(item.berat_plot).toFixed(2) : '-';
+        const pclName = item.pcl_name || 'N/A';
+        
+        let statusBadge = '<span class="badge bg-secondary">Belum</span>';
+        let revisiBtn = `<button type="button" class="btn btn-sm btn-outline-secondary revisiButton" disabled><i class="bi bi-journal-arrow-up"></i></button>`;
+
+        if (statusVal === 'selesai') {
+          statusBadge = '<span class="badge bg-success">Selesai</span>';
+          revisiBtn = `<button type="button" class="btn btn-sm btn-warning revisiButton" data-id="${item.id}" data-nama="${item.nama_petani}"><i class="bi bi-journal-arrow-up"></i></button>`;
+        } else if (statusVal === 'sudah') {
+          statusBadge = '<span class="badge bg-primary">Sudah</span>';
+        } else if (statusVal === 'revisi') {
+          statusBadge = '<span class="badge bg-warning text-dark">Revisi</span>';
+        } else if (statusVal === 'tidak bisa') {
+          statusBadge = '<span class="badge bg-danger">Tidak Bisa</span>';
+        }
+
+        const row = `
+          <tr data-status="${statusVal}" data-id="${item.id}" class="table-row-link" style="cursor:pointer;">
+            <td class="text-center">${index + 1}</td>
+            <td class="text-center">${tanggal}</td>
+            <td>${item.nama_petani || '-'}</td>
+            <td class="d-none d-md-table-cell"><small>${pclName}</small></td>
+            <td class="d-none d-md-table-cell"><small>${lokasi}</small></td>
+            <td class="text-center fw-bold">${beratPlot}</td>
+            <td class="text-center">${statusBadge}</td>
+            <td class="text-center">${revisiBtn}</td>
+          </tr>
+        `;
+        tbody.append(row);
+      });
+
+      // Re-initialize DataTable if needed
+      if (table) {
+        table.destroy();
+      }
+      
+      table = $('#tabelPanen').DataTable({
+        responsive: true,
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json', emptyTable: 'Belum ada data panen.' },
+        pageLength: 10,
+        columnDefs: [{ targets: 0, searchable: false, orderable: false }, { targets: -1, orderable: false }],
+        order: [[1, 'desc']]
+      });
+
+      // Renumber first column on each draw (respects search/filter + paging)
+      table.on('draw.dt', function () {
+        const info = table.page.info();
+        table
+          .column(0, { search: 'applied', order: 'applied', page: 'current' })
+          .nodes()
+          .each(function (cell, i) {
+            cell.innerHTML = i + 1 + info.start;
+          });
+      }).draw(false);
+
+      // Apply current filter again after re-render
+      applyStatusFilter();
+    }
+
+    function applyStatusFilter() {
+      const filterValue = (document.getElementById('statusFilter')?.value || '').toLowerCase();
+      if (!table) return;
+      if (!filterValue) {
+        table.column(6).search('').draw();
+      } else {
+        table.column(6).search(filterValue, false, false).draw();
+      }
+    }
+
+    // Handle revisi button click
+    $(document).on('click', '.revisiButton', async function(e) {
+      e.stopPropagation();
+      const btn = $(this);
+      
+      if (btn.prop('disabled')) return;
+      
+      const id = btn.data('id');
+      const nama = btn.data('nama');
+
+      selectedIdForRevisi = id;
+      document.getElementById('noteRevisi').value = '';
+      document.getElementById('revisiError').classList.add('d-none');
+      document.getElementById('revisiModalSubtitle').textContent = `Berikan catatan revisi untuk data "${nama}".`;
+      if (!revisiModalInstance) {
+        revisiModalInstance = new bootstrap.Modal(document.getElementById('revisiModal'));
+      }
+      revisiModalInstance.show();
+    });
+
+    // Submit revisi from modal
+    document.getElementById('submitRevisiBtn').addEventListener('click', async function() {
+      const note = document.getElementById('noteRevisi').value.trim();
+      if (!note) {
+        document.getElementById('revisiError').classList.remove('d-none');
+        return;
+      }
+      document.getElementById('revisiError').classList.add('d-none');
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Mengirim...';
+
+      try {
+        const token = localStorage.getItem('sipandu_token');
+        const response = await fetch(`${API_BASE}/ubinan/${selectedIdForRevisi}/revisi`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ note_revisi: note })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+          // Optimistic UI: update entry in allData
+          const idx = allData.findIndex(d => String(d.id) === String(selectedIdForRevisi));
+          if (idx !== -1) {
+            allData[idx].status = 'revisi';
+            allData[idx].note_revisi = note;
+            allData[idx].revised_at = new Date().toISOString();
+          }
+          // Update row in place to avoid full redraw flicker
+          const rowEl = document.querySelector(`#tabelPanen tbody tr[data-id="${selectedIdForRevisi}"]`);
+          if (rowEl) {
+            rowEl.setAttribute('data-status', 'revisi');
+            const statusCell = rowEl.querySelector('td:nth-child(7)');
+            const actionCell = rowEl.querySelector('td:nth-child(8)');
+            if (statusCell) statusCell.innerHTML = '<span class="badge bg-warning text-dark">Revisi</span>';
+            if (actionCell) actionCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-secondary revisiButton" disabled><i class="bi bi-journal-arrow-up"></i></button>';
+            if (table) { table.row(rowEl).invalidate().draw(false); }
+          } else {
+            // Fallback to full render if row not found
+            renderTable(allData);
+          }
+          // Update stats and keep current filter
+          updateStats(allData);
+          applyStatusFilter();
+          // Show toast
+          const toastEl = document.getElementById('revisiToast');
+          if (toastEl) new bootstrap.Toast(toastEl, { delay: 2000 }).show();
+          revisiModalInstance?.hide();
+        } else {
+          alert('Gagal memberi revisi: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        alert('Terjadi kesalahan: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send me-1"></i>Kirim Revisi';
+      }
+    });
+
+    // Export to Excel
+    $('#exportExcelBtn').on('click', function() {
+      if (!allData || allData.length === 0) {
+        alert('Tidak ada data untuk diekspor');
+        return;
+      }
+
+      // Format data untuk Excel
+      const exportData = allData.map((row, idx) => ({
+        'No': idx + 1,
+        'Tanggal Panen': new Date(row.tanggal_panen).toLocaleDateString('id-ID'),
+        'Nama Petani': row.nama_petani || '-',
+        'Desa': row.desa || '-',
+        'Kecamatan': row.kecamatan || '-',
+        'Subround': row.subround || '-',
+        'Nomor Segmen': row.nomor_segmen || '-',
+        'Sub Segmen': row.nomor_sub_segmen || '-',
+        'Berat Plot (kg)': row.berat_plot ? parseFloat(row.berat_plot).toFixed(2) : '-',
+        'GKP (ku/ha)': row.gkp ? parseFloat(row.gkp).toFixed(4) : '-',
+        'GKG (ku/ha)': row.gkg ? parseFloat(row.gkg).toFixed(4) : '-',
+        'Produksi Beras (ku)': row.ku ? parseFloat(row.ku).toFixed(4) : '-',
+        'Status': row.status || '-'
+      }));
+
+      // Create workbook
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Data Panen');
+
+      // Set column widths
+      ws['!cols'] = [
+        { wch: 5 },   // No
+        { wch: 15 },  // Tanggal Panen
+        { wch: 20 },  // Nama Petani
+        { wch: 15 },  // Desa
+        { wch: 15 },  // Kecamatan
+        { wch: 10 },  // Subround
+        { wch: 12 },  // Nomor Segmen
+        { wch: 12 },  // Sub Segmen
+        { wch: 15 },  // Berat Plot
+        { wch: 14 },  // GKP
+        { wch: 14 },  // GKG
+        { wch: 16 },  // Produksi Beras
+        { wch: 12 }   // Status
+      ];
+
+      // Download
+      const timestamp = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `Data_Panen_${timestamp}.xlsx`);
+    });
+
+    // Status filter
+    $('#statusFilter').on('change', function() {
+      applyStatusFilter();
+    });
+
+    // Row click handler untuk ke detail
+    $(document).on('click', '.table-row-link', function(e) {
+      // Jangan redirect jika klik tombol revisi
+      if ($(e.target).closest('.revisiButton').length) return;
+      
+      const id = $(this).data('id');
+      if (id) {
+        window.location.href = `./detail_ubinan.html?id=${id}`;
+      }
+    });
+
+    // Load data on page load
+    $(function() {
+      loadData();
+    });
+  </script>
+</body>
+</html>

@@ -21,11 +21,40 @@
     .revisi-alert { background:#fff3cd; border:1px solid #ffeaa7; border-radius:8px; padding:.75rem; margin-top:.75rem; font-size:.85rem; }
     footer { margin-top:60px; font-size:14px; color:#888; }
   </style>
+  <script>
+    // Check authentication immediately before loading page content
+    (function() {
+      const user = localStorage.getItem('sipandu_user');
+      const token = localStorage.getItem('sipandu_token');
+      
+      // If no user or token, redirect to login
+      if (!user || !token) {
+        localStorage.removeItem('sipandu_user');
+        localStorage.removeItem('sipandu_token');
+        window.location.href = '../../index.html';
+        return;
+      }
+      
+      // Verify user is PCL role
+      try {
+        const userData = JSON.parse(user);
+        if (userData.role !== 'pcl') {
+          localStorage.removeItem('sipandu_user');
+          localStorage.removeItem('sipandu_token');
+          window.location.href = '../../index.html';
+        }
+      } catch (e) {
+        localStorage.removeItem('sipandu_user');
+        localStorage.removeItem('sipandu_token');
+        window.location.href = '../../index.html';
+      }
+    })();
+  </script>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-      <a class="navbar-brand" href="#"><img src="../../assets/img/logo.png" alt="Logo"> SIPANDU</a>
+      <a class="navbar-brand" href="#"><img src="../assets/img/logo.png" alt="Logo"> SIPANDU</a>
       <div class="d-flex align-items-center">
         <div class="dropdown">
           <a href="#" id="userDisplay" class="text-white fw-bold text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">pcl_demo</a>
@@ -97,15 +126,20 @@
           const subround = item.subround ? `Subround ${item.subround}` : '';
           const segmen = (item.nomor_segmen || item.nomor_sub_segmen) ? `${item.nomor_segmen || '-'}${item.nomor_sub_segmen ? ' / ' + item.nomor_sub_segmen : ''}` : '';
           
-          let statusBadge = '<span class="badge bg-secondary"><i class="bi bi-hourglass-split me-1"></i>Belum Selesai</span>';
-          let actionBtn = '<a href="./form_monitoring.html" class="btn btn-primary btn-sm btn-custom"><i class="bi bi-pencil-square me-1"></i>Isi Form</a>';
-          
-          if (item.status && item.status.toLowerCase() === 'selesai') {
-            statusBadge = '<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Selesai</span>';
+          let actionBtn = `<a href="./form_monitoring.html?id=${item.id}" class="btn btn-primary btn-sm btn-custom"><i class="bi bi-pencil-square me-1"></i>Isi Form</a>`;
+
+          const statusVal = (item.status || '').toLowerCase();
+
+          if (statusVal === 'selesai') {
+            actionBtn = '<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Selesai</span>';
+          } else if (statusVal === 'revisi') {
+            actionBtn = `<a href="./form_monitoring.html?id=${item.id}" class="btn btn-warning btn-sm btn-custom"><i class="bi bi-pencil-square me-1"></i>Perbaiki</a>`;
+          } else if (statusVal === 'tidak bisa') {
+            actionBtn = '<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Tidak Bisa</span>';
           } else if (item.note_revisi) {
-            statusBadge = '<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle me-1"></i>Perlu Revisi</span>';
-            actionBtn = '<a href="./form_monitoring.html" class="btn btn-warning btn-sm btn-custom"><i class="bi bi-exclamation-triangle me-1"></i>Perlu Revisi</a>';
+            actionBtn = `<a href="./form_monitoring.html?id=${item.id}" class="btn btn-warning btn-sm btn-custom"><i class="bi bi-exclamation-triangle me-1"></i>Perlu Revisi</a>`;
           }
+          // For 'belum' and 'sudah', keep default "Isi Form" button
 
           let revisiBlock = '';
           if (item.note_revisi) {

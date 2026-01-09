@@ -68,7 +68,7 @@ CREATE TABLE monitoring_data_panen (
     CONSTRAINT fk_monitoring_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
-        ON DELE\TE CASCADE
+        ON DELETE CASCADE
 );
 
 COMMIT;

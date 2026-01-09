@@ -112,7 +112,7 @@
           msg.innerHTML = '<i class="bi bi-check-circle me-2"></i>Login berhasil. Mengalihkan...';
           msg.classList.remove('d-none');
           setTimeout(() => {
-            const redirectMap = { pml: './admin-biasa/index.html', supervisor: './supervisor/index.html', pcl: './form-user/dashboard_user.html' };
+            const redirectMap = { pml: './pml/index.html', supervisor: './supervisor/index.html', pcl: './form-user/dashboard_user.html' };
             window.location.href = redirectMap[user.role] || './form-user/dashboard_user.html';
           }, 700);
           return;

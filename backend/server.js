@@ -6,6 +6,9 @@ const dataRoutes = require('./routes/data');
 
 const app = express();
 
+// Serve uploaded files statically
+app.use('/uploads', express.static('uploads'));
+
 // Middleware
 // Allow CORS from any origin in development so frontend served from file:// or localhost can connect
 if (process.env.NODE_ENV === 'development') {

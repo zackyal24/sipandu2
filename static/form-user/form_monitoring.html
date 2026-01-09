@@ -3,35 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Form Data Ubinan (Static)</title>
+  <title>Form Monitoring Ubinan</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <script src="../js/auth.js"></script>
+  <script>
+    // Check authentication on page load
+    (function() {
+      try {
+        requireRole('pcl', '/index.html');
+      } catch(e) {
+        console.error('Auth error:', e);
+      }
+    })();
+  </script>
   <style>
     body { font-family:'Poppins',sans-serif; background:#f0f4f8; }
+    .navbar-brand { font-weight:bold; font-size:clamp(1rem,2.5vw,1.25rem); display:flex; align-items:center; gap:.5rem; }
+    .navbar-brand img { width:40px; height:auto; }
     .card { max-width: 700px; margin: 24px auto; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
     footer { color:#888; }
+    .form-control:read-only { background-color: #e9ecef; }
   </style>
 </head>
 <body>
-  <script src="/assets/js/auth.js"></script>
-  <script>
-    try { requireRole('pcl', '/index.html'); } catch(e){}
-  </script>
-  <nav class="navbar navbar-light bg-white border-bottom sticky-top">
-    <div class="container-fluid">
-      <a class="navbar-brand d-flex align-items-center" href="./dashboard_user.html">
-        <img src="../../assets/img/logo.png" alt="Logo" height="36" class="me-2" /> SIPANDU
-      </a>
-      <a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="./dashboard_user.html"><img src="../assets/img/logo.png" alt="Logo"> SIPANDU</a>
+      <div class="d-flex align-items-center">
+        <div class="dropdown">
+          <a href="#" id="userDisplay" class="text-white fw-bold text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">pcl_demo</a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="../auth/ganti_password.html"><i class="bi bi-key me-2"></i>Ganti Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="javascript:logout('../index.html')"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </nav>
 
   <div class="container my-3 my-md-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+    </div>
     <div class="card">
       <div class="text-center pb-3">
-        <h1 class="h4 mb-1">Form Data Ubinan</h1>
-        <p class="text-muted mb-0">Versi statis untuk demo tampilan</p>
+        <h1 class="h4 mb-1">Form Monitoring Ubinan</h1>
+        <p class="text-muted mb-0">Update data ubinan setelah panen dilakukan</p>
       </div>
 
       <div id="loadingSpinner" class="text-center mb-3 d-none">
@@ -39,57 +59,66 @@
         <p class="mt-2">Menyimpan data, mohon tunggu...</p>
       </div>
 
-      <form onsubmit="event.preventDefault(); document.getElementById('loadingSpinner').classList.remove('d-none');">
+      <div id="alertContainer"></div>
+
+      <form id="formMonitoring" enctype="multipart/form-data">
         <div class="row g-3">
+          <!-- Read-only fields from planning data -->
           <div class="col-12">
             <label class="form-label"><i class="bi bi-person me-2"></i>Nama Petani</label>
-            <input type="text" class="form-control" placeholder="Nama" required />
+            <input type="text" id="nama_petani" class="form-control" readonly />
           </div>
           <div class="col-12 col-md-6">
             <label class="form-label"><i class="bi bi-house me-2"></i>Desa</label>
-            <input type="text" class="form-control" placeholder="Desa" required />
+            <input type="text" id="desa" class="form-control" readonly />
           </div>
           <div class="col-12 col-md-6">
             <label class="form-label"><i class="bi bi-geo-alt me-2"></i>Kecamatan</label>
-            <input type="text" class="form-control" placeholder="Kecamatan" required />
+            <input type="text" id="kecamatan" class="form-control" readonly />
           </div>
           <div class="col-12 col-md-6">
             <label class="form-label"><i class="bi bi-list-ol me-2"></i>Subround</label>
-            <input type="text" class="form-control" placeholder="Subround" required />
+            <input type="text" id="subround" class="form-control" readonly />
           </div>
           <div class="col-12 col-md-6">
-            <label class="form-label"><i class="bi bi-calendar me-2"></i>Tanggal Ubinan</label>
-            <input type="date" class="form-control" required />
+            <label class="form-label"><i class="bi bi-calendar me-2"></i>Tanggal Panen</label>
+            <input type="date" id="tanggal_panen" class="form-control" readonly />
           </div>
           <div class="col-12 col-md-6">
             <label class="form-label"><i class="bi bi-diagram-3 me-2"></i>Nomor Segmen</label>
-            <input type="text" class="form-control" placeholder="Nomor Segmen" required />
+            <input type="text" id="nomor_segmen" class="form-control" readonly />
           </div>
           <div class="col-12 col-md-6">
             <label class="form-label"><i class="bi bi-grid me-2"></i>Nomor Sub Segmen</label>
-            <input type="text" class="form-control" placeholder="Nomor Sub Segmen" required />
+            <input type="text" id="nomor_sub_segmen" class="form-control" readonly />
           </div>
+
+          <!-- Hidden fields for calculated values -->
+          <input type="hidden" id="gkp" />
+          <input type="hidden" id="gkg" />
+          <input type="hidden" id="ku" />
+
+          <!-- Editable monitoring fields -->
+          <div class="col-12">
+            <label class="form-label"><i class="bi bi-basket me-2"></i>Berat Panen Per Plot (kg) <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" id="berat_plot" class="form-control" placeholder="Contoh: 5.25" required />
+          </div>
+
           <div class="col-12">
             <label class="form-label"><i class="bi bi-camera me-2"></i>Upload Foto Serah Terima</label>
-            <input type="file" id="foto_serah_terima" class="form-control" accept="image/*" />
-            <div id="info_foto_serah_terima" class="file-info small text-muted mt-1" style="display:none;">Info file...</div>
+            <input type="file" id="foto_serah_terima" name="foto_serah_terima" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
             <label class="form-label"><i class="bi bi-grid-3x3-gap me-2"></i>Upload Foto Bukti Plot Ubinan</label>
-            <input type="file" id="foto_bukti_plot_ubinan" class="form-control" accept="image/*" />
-            <div id="info_foto_bukti_plot_ubinan" class="file-info small text-muted mt-1" style="display:none;">Info file...</div>
+            <input type="file" id="foto_bukti_plot_ubinan" name="foto_bukti_plot_ubinan" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
             <label class="form-label"><i class="bi bi-speedometer me-2"></i>Upload Foto Berat Timbangan</label>
-            <input type="file" id="foto_berat_timbangan" class="form-control" accept="image/*" />
-            <div id="info_foto_berat_timbangan" class="file-info small text-muted mt-1" style="display:none;">Info file...</div>
+            <input type="file" id="foto_berat_timbangan" name="foto_berat_timbangan" class="form-control" accept="image/*" />
           </div>
+
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-basket me-2"></i>Berat Panen Per Plot (kg)</label>
-            <input type="number" step="0.01" class="form-control" placeholder="Contoh: 5.25" required />
-          </div>
-          <div class="col-12">
-            <div class="d-grid"><button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Simpan (Demo)</button></div>
+            <div class="d-grid"><button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Simpan Data Monitoring</button></div>
           </div>
         </div>
       </form>
@@ -98,41 +127,184 @@
 
   <footer class="text-center small mb-4">&copy; <span id="year"></span> SIPANDU - BPS Kabupaten Bekasi</footer>
 
+  <script src="../js/api.js"></script>
   <script>
+    const API_BASE = 'http://localhost:5000/api';
     document.getElementById('year').textContent = new Date().getFullYear();
-    function compressImage(file, quality = 0.7, maxWidth = 1024, maxHeight = 768) {
-      return new Promise((resolve) => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        img.onload = function () {
-          let { width, height } = img;
-          if (width > height) { if (width > maxWidth) { height = (height * maxWidth) / width; width = maxWidth; } }
-          else { if (height > maxHeight) { width = (width * maxHeight) / height; height = maxHeight; } }
-          canvas.width = width; canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(resolve, 'image/jpeg', quality);
-        };
-        img.src = URL.createObjectURL(file);
-      });
+
+    let ubinanId = null;
+
+    // Get ID from URL parameter
+    function getUbinanIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
     }
-    function formatFileSize(bytes) { if (bytes===0) return '0 Bytes'; const k=1024, sizes=['Bytes','KB','MB','GB']; const i=Math.floor(Math.log(bytes)/Math.log(k)); return parseFloat((bytes/Math.pow(k,i)).toFixed(2))+' '+sizes[i]; }
-    ['foto_serah_terima','foto_bukti_plot_ubinan','foto_berat_timbangan'].forEach(id=>{
-      const input=document.getElementById(id);
-      input.addEventListener('change', async (e)=>{
-        const file=e.target.files[0]; if(!file) return;
-        const infoDiv=document.getElementById('info_'+id); infoDiv.style.display='block';
-        infoDiv.textContent = `Original: ${formatFileSize(file.size)} - Mengompres...`;
-        try {
-          const blob = await compressImage(file, 0.7, 1024, 768);
-          const compressedFile = new File([blob], file.name, {type:'image/jpeg', lastModified: Date.now()});
-          const dt = new DataTransfer(); dt.items.add(compressedFile); e.target.files = dt.files;
-          infoDiv.textContent = `Original: ${formatFileSize(file.size)} → Dikompres: ${formatFileSize(blob.size)}`;
-        } catch(err) {
-          infoDiv.textContent = `Original: ${formatFileSize(file.size)} - Gagal kompresi`; 
+
+    // Show alert message
+    function showAlert(message, type = 'success') {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+      setTimeout(() => {
+        alertContainer.innerHTML = '';
+      }, 5000);
+    }
+
+    // Calculate GKP, GKG, KU automatically
+    function calculateValues() {
+      const beratPlot = parseFloat(document.getElementById('berat_plot').value) || 0;
+      
+      if (beratPlot > 0) {
+        const gkp = (beratPlot / 100) / (6.25 / 10000);
+        const gkg = gkp * 0.8602;
+        const ku = gkg * 0.6274;
+        
+        document.getElementById('gkp').value = gkp.toFixed(2);
+        document.getElementById('gkg').value = gkg.toFixed(2);
+        document.getElementById('ku').value = ku.toFixed(2);
+      }
+    }
+
+    // Format tanggal ISO ke YYYY-MM-DD untuk input date
+    function formatDateForInput(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Load ubinan data
+    async function loadUbinanData() {
+      ubinanId = getUbinanIdFromUrl();
+      
+      if (!ubinanId) {
+        showAlert('ID Ubinan tidak ditemukan. Silakan akses dari dashboard.', 'danger');
+        setTimeout(() => {
+          window.location.href = './dashboard_user.html';
+        }, 2000);
+        return;
+      }
+
+      try {
+        const response = await fetchWithAuth(`${API_BASE}/ubinan/${ubinanId}`);
+        
+        if (!response.ok) {
+          showAlert(`Gagal memuat data: (Status ${response.status}) ${response.data?.error || 'Unknown error'}`, 'danger');
+          return;
         }
-      });
-    });
+
+        if (response.data && response.data.success && response.data.data) {
+          const data = response.data.data;
+          // Block editing for final statuses
+          const st = (data.status || '').toLowerCase();
+          if (st === 'selesai' || st === 'tidak bisa') {
+            showAlert('Data ini tidak dapat diubah karena status sudah final.', 'info');
+            setTimeout(() => { window.location.href = './dashboard_user.html'; }, 1500);
+            return;
+          }
+          
+          // Fill read-only fields
+          document.getElementById('nama_petani').value = data.nama_petani || '';
+          document.getElementById('desa').value = data.desa || '';
+          document.getElementById('kecamatan').value = data.kecamatan || '';
+          document.getElementById('subround').value = data.subround || '';
+          
+          // Format tanggal ISO ke format input date
+          if (data.tanggal_panen) {
+            document.getElementById('tanggal_panen').value = formatDateForInput(data.tanggal_panen);
+          }
+          
+          document.getElementById('nomor_segmen').value = data.nomor_segmen || '';
+          document.getElementById('nomor_sub_segmen').value = data.nomor_sub_segmen || '';
+          
+          // Fill existing monitoring data if available
+          if (data.berat_plot) {
+            document.getElementById('berat_plot').value = data.berat_plot;
+            calculateValues();
+          }
+        } else {
+          showAlert('Gagal memuat data: ' + (response.data?.error || 'Response format invalid'), 'danger');
+        }
+      } catch (error) {
+        showAlert('Gagal memuat data ubinan: ' + error.message, 'danger');
+      }
+    }
+
+    // Handle form submission
+    async function handleSubmitMonitoring(event) {
+      event.preventDefault();
+      
+      const beratPlot = document.getElementById('berat_plot').value;
+      
+      if (!beratPlot) {
+        showAlert('Berat panen per plot harus diisi', 'warning');
+        return;
+      }
+
+      document.getElementById('loadingSpinner').classList.remove('d-none');
+
+      try {
+        const formData = new FormData();
+        formData.append('berat_plot', beratPlot);
+        
+        // Add photo files if selected
+        const fotoSerahTerima = document.getElementById('foto_serah_terima').files[0];
+        const fotoBuktiPlot = document.getElementById('foto_bukti_plot_ubinan').files[0];
+        const fotoBeratTimbangan = document.getElementById('foto_berat_timbangan').files[0];
+        
+        if (fotoSerahTerima) formData.append('foto_serah_terima', fotoSerahTerima);
+        if (fotoBuktiPlot) formData.append('foto_bukti_plot_ubinan', fotoBuktiPlot);
+        if (fotoBeratTimbangan) formData.append('foto_berat_timbangan', fotoBeratTimbangan);
+
+        // Make PUT request with FormData
+        const token = localStorage.getItem('sipandu_token');
+        const response = await fetch(`${API_BASE}/ubinan/${ubinanId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showAlert('Data monitoring berhasil disimpan! Status telah diubah menjadi selesai.', 'success');
+          setTimeout(() => {
+            window.location.href = './dashboard_user.html';
+          }, 1500);
+        } else {
+          showAlert('Gagal menyimpan data: ' + (result.error || 'Unknown error'), 'danger');
+        }
+      } catch (error) {
+        showAlert('Gagal menyimpan data monitoring: ' + error.message, 'danger');
+      } finally {
+        document.getElementById('loadingSpinner').classList.add('d-none');
+      }
+    }
+
+    // Add event listeners
+    document.getElementById('berat_plot').addEventListener('input', calculateValues);
+    document.getElementById('formMonitoring').addEventListener('submit', handleSubmitMonitoring);
+
+    // Set user display name like dashboard
+    (function() {
+      try {
+        const u = getSipanduUser();
+        if (u) {
+          const el = document.getElementById('userDisplay');
+          if (el) el.textContent = u.name || u.username;
+        }
+      } catch (e) { console.warn('User display error', e); }
+    })();
+
+    // Load data on page load
+    window.addEventListener('DOMContentLoaded', loadUbinanData);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
