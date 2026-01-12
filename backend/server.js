@@ -1,13 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const authRoutes = require('./routes/auth');
 const dataRoutes = require('./routes/data');
 
 const app = express();
 
-// Serve uploaded files statically
-app.use('/uploads', express.static('uploads'));
+// Serve uploaded files statically (from root/uploads folder)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Middleware
 // Allow CORS from any origin in development so frontend served from file:// or localhost can connect

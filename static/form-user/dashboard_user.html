@@ -98,7 +98,7 @@
       const u = getSipanduUser();
       if (u) {
         const el = document.getElementById('userDisplay');
-        if (el) el.textContent = u.name || u.username;
+        if (el) el.textContent = u.username;
       }
     } catch (e) { console.warn('Auth script error', e); }
 

@@ -10,7 +10,7 @@ const router = express.Router();
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let uploadPath = 'uploads/';
+    let uploadPath = path.join(__dirname, '../../uploads/');
     if (file.fieldname === 'foto_serah_terima') uploadPath += 'serah_terima/';
     else if (file.fieldname === 'foto_bukti_plot_ubinan') uploadPath += 'bukti_plot_ubinan/';
     else if (file.fieldname === 'foto_berat_timbangan') uploadPath += 'berat_timbangan/';
@@ -97,7 +97,8 @@ router.get('/ubinan', requireAuth, async (req, res) => {
         m.revised_at,
         m.created_at,
         m.user_id,
-        u.nama_lengkap as pcl_name
+        u.nama_lengkap as pcl_name,
+        u.no_hp
       FROM monitoring_data_panen m
       LEFT JOIN users u ON m.user_id = u.id
     `;
@@ -156,6 +157,196 @@ router.get('/users', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ error: 'Gagal mengambil data users' });
+  }
+});
+
+// GET User by ID (supervisor/pml only)
+router.get('/users/:id', requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'pml' && req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Akses ditolak' });
+    }
+
+    const { id } = req.params;
+    const result = await pool.query(`
+      SELECT 
+        id, 
+        username, 
+        nama_lengkap, 
+        no_hp,
+        email,
+        role,
+        pml_id,
+        created_at
+      FROM users
+      WHERE id = $1
+    `, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User tidak ditemukan' });
+    }
+
+    res.json({
+      success: true,
+      data: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Gagal mengambil data user' });
+  }
+});
+
+// POST Create User (supervisor only)
+router.post('/users', requireAuth, async (req, res) => {
+  try {
+    // Check role - supervisor only
+    if (req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Hanya supervisor yang dapat menambah user' });
+    }
+
+    const { username, nama_lengkap, email, no_hp, password, role, pml_id } = req.body;
+
+    // Validate input
+    if (!username || !password || !nama_lengkap || !email || !no_hp || !role) {
+      return res.status(400).json({ error: 'Semua field harus diisi' });
+    }
+
+    // Validate PCL must have PML
+    if (role.toLowerCase() === 'pcl' && !pml_id) {
+      return res.status(400).json({ error: 'PCL harus memiliki PML pengawas' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password minimal 6 karakter' });
+    }
+
+    // Check if username already exists
+    const checkUser = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    if (checkUser.rows.length > 0) {
+      return res.status(400).json({ error: 'Username sudah digunakan' });
+    }
+
+    // Hash password
+    const bcrypt = require('bcrypt');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert new user
+    let query, params;
+    if (role.toLowerCase() === 'pcl' && pml_id) {
+      query = `INSERT INTO users (username, password, nama_lengkap, no_hp, email, role, pml_id, created_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+               RETURNING id, username, nama_lengkap, no_hp, email, role, pml_id, created_at`;
+      params = [username, hashedPassword, nama_lengkap, no_hp, email, role.toLowerCase(), pml_id];
+    } else {
+      query = `INSERT INTO users (username, password, nama_lengkap, no_hp, email, role, created_at)
+               VALUES ($1, $2, $3, $4, $5, $6, NOW())
+               RETURNING id, username, nama_lengkap, no_hp, email, role, created_at`;
+      params = [username, hashedPassword, nama_lengkap, no_hp, email, role.toLowerCase()];
+    }
+
+    const result = await pool.query(query, params);
+
+    res.json({
+      success: true,
+      message: 'User berhasil ditambahkan',
+      data: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Gagal menambahkan user', details: error.message });
+  }
+});
+
+// PUT Update User (supervisor only)
+router.put('/users/:id', requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Hanya supervisor yang dapat mengubah user' });
+    }
+
+    const { id } = req.params;
+    const { nama_lengkap, email, no_hp, role, pml_id, password } = req.body;
+
+    if (!nama_lengkap || !email || !no_hp || !role) {
+      return res.status(400).json({ error: 'Semua field harus diisi' });
+    }
+
+    // Validate PCL must have PML
+    if (role.toLowerCase() === 'pcl' && !pml_id) {
+      return res.status(400).json({ error: 'PCL harus memiliki PML pengawas' });
+    }
+
+    // Validate PML/Supervisor must NOT have pml_id
+    if ((role.toLowerCase() === 'pml' || role.toLowerCase() === 'supervisor') && pml_id) {
+      return res.status(400).json({ error: 'PML dan Supervisor tidak boleh memiliki PML pengawas' });
+    }
+
+    let hashedPassword = null;
+    if (password && password.trim().length > 0) {
+      if (password.length < 6) {
+        return res.status(400).json({ error: 'Password minimal 6 karakter' });
+      }
+      const bcrypt = require('bcrypt');
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    let query = `UPDATE users 
+                 SET nama_lengkap = $1, email = $2, no_hp = $3, role = $4, pml_id = $5`;
+    const params = [nama_lengkap, email, no_hp, role.toLowerCase(), pml_id || null];
+
+    if (hashedPassword) {
+      query += `, password = $6`;
+      params.push(hashedPassword);
+    }
+
+    // id always last param
+    params.push(id);
+    query += ` WHERE id = $${params.length} RETURNING id, username, nama_lengkap, email, no_hp, role`;
+
+    const result = await pool.query(query, params);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User tidak ditemukan' });
+    }
+
+    res.json({
+      success: true,
+      message: 'User berhasil diupdate',
+      data: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Gagal mengupdate user' });
+  }
+});
+
+// DELETE User (supervisor only)
+router.delete('/users/:id', requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Hanya supervisor yang dapat menghapus user' });
+    }
+
+    const { id } = req.params;
+
+    // Prevent deleting self
+    if (parseInt(id) === req.user.id) {
+      return res.status(400).json({ error: 'Tidak bisa menghapus akun sendiri' });
+    }
+
+    const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING id', [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User tidak ditemukan' });
+    }
+
+    res.json({
+      success: true,
+      message: 'User berhasil dihapus'
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Gagal menghapus user' });
   }
 });
 
@@ -236,6 +427,157 @@ router.get('/segmen', optionalAuth, async (req, res) => {
   }
 });
 
+// POST Add Segmen (Supervisor only)
+router.post('/segmen/add', requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Hanya supervisor yang bisa menambah segmen' });
+    }
+
+    const { nomor_segmen } = req.body;
+    if (!nomor_segmen) {
+      return res.status(400).json({ error: 'Nomor segmen tidak boleh kosong' });
+    }
+
+    // Check if already exists
+    const existCheck = await pool.query('SELECT id FROM segmen WHERE nomor_segmen = $1', [nomor_segmen]);
+    if (existCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'Nomor segmen sudah ada' });
+    }
+
+    // Try to insert
+    try {
+      const result = await pool.query(
+        'INSERT INTO segmen (nomor_segmen) VALUES ($1) RETURNING id, nomor_segmen',
+        [nomor_segmen]
+      );
+      res.json({ success: true, data: result.rows[0] });
+    } catch (insertError) {
+      // If sequence error, fix it and retry
+      if (insertError.code === '23505') {
+        await pool.query("SELECT setval('segmen_id_seq', (SELECT COALESCE(MAX(id), 0) FROM segmen))");
+        const result = await pool.query(
+          'INSERT INTO segmen (nomor_segmen) VALUES ($1) RETURNING id, nomor_segmen',
+          [nomor_segmen]
+        );
+        res.json({ success: true, data: result.rows[0] });
+      } else {
+        throw insertError;
+      }
+    }
+  } catch (error) {
+    console.error('Error adding segmen:', error);
+    res.status(500).json({ error: 'Gagal menambah segmen' });
+  }
+});
+
+// DELETE Segmen (Supervisor only)
+router.delete('/segmen/:id', requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Hanya supervisor yang bisa menghapus segmen' });
+    }
+
+    const { id } = req.params;
+    await pool.query('DELETE FROM segmen WHERE id = $1', [id]);
+    res.json({ success: true, message: 'Segmen berhasil dihapus' });
+  } catch (error) {
+    console.error('Error deleting segmen:', error);
+    res.status(500).json({ error: 'Gagal menghapus segmen' });
+  }
+});
+
+// DELETE All Segmen (Supervisor only)
+router.delete('/segmen/all/delete', requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Hanya supervisor yang bisa menghapus semua segmen' });
+    }
+
+    const result = await pool.query('DELETE FROM segmen');
+    res.json({ success: true, message: 'Semua segmen berhasil dihapus', deletedCount: result.rowCount });
+  } catch (error) {
+    console.error('Error deleting all segmen:', error);
+    res.status(500).json({ error: 'Gagal menghapus semua segmen' });
+  }
+});
+
+// CSV Upload multer configuration
+const csvUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.csv' || ext === '.xlsx' || ext === '.xls') {
+      cb(null, true);
+    } else {
+      cb(new Error('Hanya file CSV atau Excel yang diperbolehkan'));
+    }
+  }
+});
+
+// POST Import Segmen from CSV/Excel (Supervisor only)
+router.post('/segmen/import', csvUpload.single('file'), requireAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'supervisor') {
+      return res.status(403).json({ error: 'Hanya supervisor yang bisa import segmen' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'File tidak ditemukan' });
+    }
+
+    const fileContent = req.file.buffer.toString('utf-8');
+    const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
+    
+    // Skip header line
+    const dataLines = lines.slice(1);
+    
+    let inserted = 0;
+    let skipped = 0;
+    let errors = 0;
+
+    for (const line of dataLines) {
+      const nomor_segmen = line.trim();
+      if (!nomor_segmen) {
+        skipped++;
+        continue;
+      }
+
+      try {
+        // Check if already exists
+        const existCheck = await pool.query('SELECT id FROM segmen WHERE nomor_segmen = $1', [nomor_segmen]);
+        if (existCheck.rows.length > 0) {
+          skipped++;
+          continue;
+        }
+
+        // Insert with auto-fixing sequence if needed
+        try {
+          await pool.query('INSERT INTO segmen (nomor_segmen) VALUES ($1)', [nomor_segmen]);
+          inserted++;
+        } catch (insertError) {
+          if (insertError.code === '23505') {
+            // Fix sequence and retry
+            await pool.query("SELECT setval('segmen_id_seq', (SELECT COALESCE(MAX(id), 0) FROM segmen))");
+            await pool.query('INSERT INTO segmen (nomor_segmen) VALUES ($1)', [nomor_segmen]);
+            inserted++;
+          } else {
+            throw insertError;
+          }
+        }
+      } catch (e) {
+        errors++;
+      }
+    }
+
+    res.json({ success: true, summary: { inserted, skipped, errors } });
+  } catch (error) {
+    console.error('Error importing segmen:', error);
+    res.status(500).json({ error: 'Gagal import segmen' });
+  }
+});
+
 // POST Tambah Data Ubinan
 router.post('/ubinan', requireAuth, async (req, res) => {
   try {
@@ -280,13 +622,15 @@ router.get('/ubinan/:id', requireAuth, async (req, res) => {
     
     const result = await pool.query(`
       SELECT 
-        id, nama_petani, desa, kecamatan, tanggal_panen, subround,
-        berat_plot, gkp, gkg, ku, status,
-        nomor_segmen, nomor_sub_segmen,
-        foto_serah_terima, foto_bukti_plot_ubinan, foto_berat_timbangan,
-        note_revisi, revised_at, created_at, user_id
-      FROM monitoring_data_panen
-      WHERE id = $1
+        m.id, m.nama_petani, m.desa, m.kecamatan, m.tanggal_panen, m.subround,
+        m.berat_plot, m.gkp, m.gkg, m.ku, m.status,
+        m.nomor_segmen, m.nomor_sub_segmen,
+        m.foto_serah_terima, m.foto_bukti_plot_ubinan, m.foto_berat_timbangan,
+        m.note_revisi, m.revised_at, m.created_at, m.user_id,
+        u.nama_lengkap as pcl_name, u.no_hp
+      FROM monitoring_data_panen m
+      LEFT JOIN users u ON m.user_id = u.id
+      WHERE m.id = $1
     `, [id]);
     
     if (result.rows.length === 0) {
@@ -385,15 +729,18 @@ router.put('/ubinan/:id', requireAuth, upload.fields([
     if (req.files) {
       if (req.files.foto_serah_terima) {
         updateFields.push(`foto_serah_terima = $${paramCounter++}`);
-        values.push(req.files.foto_serah_terima[0].path.replace(/\\/g, '/'));
+        const relativePath = path.relative(path.join(__dirname, '../../'), req.files.foto_serah_terima[0].path).replace(/\\/g, '/');
+        values.push(relativePath);
       }
       if (req.files.foto_bukti_plot_ubinan) {
         updateFields.push(`foto_bukti_plot_ubinan = $${paramCounter++}`);
-        values.push(req.files.foto_bukti_plot_ubinan[0].path.replace(/\\/g, '/'));
+        const relativePath = path.relative(path.join(__dirname, '../../'), req.files.foto_bukti_plot_ubinan[0].path).replace(/\\/g, '/');
+        values.push(relativePath);
       }
       if (req.files.foto_berat_timbangan) {
         updateFields.push(`foto_berat_timbangan = $${paramCounter++}`);
-        values.push(req.files.foto_berat_timbangan[0].path.replace(/\\/g, '/'));
+        const relativePath = path.relative(path.join(__dirname, '../../'), req.files.foto_berat_timbangan[0].path).replace(/\\/g, '/');
+        values.push(relativePath);
       }
     }
     
@@ -416,6 +763,37 @@ router.put('/ubinan/:id', requireAuth, upload.fields([
   } catch (error) {
     console.error('Error updating ubinan:', error);
     res.status(500).json({ error: 'Gagal mengupdate data ubinan: ' + error.message });
+  }
+});
+
+// DELETE Ubinan by ID (Supervisor/PML only)
+router.delete('/ubinan/:id', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.user;
+
+    // Only Supervisor and PML can delete
+    if (role !== 'supervisor' && role !== 'pml') {
+      return res.status(403).json({ error: 'Hanya Supervisor dan PML yang dapat menghapus data' });
+    }
+
+    // Check if record exists
+    const checkResult = await pool.query('SELECT id FROM monitoring_data_panen WHERE id = $1', [id]);
+    
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Data ubinan tidak ditemukan' });
+    }
+
+    // Delete the record
+    await pool.query('DELETE FROM monitoring_data_panen WHERE id = $1', [id]);
+
+    res.json({
+      success: true,
+      message: 'Data ubinan berhasil dihapus'
+    });
+  } catch (error) {
+    console.error('Error deleting ubinan:', error);
+    res.status(500).json({ error: 'Gagal menghapus data ubinan: ' + error.message });
   }
 });
 

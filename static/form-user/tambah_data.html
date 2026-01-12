@@ -50,7 +50,7 @@
   
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-      <a class="navbar-brand" href="./dashboard_user.html"><img src="../assets/img/logo.png" alt="Logo" class="me-2"> SIPANDU</a>
+      <a class="navbar-brand" href="#"><img src="../assets/img/logo.png" alt="Logo"> SIPANDU</a>
       <div class="d-flex align-items-center">
         <div class="dropdown">
           <a href="#" id="userDisplay" class="text-white fw-bold text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">pcl_demo</a>
@@ -357,7 +357,7 @@
         const u = getSipanduUser();
         if (u) {
           const el = document.getElementById('userDisplay');
-          if (el) el.textContent = u.name || u.username;
+          if (el) el.textContent = u.username;
         }
       } catch (e) { console.warn('User display error', e); }
     })();
