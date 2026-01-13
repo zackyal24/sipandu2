@@ -16,8 +16,8 @@
   </style>
 </head>
 <body>
-  <script src="../assets/js/auth.js"></script>
-  <script src="../assets/js/api.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
   <script>
     try { requireRole('supervisor', '../index.html'); } catch(e){}
   </script>
@@ -25,7 +25,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center" href="#">
-        <img src="../assets/img/logo.png" alt="Logo" height="40" class="me-2" /> SIPANDU
+        <img src="../../assets/img/logo.png" alt="Logo" height="40" class="me-2" /> SIPANDU
       </a>
       <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
         <span class="navbar-toggler-icon"></span>
@@ -188,8 +188,8 @@
     function loadSegmen() {
       fetchWithAuth(API_BASE + '/segmen')
         .then(res => {
-          if (res.success) {
-            allSegmen = res.data || [];
+          if (res.ok && res.data?.success) {
+            allSegmen = res.data.data || [];
             renderTable();
           }
         })
@@ -255,7 +255,7 @@
         body: JSON.stringify({ nomor_segmen: nomor })
       })
         .then(res => {
-          if (res.success) {
+          if (res.ok && res.data?.success) {
             document.getElementById('addSegmenForm').reset();
             const modal = bootstrap.Modal.getInstance(document.getElementById('addSegmenModal'));
             modal.hide();
@@ -300,7 +300,7 @@
         body: formData
       })
         .then(res => {
-          if (res.success) {
+          if (res.ok && res.data?.success) {
             const modal = bootstrap.Modal.getInstance(document.getElementById('importSegmenModal'));
             modal.hide();
             fileInput.value = '';
@@ -331,7 +331,7 @@
 
       fetchWithAuth(API_BASE + '/segmen/' + id, { method: 'DELETE' })
         .then(res => {
-          if (res.success) {
+          if (res.ok && res.data?.success) {
             alert('Segmen berhasil dihapus');
             loadSegmen();
           } else {
@@ -350,8 +350,8 @@
 
       fetchWithAuth(API_BASE + '/segmen/all/delete', { method: 'DELETE' })
         .then(res => {
-          if (res.success) {
-            alert(`${res.deletedCount || 0} segmen berhasil dihapus`);
+          if (res.ok && res.data?.success) {
+            alert(`${res.data.deletedCount || 0} segmen berhasil dihapus`);
             loadSegmen();
           } else {
             alert('Gagal menghapus semua segmen');

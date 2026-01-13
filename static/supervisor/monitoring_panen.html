@@ -204,13 +204,33 @@
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">Hapus Data</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">Yakin hapus data <strong id="deleteNamaPetani">ini</strong>?</p>
+          <p class="text-muted small mb-0">Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-  <script src="../assets/js/auth.js"></script>
+  <script src="../../assets/js/auth.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-  <script src="../assets/js/api.js"></script>
+  <script src="../../assets/js/api.js"></script>
   <script>const API_BASE = 'http://localhost:5000/api';</script>
   <script>
     (function navbarUser(){
@@ -231,8 +251,8 @@
       const s = (status || '').toLowerCase();
       if (s === 'selesai') return '<span class="badge bg-success">Selesai</span>';
       if (s === 'sudah') return '<span class="badge bg-primary">Sudah</span>';
-      if (s === 'belum') return '<span class="badge bg-warning text-dark">Belum</span>';
-      if (s === 'revisi') return '<span class="badge bg-secondary">Revisi</span>';
+      if (s === 'belum') return '<span class="badge bg-secondary">Belum</span>';
+      if (s === 'revisi') return '<span class="badge bg-warning text-dark">Revisi</span>';
       if (s === 'tidak bisa') return '<span class="badge bg-danger">Tidak Bisa</span>';
       return '<span class="badge bg-light text-dark">-</span>';
     }
@@ -342,40 +362,69 @@
         this.style.background = '';
       });
 
-      $('#tabelPanen').on('click','.delete-btn',async function(e){
+      $('#tabelPanen').on('click','.delete-btn',function(e){
         e.stopPropagation();
         const id = this.dataset.id;
         if (!id) return;
-        const ok = window.confirm('Yakin hapus data ini?');
-        if (!ok) return;
-        this.disabled = true;
-        try {
-          const res = await fetchWithAuth(API_BASE + '/ubinan/' + id, { method:'DELETE' });
-          if (!res || !res.success) {
-            alert('Gagal hapus: ' + (res?.error || 'unknown'));
-            this.disabled = false;
-          } else {
-            allData = allData.filter(d => String(d.id) !== String(id));
-            if (dataTable) { dataTable.destroy(); dataTable = null; }
-            buildRows();
-            updateStats();
-            initDataTable();
-            attachRowClick();
-            this.disabled = false;
-          }
-        } catch(err) {
-          console.error('Hapus gagal', err);
-          alert('Gagal hapus: ' + err.message);
-          this.disabled = false;
-        }
+        
+        // Find data for this ID
+        const item = allData.find(d => String(d.id) === String(id));
+        const nama = item?.nama_petani || 'ini';
+        document.getElementById('deleteNamaPetani').textContent = nama;
+        
+        // Store ID for confirmation
+        window.deleteItemId = id;
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
       });
+    }
+    
+    async function confirmDelete() {
+      const id = window.deleteItemId;
+      if (!id) return;
+      
+      const btn = document.getElementById('confirmDeleteBtn');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menghapus...';
+      
+      try {
+        const res = await fetchWithAuth(API_BASE + '/ubinan/' + id, { method:'DELETE' });
+        if (!res.ok || !res.data?.success) {
+          alert('Gagal hapus: ' + (res?.error || 'unknown'));
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        } else {
+          // Close modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          modal.hide();
+          
+          // Update data
+          allData = allData.filter(d => String(d.id) !== String(id));
+          if (dataTable) { dataTable.destroy(); dataTable = null; }
+          buildRows();
+          updateStats();
+          initDataTable();
+          attachRowClick();
+          
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      } catch(err) {
+        console.error('Hapus gagal', err);
+        alert('Gagal hapus: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
     }
 
     async function loadData(){
       try {
         const res = await fetchWithAuth(API_BASE + '/ubinan?ts=' + Date.now());
-        if (!res || !res.success) { console.error('Gagal memuat data ubinan', res); return; }
-        allData = res.data || [];
+        if (!res.ok || !res.data?.success) { console.error('Gagal memuat data ubinan', res); return; }
+        allData = res.data.data || [];
         buildRows();
         updateStats();
         initDataTable();

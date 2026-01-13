@@ -54,7 +54,7 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-      <a class="navbar-brand" href="#"><img src="../assets/img/logo.png" alt="Logo"> SIPANDU</a>
+      <a class="navbar-brand" href="#"><img src="../../assets/img/logo.png" alt="Logo"> SIPANDU</a>
       <div class="d-flex align-items-center">
         <div class="dropdown">
           <a href="#" id="userDisplay" class="text-white fw-bold text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">pcl_demo</a>
@@ -90,11 +90,12 @@
   <footer class="text-center mt-4 mb-3">&copy; <span id="year"></span> SIPANDU - BPS Kabupaten Bekasi</footer>
 
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/api.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/api.js"></script>
+  <script>const API_BASE = 'http://localhost:5000/api';</script>
   <script>
     try {
-      requireRole('pcl', '/index.html');
+      requireRole('pcl', '../../index.html');
       const u = getSipanduUser();
       if (u) {
         const el = document.getElementById('userDisplay');
@@ -107,14 +108,13 @@
       const listEl = document.getElementById('ubinanList');
       
       try {
-        const response = await fetchWithAuth(API_BASE + '/ubinan');
-        
-        if (!response.ok || !response.data || !response.data.success) {
+        const res = await fetchWithAuth(API_BASE + '/ubinan');
+        if (!res.ok || !res.data?.success) {
           listEl.innerHTML = '<div class="text-center text-muted py-4">Tidak dapat memuat data.</div>';
           return;
         }
 
-        const items = response.data.data || [];
+        const items = res.data.data || [];
         if (!items.length) {
           listEl.innerHTML = '<div class="text-center text-muted py-4">Belum ada data ubinan.</div>';
           return;
