@@ -1,2 +1,7 @@
-backend/node_modules/
-/uploads/
+node_modules/
+.env
+credentials/
+.vercel
+uploads/
+*.log
+Thumbs.db

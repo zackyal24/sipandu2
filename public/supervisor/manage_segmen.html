@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Segmen | SIPANDU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+  <style>
+    body { background:#f8f9fc; font-family:'Poppins',sans-serif; overflow-x:hidden; }
+    .navbar-brand { font-weight:bold; }
+    @media(min-width:992px){ #mainContent{margin-left:240px !important;} .sidebar{width:240px;} }
+    @media(max-width:991.98px){ #mainContent{margin-left:0 !important;} .sidebar{display:none !important;} }
+  </style>
+</head>
+<body>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    try { requireRole('supervisor', '../index.html'); } catch(e){}
+  </script>
+  
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top" style="z-index:1040;">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="../assets/img/logo.png" alt="Logo" height="40" class="me-2" /> SIPANDU
+      </a>
+      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="d-flex align-items-center ms-auto">
+        <div class="dropdown">
+          <a href="#" class="text-white fw-bold text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" id="userDisplay">Supervisor</a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="../auth/ganti_password.html"><i class="bi bi-key me-2"></i>Ganti Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="javascript:logout('../index.html')"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid" style="padding-top:70px;">
+    <div class="row">
+      <nav class="col-lg-2 d-none d-lg-block sidebar position-fixed bg-white border-end shadow-sm py-4" style="height:100vh; z-index:1030;">
+        <div class="position-sticky">
+          <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-primary text-decoration-none px-3">
+            <span class="fs-5 fw-bold">Supervisor</span>
+          </a>
+          <hr />
+          <ul class="nav nav-pills flex-column mb-auto px-2">
+            <li class="nav-item mb-2"><a href="./index.html" class="nav-link"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring.html" class="nav-link"><i class="bi bi-list-task me-2"></i>Monitoring</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring_panen.html" class="nav-link"><i class="bi bi-basket-fill me-2"></i>Data Ubinan</a></li>
+            <li class="nav-item mb-2">
+              <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenu" role="button">
+                <span><i class="bi bi-gear me-2"></i>Manajemen</span>
+                <i class="bi bi-chevron-down"></i>
+              </a>
+              <div class="collapse ps-4" id="manajemenMenu">
+                <ul class="nav flex-column">
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link active"><i class="bi bi-123 me-2"></i>Segmen</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <hr />
+        </div>
+      </nav>
+
+      <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header bg-primary text-white">
+          <h5 class="offcanvas-title"><i class="bi bi-person-circle me-2"></i>Supervisor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item mb-2"><a href="./index.html" class="nav-link"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring.html" class="nav-link"><i class="bi bi-list-task me-2"></i>Monitoring</a></li>
+            <li class="nav-item mb-2"><a href="./monitoring_panen.html" class="nav-link"><i class="bi bi-basket-fill me-2"></i>Data Ubinan</a></li>
+            <li class="nav-item mb-2">
+              <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#manajemenMenuMobile" role="button">
+                <span><i class="bi bi-gear me-2"></i>Manajemen</span>
+                <i class="bi bi-chevron-down"></i>
+              </a>
+              <div class="collapse ps-4" id="manajemenMenuMobile">
+                <ul class="nav flex-column">
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link active"><i class="bi bi-123 me-2"></i>Segmen</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <hr />
+        </div>
+      </div>
+
+      <main id="mainContent" class="col-12 col-lg-10 px-2 px-md-4" style="margin-left:240px;">
+        <h2 class="my-4">Manage Segmen</h2>
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSegmenModal"><i class="bi bi-plus-lg me-1"></i>Tambah Segmen</button>
+              <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#importSegmenModal"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Import Excel/CSV</button>
+              <button class="btn btn-outline-danger btn-sm" onclick="deleteAllSegmen()"><i class="bi bi-trash me-1"></i>Hapus Semua</button>
+            </div>
+            <div class="table-responsive">
+              <table id="segmenTable" class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width:50px;">No</th>
+                    <th>Nomor Segmen</th>
+                    <th style="width:100px;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <footer class="text-center small text-muted my-4">&copy; <span id="year"></span> SIPANDU - BPS Kabupaten Bekasi</footer>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Segmen -->
+  <div class="modal fade" id="addSegmenModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Tambah Segmen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addSegmenForm">
+            <div class="mb-3">
+              <label for="nomorSegmen" class="form-label">Nomor Segmen *</label>
+              <input type="text" class="form-control" id="nomorSegmen" placeholder="Contoh: 321602206" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" onclick="submitAddSegmen()">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Hapus -->
+  <div class="modal fade" id="deleteSegmenModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">Hapus Segmen</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">Yakin hapus segmen <strong id="deleteSegmenNomor"></strong>?</p>
+          <p class="text-muted small mb-0">Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteSegmen()">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Hapus Semua -->
+  <div class="modal fade" id="deleteAllSegmenModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h6 class="modal-title">Hapus Semua Segmen</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2 fw-bold text-danger">PERINGATAN!</p>
+          <p class="mb-2">Yakin ingin menghapus <strong>SEMUA</strong> segmen?</p>
+          <p class="text-muted small mb-0">Tindakan ini tidak dapat dibatalkan!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteAllSegmen()">Hapus Semua</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Import Segmen -->
+  <div class="modal fade" id="importSegmenModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Import Segmen dari Excel/CSV</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted">Format: satu kolom <strong>nomor_segmen</strong>. Baris header opsional.</p>
+          <div class="mb-3">
+            <label for="csvFile" class="form-label">Pilih File (CSV atau Excel)</label>
+            <input type="file" class="form-control" id="csvFile" accept=".csv,.xlsx" />
+          </div>
+          <button type="button" class="btn btn-link btn-sm" onclick="downloadCsvTemplate()">Unduh Template CSV</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-success" onclick="submitImportSegmen()">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+  <script>
+    let allSegmen = [];
+    let deleteSegmenId = null;
+    let deleteSegmenNomor = null;
+    const API_BASE = window.location.origin + '/api';
+
+    function loadSegmen() {
+      fetchWithAuth(API_BASE + '/segmen')
+        .then(res => {
+          if (res.ok && res.data?.success) {
+            allSegmen = res.data.data || [];
+            renderTable();
+          } else {
+            console.error('Load failed - not ok or not success:', res);
+            alert('Gagal memuat data segmen: ' + (res?.data?.error || 'Unknown error'));
+          }
+        })
+        .catch(err => {
+          console.error('Error loading segmen:', err);
+          alert('Gagal memuat data segmen: ' + (err.message || 'Network error'));
+        });
+    }
+
+    function renderTable() {
+      // Destroy existing DataTable first
+      if ($.fn.DataTable.isDataTable('#segmenTable')) {
+        $('#segmenTable').DataTable().clear().destroy();
+      }
+
+      // Clear and rebuild table body
+      const tbody = document.querySelector('#segmenTable tbody');
+      tbody.innerHTML = '';
+      
+      if (!allSegmen || allSegmen.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Belum ada data</td></tr>';
+        return;
+      }
+      
+      allSegmen.forEach((segmen, idx) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td class="text-center">0</td>
+          <td>${segmen.nomor_segmen}</td>
+          <td class="text-center">
+            <button class="btn btn-danger btn-sm" onclick="deleteSegmen(${segmen.id}, '${segmen.nomor_segmen}')">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        `;
+      });
+
+      // Initialize DataTable
+      const table = $('#segmenTable').DataTable({
+        pageLength: 10,
+        ordering: false,
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' }
+      });
+
+      // Update row numbers on every draw (search, filter, pagination)
+      function updateRowNumbers() {
+        let counter = 1;
+        $('#segmenTable tbody tr').each(function() {
+          $(this).find('td:first').text(counter);
+          counter++;
+        });
+      }
+
+      updateRowNumbers();
+      table.on('draw', updateRowNumbers);
+    }
+
+    function submitAddSegmen() {
+      const nomor = document.getElementById('nomorSegmen').value.trim();
+      if (!nomor) {
+        alert('Nomor segmen tidak boleh kosong');
+        return;
+      }
+
+      fetchWithAuth(API_BASE + '/segmen/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nomor_segmen: nomor })
+      })
+        .then(res => {
+          if (res.ok && res.data?.success) {
+            document.getElementById('addSegmenForm').reset();
+            const modalEl = document.getElementById('addSegmenModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            
+            // Remove focus from any element inside modal before hiding
+            if (document.activeElement && modalEl.contains(document.activeElement)) {
+              document.activeElement.blur();
+            }
+            
+            modal.hide();
+            
+            // Clean up backdrop
+            setTimeout(() => {
+              const backdrop = document.querySelector('.modal-backdrop');
+              if (backdrop) backdrop.remove();
+              document.body.classList.remove('modal-open');
+              document.body.style.removeProperty('overflow');
+              document.body.style.removeProperty('padding-right');
+            }, 200);
+            
+            // Reload data
+            setTimeout(() => {
+              loadSegmen();
+            }, 300);
+          } else {
+            alert('Error: ' + (res.error || 'Gagal menambah segmen'));
+          }
+        })
+        .catch(err => {
+          console.error('Error adding segmen:', err);
+          alert('Gagal menambah segmen: ' + (err.message || 'Network error'));
+        });
+    }
+
+    function submitImportSegmen() {
+      const fileInput = document.getElementById('csvFile');
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) {
+        alert('Silakan pilih file terlebih dahulu');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetchWithAuth(API_BASE + '/segmen/import', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => {
+          if (res.ok && res.data?.success) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('importSegmenModal'));
+            modal.hide();
+            fileInput.value = '';
+            
+            setTimeout(() => {
+              const backdrop = document.querySelector('.modal-backdrop');
+              if (backdrop) backdrop.remove();
+              document.body.classList.remove('modal-open');
+              document.body.style.removeProperty('overflow');
+              document.body.style.removeProperty('padding-right');
+            }, 200);
+            
+            setTimeout(() => {
+              loadSegmen();
+            }, 300);
+          } else {
+            alert('Gagal import: ' + (res.error || 'Tidak diketahui'));
+          }
+        })
+        .catch(err => {
+          console.error('Import error:', err);
+          alert('Gagal import segmen: ' + (err.message || 'Network error'));
+        });
+    }
+
+    function deleteSegmen(id, nomor_segmen) {
+      deleteSegmenId = id;
+      deleteSegmenNomor = nomor_segmen;
+      document.getElementById('deleteSegmenNomor').textContent = nomor_segmen;
+      
+      const modal = new bootstrap.Modal(document.getElementById('deleteSegmenModal'));
+      modal.show();
+    }
+
+    function confirmDeleteSegmen() {
+      if (!deleteSegmenId) return;
+
+      fetchWithAuth(API_BASE + '/segmen/' + deleteSegmenId, { method: 'DELETE' })
+        .then(res => {
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteSegmenModal'));
+          modal.hide();
+          
+          if (res.ok && res.data?.success) {
+            loadSegmen();
+          } else {
+            alert('Gagal menghapus segmen');
+          }
+          
+          deleteSegmenId = null;
+          deleteSegmenNomor = null;
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Gagal menghapus segmen: ' + (err.message || 'Network error'));
+          
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteSegmenModal'));
+          modal.hide();
+          
+          deleteSegmenId = null;
+          deleteSegmenNomor = null;
+        });
+    }
+
+    function deleteAllSegmen() {
+      const modal = new bootstrap.Modal(document.getElementById('deleteAllSegmenModal'));
+      modal.show();
+    }
+
+    function confirmDeleteAllSegmen() {
+      fetchWithAuth(API_BASE + '/segmen/all/delete', { method: 'DELETE' })
+        .then(res => {
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAllSegmenModal'));
+          modal.hide();
+          
+          if (res.ok && res.data?.success) {
+            loadSegmen();
+          } else {
+            alert('Gagal menghapus semua segmen');
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Gagal menghapus semua segmen: ' + (err.message || 'Network error'));
+          
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAllSegmenModal'));
+          modal.hide();
+        });
+    }
+
+    function downloadCsvTemplate() {
+      const csv = 'nomor_segmen\n321602206\n321602207\n321602306\n';
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'template_segmen.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        const u = (typeof getSipanduUser === 'function') ? getSipanduUser() : JSON.parse(localStorage.getItem('sipandu_user'));
+        if (u) {
+          const el = document.getElementById('userDisplay');
+          if (el) el.textContent = u.username || u.nama_lengkap || 'Supervisor';
+        }
+      } catch(err) { console.error('Gagal memuat user', err); }
+
+      loadSegmen();
+    });
+  </script>
+</body>
+</html>
