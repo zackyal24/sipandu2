@@ -5,20 +5,24 @@ let storage = null;
 
 const getStorage = () => {
   if (!storage) {
-    // Initialize dengan credentials dari environment variable atau service account file
+    // Untuk akses lokal, uncomment kode di bawah ini dan set GOOGLE_APPLICATION_CREDENTIALS ke path file key JSON
+    /*
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       storage = new Storage({
         projectId: process.env.GCP_PROJECT_ID,
         keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
       });
-    } else if (process.env.GCS_CREDENTIALS) {
+    } else 
+    */
+    if (process.env.GCS_CREDENTIALS) {
       // Untuk environment variable JSON
       storage = new Storage({
         projectId: process.env.GCP_PROJECT_ID,
         credentials: JSON.parse(process.env.GCS_CREDENTIALS)
       });
     } else {
-      throw new Error('GCS credentials not configured. Set GOOGLE_APPLICATION_CREDENTIALS or GCS_CREDENTIALS environment variable');
+      // Default: gunakan credential dari environment Cloud Run
+      storage = new Storage();
     }
   }
   return storage;
