@@ -114,9 +114,7 @@
             pmlSelect.innerHTML += `<option value="${pml.id}">${pml.nama_lengkap} (${pml.username})</option>`;
           });
         }
-      } catch (err) {
-        console.error('Error loading PML list:', err);
-      }
+      } catch (err) {}
     }
 
     async function loadUserData() {
@@ -138,15 +136,12 @@
           document.getElementById('email').value = userData.email || '';
           document.getElementById('no_hp').value = userData.no_hp || '';
           document.getElementById('role').value = userData.role;
-          
           if (userData.role === 'pcl' && userData.pml_id) {
             document.getElementById('pml_id').value = userData.pml_id;
           }
-          
           togglePmlField();
         }
       } catch (err) {
-        console.error('Error loading user:', err);
         alert('Gagal memuat data user: ' + (err.message || 'Network error'));
         window.location.href = './monitoring_akun.html';
       }
@@ -193,7 +188,6 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-
         if (res.success) {
           const box = document.getElementById('successBox');
           if (box) {
@@ -210,7 +204,6 @@
           alert('Error: ' + (res.error || 'Gagal update user'));
         }
       } catch (err) {
-        console.error('Error updating user:', err);
         alert('Gagal update user: ' + (err.message || 'Network error'));
       }
     }
@@ -223,7 +216,6 @@
         const res = await fetchWithAuth(API_BASE + '/users/' + userId, {
           method: 'DELETE'
         });
-
         if (res.success) {
           alert('User berhasil dihapus');
           window.location.href = './monitoring_akun.html';
@@ -231,7 +223,6 @@
           alert('Error: ' + (res.error || 'Gagal hapus user'));
         }
       } catch (err) {
-        console.error('Error deleting user:', err);
         alert('Gagal hapus user: ' + (err.message || 'Network error'));
       }
     }

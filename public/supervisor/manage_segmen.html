@@ -310,15 +310,10 @@
             document.getElementById('addSegmenForm').reset();
             const modalEl = document.getElementById('addSegmenModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
-            
-            // Remove focus from any element inside modal before hiding
             if (document.activeElement && modalEl.contains(document.activeElement)) {
               document.activeElement.blur();
             }
-            
             modal.hide();
-            
-            // Clean up backdrop
             setTimeout(() => {
               const backdrop = document.querySelector('.modal-backdrop');
               if (backdrop) backdrop.remove();
@@ -326,8 +321,6 @@
               document.body.style.removeProperty('overflow');
               document.body.style.removeProperty('padding-right');
             }, 200);
-            
-            // Reload data
             setTimeout(() => {
               loadSegmen();
             }, 300);
@@ -336,7 +329,6 @@
           }
         })
         .catch(err => {
-          console.error('Error adding segmen:', err);
           alert('Gagal menambah segmen: ' + (err.message || 'Network error'));
         });
     }

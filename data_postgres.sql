@@ -335,10 +335,10 @@ INSERT INTO segmen (id, nomor_segmen) VALUES
 
 -- Data users
 INSERT INTO users (id, username, password, nama_lengkap, no_hp, email, role, created_at, pml_id) VALUES
-(21, 'root', '$2y$10$35O/TGl5sSaOBvA0F3dhtOM0f31a7vm/44hrbGn69IEVUZQmZegtS', 'root', '+62 812-8097-6144', 'pandupermana230687@gmail.com', 'supervisor', '2025-08-14 06:22:01', NULL),
-(22, 'pandu', '$2y$10$NOd5MdsoABXT4kTNyXGSW.Us93972Y5RRij1.ou1B67CS9d0nYzhu', 'Pandu Permana', '+62 812-8097-6144', 'pandupermana230687@gmail.com', 'supervisor', '2025-08-14 06:22:26', NULL),
-(25, 'gilang', '$2y$10$IGYxVkLDB5B8vK9Hu1g5S.Hlx6EezBPsvDKqL60ElJsBLct10Sfbi', 'gilang', '0871236', 'gilang@asd', 'pml', '2025-09-03 14:26:49', NULL),
-(26, 'zacky', '$2y$10$5Y9JBm.5JGlyo57oQhtvD.C7Pg5.KxYH54GyWrJLHmGxs1w4./mQq', 'zacky', '0813278', 'zacky@asd', 'pcl', '2025-09-03 14:27:39', 25);
+(21, 'root', '$2b$10$35O/TGl5sSaOBvA0F3dhtOM0f31a7vm/44hrbGn69IEVUZQmZegtS', 'root', '+62 812-8097-6144', 'pandupermana230687@gmail.com', 'supervisor', '2025-08-14 06:22:01', NULL),
+(22, 'pandu', '$2b$10$NOd5MdsoABXT4kTNyXGSW.Us93972Y5RRij1.ou1B67CS9d0nYzhu', 'Pandu Permana', '+62 812-8097-6144', 'pandupermana230687@gmail.com', 'supervisor', '2025-08-14 06:22:26', NULL),
+(25, 'gilang', '$2b$10$IGYxVkLDB5B8vK9Hu1g5S.Hlx6EezBPsvDKqL60ElJsBLct10Sfbi', 'gilang', '0871236', 'gilang@asd', 'pml', '2025-09-03 14:26:49', NULL),
+(26, 'zacky', '$2b$10$5Y9JBm.5JGlyo57oQhtvD.C7Pg5.KxYH54GyWrJLHmGxs1w4./mQq', 'zacky', '0813278', 'zacky@asd', 'pcl', '2025-09-03 14:27:39', 25);
 
 -- Data monitoring
 INSERT INTO monitoring_data_panen

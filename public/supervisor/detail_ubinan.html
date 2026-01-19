@@ -153,7 +153,7 @@
         const name = u.username || u.nama_lengkap || 'Supervisor';
         const el = document.getElementById('userDisplay');
         if (el) el.textContent = name;
-      } catch(err) { console.error('Gagal memuat user', err); }
+      } catch(err) {}
     })();
   </script>
   <script>
@@ -171,51 +171,30 @@
     async function loadData() {
       try {
         const id = getUbinianId();
-        console.log('Loading data untuk ID:', id);
-        
         if (!id) {
           alert('ID tidak ditemukan');
           history.back();
           return;
         }
-        
         const url = `${API_BASE}/ubinan/${id}`;
-        console.log('Fetching dari:', url);
-        console.log('API_BASE:', API_BASE);
-        console.log('fetchWithAuth function exists:', typeof fetchWithAuth);
-        
         if (typeof fetchWithAuth !== 'function') {
-          console.error('fetchWithAuth function not found!');
           document.getElementById('loading').innerHTML = '<div class="alert alert-danger">Error: API function not loaded</div>';
           return;
         }
-        
         const response = await fetchWithAuth(url);
-        console.log('Full response object:', response);
-        console.log('Response type:', typeof response);
-        console.log('Response keys:', Object.keys(response || {}));
-        
         if (!response) {
-          console.error('Response is null or undefined');
           document.getElementById('loading').innerHTML = '<div class="alert alert-danger">Error: No response from server</div>';
           return;
         }
-        
         if (response.error) {
-          console.error('API Error:', response.error);
           document.getElementById('loading').innerHTML = `<div class="alert alert-danger">Error: ${response.error}</div>`;
           return;
         }
-        
         if (!response.ok || !response.data?.success) {
-          console.error('Success is false:', response);
           document.getElementById('loading').innerHTML = `<div class="alert alert-danger">Error: ${response.data?.error || 'Unknown error'}</div>`;
           return;
         }
-        
         const data = response.data.data;
-        console.log('Data loaded successfully:', data);
-        
         // Populate data
         document.getElementById('nama_petani').textContent = data.nama_petani || '-';
         document.getElementById('desa').textContent = data.desa || '-';
@@ -265,9 +244,6 @@
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dataTable').style.display = 'table';
       } catch (error) {
-        console.error('Catch error:', error);
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
         document.getElementById('loading').innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> ${error.message}</div>`;
       }
     }

@@ -9,3 +9,4 @@ dist
 credentials/*.json
 .DS_Store
 *.md
+*.sql

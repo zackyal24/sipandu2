@@ -271,7 +271,7 @@
         if (!u) return;
         const el = document.getElementById('userDisplay');
           if (el) el.textContent = u.username || u.nama_lengkap || 'Supervisor';
-      } catch(err) { console.error('Gagal memuat user', err); }
+      } catch(err) { /* error loading user, silent */ }
     });
   </script>
   <script src="../assets/js/api.js"></script>
@@ -279,58 +279,58 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     
-    // Debug: Check localStorage immediately
-    console.log('=== NAVBAR UPDATE DEBUG ===');
-    console.log('Raw localStorage sipandu_user:', localStorage.getItem('sipandu_user'));
-    
     // Update user display in navbar - IMMEDIATELY
     const rawUser = localStorage.getItem('sipandu_user');
     if (rawUser) {
       try {
         const userData = JSON.parse(rawUser);
-        console.log('Parsed user data:', userData);
+        
         const el = document.getElementById('userDisplay');
         const displayName = userData.username || userData.nama_lengkap || 'Supervisor';
-        console.log('Display name to set:', displayName);
-        console.log('Element found:', !!el);
+        
         if (el) {
           el.textContent = displayName;
-          console.log('✓ Navbar updated to:', displayName);
+          
         } else {
-          console.log('✗ Element userDisplay not found');
+          
         }
       } catch (e) {
-        console.error('Error parsing user data:', e);
+        
       }
     } else {
-      console.log('No user data in localStorage');
+      
     }
 
     let allData = [];
 
     async function loadData() {
       try {
-        console.log('=== LOADING DATA ===');
-        console.log('API_BASE:', API_BASE);
         const url = API_BASE + '/ubinan?ts=' + Date.now();
-        console.log('Fetching from:', url);
-        
         const response = await fetchWithAuth(url);
-        console.log('API Response:', response);
-        
         if (!response.ok || !response.data?.success) {
-          console.error('Failed to load data', response);
+          showError('Gagal memuat data, silakan coba lagi.');
           return;
         }
-
         allData = response.data.data || [];
-        console.log('✓ Loaded', allData.length, 'records');
         updateStats();
         renderRecentData();
         renderBelumData();
       } catch (error) {
-        console.error('Error loading data:', error);
+        showError('Gagal memuat data, silakan cek koneksi Anda dan coba lagi.');
       }
+    }
+
+    function showError(msg) {
+      let alert = document.getElementById('mainErrorAlert');
+      if (!alert) {
+        alert = document.createElement('div');
+        alert.id = 'mainErrorAlert';
+        alert.className = 'alert alert-danger text-center my-3';
+        const container = document.querySelector('.container-fluid');
+        if (container) container.prepend(alert);
+        else document.body.prepend(alert);
+      }
+      alert.textContent = msg;
     }
 
     function updateStats() {
@@ -354,14 +354,14 @@
         if (cardSelesai) cardSelesai.textContent = selesai;
         if (cardBelum) cardBelum.textContent = belum;
       } catch (error) {
-        console.error('Error updating stats:', error);
+        
       }
     }
 
     function renderRecentData() {
       try {
         const recent = allData.slice(0, 5);
-        console.log('Rendering recent data, count:', recent.length);
+        
         let html = '';
         
         recent.forEach((item, idx) => {
@@ -395,7 +395,7 @@
         const tbody = document.getElementById('tabelRecentBody');
         if (tbody) {
           tbody.innerHTML = html;
-          console.log('✓ Recent table updated');
+          
 
           // Bind click navigation once
           if (!tbody.dataset.bound) {
@@ -411,7 +411,7 @@
           }
         }
       } catch (error) {
-        console.error('Error rendering recent data:', error);
+        
       }
     }
 
@@ -421,7 +421,7 @@
           const status = (d.status || '').toLowerCase();
           return status === 'belum' || status === 'sudah' || status === 'revisi';
         }).slice(0, 5);
-        console.log('Rendering belum data, count:', belum.length);
+        
         let html = '';
         
         const today = new Date();
@@ -465,10 +465,10 @@
         const tbody = document.getElementById('tabelBelumBody');
         if (tbody) {
           tbody.innerHTML = html;
-          console.log('✓ Belum table updated');
+          
         }
       } catch (error) {
-        console.error('Error rendering belum data:', error);
+        
       }
     }
 

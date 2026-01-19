@@ -311,7 +311,7 @@
       if (!tbody) return;
       destroyTable();
       if (!allData.length){
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Belum ada data</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Belum ada data ubinan.</td></tr>';
         return;
       }
       let html = '';
@@ -425,6 +425,9 @@
       } catch(err) {
         console.error('Hapus gagal', err);
         alert('Gagal hapus: ' + err.message);
+        // Pastikan modal selalu tertutup meskipun error
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+        if (modal) modal.hide();
         btn.disabled = false;
         btn.innerHTML = originalHtml;
       }
@@ -437,7 +440,7 @@
         allData = res.data.data || [];
         buildRows();
         updateStats();
-        initDataTable();
+        if (allData.length) initDataTable();
       } catch(err) {
         console.error('Error load ubinan:', err);
         const tbody = document.getElementById('tableBody');

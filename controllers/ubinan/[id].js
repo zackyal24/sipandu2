@@ -54,7 +54,8 @@ module.exports = async (req, res) => {
             const gcsPath = getFilePathFromUrl(data[field]);
             if (gcsPath) {
               try {
-                data[`${field}_url`] = await getSignedUrl(bucket, gcsPath, 3600);
+                const signedUrl = await getSignedUrl(bucket, gcsPath, 3600);
+                data[`${field}_url`] = signedUrl;
               } catch (err) {
                 console.error(`Error generating signed URL for ${field}:`, err.message);
               }
