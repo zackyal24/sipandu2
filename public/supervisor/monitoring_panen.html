@@ -394,12 +394,10 @@
     async function confirmDelete() {
       const id = window.deleteItemId;
       if (!id) return;
-      
       const btn = document.getElementById('confirmDeleteBtn');
       const originalHtml = btn.innerHTML;
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menghapus...';
-      
       try {
         const res = await fetchWithAuth(API_BASE + '/ubinan/' + id, { method:'DELETE' });
         if (!res.ok || !res.data?.success) {
@@ -408,17 +406,24 @@
           btn.innerHTML = originalHtml;
         } else {
           // Close modal
-          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-          modal.hide();
-          
+          const modalElem = document.getElementById('deleteModal');
+          const modal = bootstrap.Modal.getInstance(modalElem);
+          if (modal) modal.hide();
+          // Ensure backdrop is removed after modal is hidden
+          setTimeout(() => {
+            document.body.classList.remove('modal-open');
+            // Remove lingering backdrops
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.parentNode.removeChild(el));
+          }, 300);
           // Update data
           allData = allData.filter(d => String(d.id) !== String(id));
           if (dataTable) { dataTable.destroy(); dataTable = null; }
           buildRows();
           updateStats();
-          initDataTable();
-          attachRowClick();
-          
+          if (allData.length) {
+            initDataTable();
+            attachRowClick();
+          }
           btn.disabled = false;
           btn.innerHTML = originalHtml;
         }
@@ -426,8 +431,13 @@
         console.error('Hapus gagal', err);
         alert('Gagal hapus: ' + err.message);
         // Pastikan modal selalu tertutup meskipun error
-        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+        const modalElem = document.getElementById('deleteModal');
+        const modal = bootstrap.Modal.getInstance(modalElem);
         if (modal) modal.hide();
+        setTimeout(() => {
+          document.body.classList.remove('modal-open');
+          document.querySelectorAll('.modal-backdrop').forEach(el => el.parentNode.removeChild(el));
+        }, 300);
         btn.disabled = false;
         btn.innerHTML = originalHtml;
       }

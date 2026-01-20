@@ -22,7 +22,16 @@
       #detail-panen table { width: 100%; font-size: 12px; }
       #detail-panen th { background-color: #f0f0f0 !important; font-weight: 600; }
       #detail-panen td { padding: 8px; }
-      img.preview { max-width: 400px; height: auto; page-break-inside: avoid; }
+      tr, td, img.preview {
+        page-break-inside: avoid !important;
+      }
+      img.preview {
+        max-width: 400px !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 10px auto 20px auto !important;
+      }
     }
   </style>
 </head>
@@ -226,13 +235,13 @@
         
         // Foto (gunakan signed URL dari GCS)
         if (data.foto_serah_terima_url) {
-          document.getElementById('foto_serah_terima_cell').innerHTML = `<img src="${data.foto_serah_terima_url}" class="preview" alt="Foto Serah Terima" onclick="window.open(this.src, '_blank')" style="cursor:pointer;">`;
+          document.getElementById('foto_serah_terima_cell').innerHTML = `<img src="${data.foto_serah_terima_url}" class="preview" alt="Foto Serah Terima" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
         }
         if (data.foto_bukti_plot_ubinan_url) {
-          document.getElementById('foto_bukti_plot_ubinan_cell').innerHTML = `<img src="${data.foto_bukti_plot_ubinan_url}" class="preview" alt="Foto Bukti Plot" onclick="window.open(this.src, '_blank')" style="cursor:pointer;">`;
+          document.getElementById('foto_bukti_plot_ubinan_cell').innerHTML = `<img src="${data.foto_bukti_plot_ubinan_url}" class="preview" alt="Foto Bukti Plot" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
         }
         if (data.foto_berat_timbangan_url) {
-          document.getElementById('foto_berat_timbangan_cell').innerHTML = `<img src="${data.foto_berat_timbangan_url}" class="preview" alt="Foto Berat Timbangan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;">`;
+          document.getElementById('foto_berat_timbangan_cell').innerHTML = `<img src="${data.foto_berat_timbangan_url}" class="preview" alt="Foto Berat Timbangan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
         }
         
         // Simpan data untuk digunakan di fungsi aksi
@@ -408,7 +417,6 @@
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
-      
       html2pdf().from(document.getElementById('detail-panen')).set(opt).save();
     });
     

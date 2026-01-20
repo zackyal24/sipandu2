@@ -16,6 +16,20 @@
     @media(max-width:768px){ img.preview{ width:150px; height:120px; } }
     @media(max-width:576px){ img.preview{ width:120px; height:100px; } }
     footer { margin-top:60px; font-size:14px; color:#888; }
+
+    /* PDF Export Styles */
+    @media print {
+      tr, td, img.preview {
+        page-break-inside: avoid !important;
+      }
+      img.preview {
+        max-width: 400px !important;
+        width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 10px auto 20px auto !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -140,17 +154,15 @@
       const gkg = data.gkg ? `<span class="fw-bold">${parseFloat(data.gkg).toFixed(2)} ku/ha</span>` : '<span class="text-muted">Belum terdata</span>';
       const ku = data.ku ? `<span class="fw-bold text-success">${parseFloat(data.ku).toFixed(2)} ku/ha</span>` : '<span class="text-muted">Belum terdata</span>';
 
-      // Render foto dengan preview (gunakan signed URL dari GCS)
+      // Render foto di dalam tabel, seperti supervisor
       const fotoSerahTerima = data.foto_serah_terima_url 
-        ? `<img src="${data.foto_serah_terima_url}" class="preview" alt="Foto Serah Terima" onclick="window.open(this.src, '_blank')" style="cursor:pointer;">`
+        ? `<img src="${data.foto_serah_terima_url}" class="preview" alt="Foto Serah Terima" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`
         : '<span class="text-muted">Belum terdata</span>';
-      
       const fotoBuktiPlot = data.foto_bukti_plot_ubinan_url
-        ? `<img src="${data.foto_bukti_plot_ubinan_url}" class="preview" alt="Foto Bukti Plot" onclick="window.open(this.src, '_blank')" style="cursor:pointer;">`
+        ? `<img src="${data.foto_bukti_plot_ubinan_url}" class="preview" alt="Foto Bukti Plot" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`
         : '<span class="text-muted">Belum terdata</span>';
-      
       const fotoBeratTimbangan = data.foto_berat_timbangan_url
-        ? `<img src="${data.foto_berat_timbangan_url}" class="preview" alt="Foto Berat Timbangan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;">`
+        ? `<img src="${data.foto_berat_timbangan_url}" class="preview" alt="Foto Berat Timbangan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`
         : '<span class="text-muted">Belum terdata</span>';
 
       // Revisi block jika ada
@@ -200,8 +212,13 @@
   </script>
   <script>
   document.getElementById('exportPDF').addEventListener('click', function(){
-    var element=document.getElementById('detail-panen');
-    html2pdf().from(element).set({ margin:0.5, filename:'detail-panen-demo.pdf', html2canvas:{scale:2}, jsPDF:{orientation:'portrait', unit:'cm', format:'a4'} }).save();
+    var element = document.getElementById('detail-panen');
+    html2pdf().from(element).set({
+      margin: 0.5,
+      filename: 'detail-panen-demo.pdf',
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { orientation: 'portrait', unit: 'cm', format: 'a4' }
+    }).save();
   });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

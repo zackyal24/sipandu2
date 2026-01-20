@@ -6,3 +6,4 @@ uploads/
 *.log
 Thumbs.db
 .env*.local
+cors.json
