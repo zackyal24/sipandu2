@@ -116,24 +116,28 @@ exports.getOrUpdateOrDelete = async (req, res) => {
 
     // PUT - Update user
     if (req.method === 'PUT') {
-      const { nama_lengkap, no_hp, email, role, pml_id } = req.body;
-
-      const result = await pool.query(
-        `UPDATE users 
-         SET nama_lengkap = COALESCE($1, nama_lengkap),
-             no_hp = COALESCE($2, no_hp),
-             email = COALESCE($3, email),
-             role = COALESCE($4, role),
-             pml_id = COALESCE($5, pml_id)
-         WHERE id = $6
-         RETURNING id, username, nama_lengkap, no_hp, email, role, pml_id`,
-        [nama_lengkap, no_hp, email, role, pml_id, id]
-      );
-
+      const { username, nama_lengkap, no_hp, email, role, pml_id } = req.body;
+      // Cek apakah username sudah digunakan user lain
+      if (username) {
+        const checkUser = await pool.query('SELECT id FROM users WHERE username = $1 AND id != $2', [username, id]);
+        if (checkUser.rows.length > 0) {
+          return res.status(400).json({ error: 'Username sudah digunakan user lain' });
+        }
+      }
+      const query = `UPDATE users 
+         SET username = COALESCE($1, username),
+             nama_lengkap = COALESCE($2, nama_lengkap),
+             no_hp = COALESCE($3, no_hp),
+             email = COALESCE($4, email),
+             role = COALESCE($5, role),
+             pml_id = COALESCE($6, pml_id)
+         WHERE id = $7
+         RETURNING id, username, nama_lengkap, no_hp, email, role, pml_id`;
+      const params = [username, nama_lengkap, no_hp, email, role, pml_id, id];
+      const result = await pool.query(query, params);
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'User tidak ditemukan' });
       }
-
       return res.json({ success: true, data: result.rows[0] });
     }
 

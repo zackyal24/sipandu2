@@ -35,7 +35,7 @@
         <form id="editUserForm" onsubmit="handleSubmit(event)">
           <div class="mb-3">
             <label class="form-label"><i class="bi bi-at me-2"></i>Username</label>
-            <input type="text" id="username" class="form-control" readonly />
+            <input type="text" id="username" class="form-control" />
           </div>
           <div class="mb-3">
             <label class="form-label"><i class="bi bi-person me-2"></i>Nama Lengkap *</label>
@@ -108,6 +108,7 @@
         const res = await fetchWithAuth(API_BASE + '/users');
         if (res.ok && res.data?.success) {
           const pmlUsers = res.data.data.filter(u => u.role === 'pml');
+          localStorage.setItem('sipandu_pml_list', JSON.stringify(pmlUsers));
           const pmlSelect = document.getElementById('pml_id');
           pmlSelect.innerHTML = '<option value="">Pilih PML</option>';
           pmlUsers.forEach(pml => {
@@ -120,13 +121,11 @@
     async function loadUserData() {
       const params = new URLSearchParams(window.location.search);
       userId = params.get('id');
-      
       if (!userId) {
         alert('User ID tidak ditemukan');
         window.location.href = './monitoring_akun.html';
         return;
       }
-
       try {
         const res = await fetchWithAuth(API_BASE + '/users/' + userId);
         if (res.ok && res.data?.success) {
@@ -136,10 +135,10 @@
           document.getElementById('email').value = userData.email || '';
           document.getElementById('no_hp').value = userData.no_hp || '';
           document.getElementById('role').value = userData.role;
+          togglePmlField();
           if (userData.role === 'pcl' && userData.pml_id) {
             document.getElementById('pml_id').value = userData.pml_id;
           }
-          togglePmlField();
         }
       } catch (err) {
         alert('Gagal memuat data user: ' + (err.message || 'Network error'));
@@ -156,7 +155,7 @@
       const confirmPassword = document.getElementById('confirm_password').value.trim();
       
       if (role === 'pcl' && !pml_id) {
-        alert('PCL harus memiliki PML pengawas');
+        alert('PCL harus memiliki PML');
         return;
       }
 
@@ -171,6 +170,7 @@
       }
 
       const data = {
+        username: document.getElementById('username').value.trim(),
         nama_lengkap: document.getElementById('nama_lengkap').value.trim(),
         email: document.getElementById('email').value.trim(),
         no_hp: document.getElementById('no_hp').value.trim(),
@@ -227,10 +227,10 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       document.getElementById('year').textContent = new Date().getFullYear();
-      loadPMLList();
-      loadUserData();
+      await loadPMLList();
+      await loadUserData();
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

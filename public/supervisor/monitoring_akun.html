@@ -253,8 +253,14 @@
       }
 
       let html = '';
+      // Ambil user yang sedang login
+      let currentUser = null;
+      try {
+        currentUser = (typeof getSipanduUser === 'function') ? getSipanduUser() : JSON.parse(localStorage.getItem('sipandu_user'));
+      } catch (e) {}
       allData.forEach((item, idx) => {
         const role = (item.role || '').toLowerCase();
+        const isSelf = currentUser && (item.id === currentUser.id);
         html += `
           <tr data-role="${role}">
             <td class="text-center">${idx + 1}</td>
@@ -267,9 +273,7 @@
               <a href="./edit_akun.html?id=${item.id}" class="btn btn-sm btn-outline-warning me-1" title="Edit User">
                 <i class="bi bi-pencil-square"></i>
               </a>
-              <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-id="${item.id}" data-name="${item.nama_lengkap || item.username}" title="Hapus User">
-                <i class="bi bi-trash"></i>
-              </button>
+              ${!isSelf ? `<button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-id="${item.id}" data-name="${item.nama_lengkap || item.username}" title="Hapus User"><i class="bi bi-trash"></i></button>` : ''}
             </td>
           </tr>
         `;
@@ -297,13 +301,19 @@
         columnDefs: [{ targets: 0, searchable: false, orderable: false }],
         order: [[1, 'asc']]
       });
-      
+
+      // Attach delete handler on every table draw (pagination, filter, etc)
       dataTable.on('draw.dt', function(){
+        // Update row numbers
         dataTable.column(0, {search:'applied', order:'applied'}).nodes().each(function(cell, i){ 
           cell.innerHTML = i + 1; 
         });
+        // Attach delete button handlers
+        attachDeleteHandlers();
       });
       dataTable.draw();
+      // Initial attach for first render
+      attachDeleteHandlers();
     }
 
     async function loadData() {
@@ -361,9 +371,16 @@
           btn.disabled = false;
           btn.innerHTML = originalHtml;
         } else {
-          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          const modalEl = document.getElementById('deleteModal');
+          const modal = bootstrap.Modal.getInstance(modalEl);
           modal.hide();
-          
+          // Paksa hapus backdrop jika masih ada
+          setTimeout(() => {
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            modalEl.classList.remove('show');
+            modalEl.setAttribute('aria-hidden', 'true');
+            modalEl.style.display = 'none';
+          }, 300);
           // Update data
           allData = allData.filter(d => String(d.id) !== String(id));
           

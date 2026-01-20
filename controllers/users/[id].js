@@ -56,55 +56,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    // PUT - Update user
-    if (req.method === 'PUT') {
-      if (user.role !== 'supervisor') {
-        return res.status(403).json({ error: 'Hanya supervisor yang dapat mengubah user' });
-      }
-
-      const { nama_lengkap, email, no_hp, role, pml_id, password } = req.body;
-
-      if (!nama_lengkap || !email || !no_hp || !role) {
-        return res.status(400).json({ error: 'Semua field harus diisi' });
-      }
-
-      if (role.toLowerCase() === 'pcl' && !pml_id) {
-        return res.status(400).json({ error: 'PCL harus memiliki PML pengawas' });
-      }
-
-      let hashedPassword = null;
-      if (password && password.trim().length > 0) {
-        if (password.length < 6) {
-          return res.status(400).json({ error: 'Password minimal 6 karakter' });
-        }
-        const bcrypt = require('bcrypt');
-        hashedPassword = await bcrypt.hash(password, 10);
-      }
-
-      let query = `UPDATE users 
-                   SET nama_lengkap = $1, email = $2, no_hp = $3, role = $4, pml_id = $5`;
-      const params = [nama_lengkap, email, no_hp, role.toLowerCase(), pml_id || null];
-
-      if (hashedPassword) {
-        query += `, password = $6`;
-        params.push(hashedPassword);
-      }
-
-      params.push(id);
-      query += ` WHERE id = $${params.length} RETURNING id, username, nama_lengkap, email, no_hp, role`;
-
-      const result = await pool.query(query, params);
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'User tidak ditemukan' });
-      }
-
-      return res.json({
-        success: true,
-        message: 'User berhasil diupdate',
-        data: result.rows[0]
-      });
-    }
+    // ...existing code...
 
     // DELETE user
     if (req.method === 'DELETE') {

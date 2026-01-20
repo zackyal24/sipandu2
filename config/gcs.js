@@ -7,12 +7,12 @@ const getStorage = () => {
   if (!storage) {
     // Untuk akses lokal, uncomment kode di bawah ini dan set GOOGLE_APPLICATION_CREDENTIALS ke path file key JSON
     
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      storage = new Storage({
-        projectId: process.env.GCP_PROJECT_ID,
-        keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
-      });
-    } else 
+    // if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    //   storage = new Storage({
+    //     projectId: process.env.GCP_PROJECT_ID,
+    //     keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
+    //   });
+    // } else 
     
     if (process.env.GCS_CREDENTIALS) {
       // Untuk environment variable JSON
