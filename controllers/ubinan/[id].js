@@ -36,7 +36,10 @@ module.exports = async (req, res) => {
     // GET - Ambil detail ubinan
     if (req.method === 'GET') {
       const result = await pool.query(
-        'SELECT * FROM monitoring_data_panen WHERE id = $1',
+        `SELECT m.*, u.nama_lengkap AS nama_pcl
+         FROM monitoring_data_panen m
+         LEFT JOIN users u ON m.user_id = u.id
+         WHERE m.id = $1`,
         [id]
       );
       if (result.rows.length === 0) {

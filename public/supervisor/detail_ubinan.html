@@ -85,6 +85,7 @@
             </div>
           </div>
           <table class="table table-bordered" id="dataTable" style="display:none;">
+            <tr><th>Nama PCL</th><td id="nama_pcl">-</td></tr>
             <tr><th style="width:30%;">Nama Petani</th><td id="nama_petani">-</td></tr>
             <tr><th>Desa</th><td id="desa">-</td></tr>
             <tr><th>Kecamatan</th><td id="kecamatan">-</td></tr>
@@ -93,10 +94,10 @@
             <tr><th>Nomor Segmen</th><td id="nomor_segmen">-</td></tr>
             <tr><th>Nomor Sub Segmen</th><td id="nomor_sub_segmen">-</td></tr>
             <tr><th>Status</th><td id="status_cell">-</td></tr>
-            <tr><th>Berat Ubinan</th><td><span class="fw-bold text-primary" id="berat_plot">-</span> kg</td></tr>
-            <tr><th>Estimasi Gabah Kering Panen</th><td id="gkp">Belum terdata</td></tr>
-            <tr><th>Estimasi Gabah Kering Giling</th><td id="gkg">Belum terdata</td></tr>
-            <tr><th>Estimasi Produksi Beras</th><td id="ku">Belum terdata</td></tr>
+            <tr><th>Berat Ubinan (Plot)</th><td id="berat_plot">-</td></tr>
+            <tr><th>Estimasi Gabah Kering Panen (GKP)</th><td id="gkp">Belum terdata <span class="text-muted">(ku/ha)</span></td></tr>
+            <tr><th>Estimasi Gabah Kering Giling (GKG)</th><td id="gkg">Belum terdata <span class="text-muted">(ku/ha)</span></td></tr>
+            <tr><th>Estimasi Produksi Beras (KU)</th><td id="ku">Belum terdata <span class="text-muted">(ku/ha)</span></td></tr>
             <tr><th>Foto Serah Terima</th><td id="foto_serah_terima_cell">Belum terdata</td></tr>
             <tr><th>Foto Bukti Plot Ubinan</th><td id="foto_bukti_plot_ubinan_cell">Belum terdata</td></tr>
             <tr><th>Foto Berat Timbangan</th><td id="foto_berat_timbangan_cell">Belum terdata</td></tr>
@@ -212,6 +213,7 @@
         document.getElementById('subround').textContent = data.subround || '-';
         document.getElementById('nomor_segmen').textContent = data.nomor_segmen || '-';
         document.getElementById('nomor_sub_segmen').textContent = data.nomor_sub_segmen || '-';
+        document.getElementById('nama_pcl').textContent = data.nama_pcl || '-';
         
         // Status badge
         const statusColor = {
@@ -225,13 +227,23 @@
         
         document.getElementById('berat_plot').textContent = data.berat_plot || '0';
         
-        const gkp = parseFloat(data.gkp);
-        const gkg = parseFloat(data.gkg);
-        const ku = parseFloat(data.ku);
-        
-        document.getElementById('gkp').textContent = !isNaN(gkp) && gkp ? gkp.toFixed(2) : 'Belum terdata';
-        document.getElementById('gkg').textContent = !isNaN(gkg) && gkg ? gkg.toFixed(2) : 'Belum terdata';
-        document.getElementById('ku').textContent = !isNaN(ku) && ku ? ku.toFixed(2) : 'Belum terdata';
+        // Format dan satuan seperti di PML
+        let beratPlot = (data.berat_plot !== undefined && data.berat_plot !== null && data.berat_plot !== '' && !isNaN(data.berat_plot))
+          ? `<span class="fw-bold text-primary">${parseFloat(data.berat_plot).toFixed(2)} kg</span>`
+          : '<span class="text-muted">Belum terdata</span>';
+        let gkp = (data.gkp !== undefined && data.gkp !== null && data.gkp !== '' && !isNaN(data.gkp))
+          ? `<span class="fw-bold">${parseFloat(data.gkp).toFixed(2)} ku/ha</span>`
+          : '<span class="text-muted">Belum terdata</span>';
+        let gkg = (data.gkg !== undefined && data.gkg !== null && data.gkg !== '' && !isNaN(data.gkg))
+          ? `<span class="fw-bold">${parseFloat(data.gkg).toFixed(2)} ku/ha</span>`
+          : '<span class="text-muted">Belum terdata</span>';
+        let ku = (data.ku !== undefined && data.ku !== null && data.ku !== '' && !isNaN(data.ku))
+          ? `<span class="fw-bold text-success">${parseFloat(data.ku).toFixed(2)} ku/ha</span>`
+          : '<span class="text-muted">Belum terdata</span>';
+        document.getElementById('berat_plot').innerHTML = beratPlot;
+        document.getElementById('gkp').innerHTML = gkp;
+        document.getElementById('gkg').innerHTML = gkg;
+        document.getElementById('ku').innerHTML = ku;
         
         // Foto (gunakan signed URL dari GCS)
         if (data.foto_serah_terima_url) {
