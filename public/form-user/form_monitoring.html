@@ -105,16 +105,24 @@
           </div>
 
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-camera me-2"></i>Upload Foto Serah Terima</label>
-            <input type="file" id="foto_serah_terima" name="foto_serah_terima" class="form-control" accept="image/*" />
+            <label class="form-label"><i class="bi bi-cash me-2"></i>Foto Penyampaian uang kepada petani</label>
+            <input type="file" id="foto_penyampaian_uang" name="foto_penyampaian_uang" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-grid-3x3-gap me-2"></i>Upload Foto Bukti Plot Ubinan</label>
-            <input type="file" id="foto_bukti_plot_ubinan" name="foto_bukti_plot_ubinan" class="form-control" accept="image/*" />
+            <label class="form-label"><i class="bi bi-person-badge me-2"></i>KTP Petani</label>
+            <input type="file" id="foto_ktp_petani" name="foto_ktp_petani" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-speedometer me-2"></i>Upload Foto Berat Timbangan</label>
-            <input type="file" id="foto_berat_timbangan" name="foto_berat_timbangan" class="form-control" accept="image/*" />
+            <label class="form-label"><i class="bi bi-speedometer me-2"></i>Foto Timbangan hasil ubinan</label>
+            <input type="file" id="foto_timbangan_ubinan" name="foto_timbangan_ubinan" class="form-control" accept="image/*" />
+          </div>
+          <div class="col-12">
+            <label class="form-label"><i class="bi bi-gear me-2"></i>Proses Ubinan</label>
+            <input type="file" id="foto_proses_ubinan" name="foto_proses_ubinan" class="form-control" accept="image/*" />
+          </div>
+          <div class="col-12">
+            <label class="form-label"><i class="bi bi-grid-3x3-gap me-2"></i>Foto plot ubinannya yg setelah dipotong padinya</label>
+            <input type="file" id="foto_plot_setelah_panen" name="foto_plot_setelah_panen" class="form-control" accept="image/*" />
           </div>
 
           <div class="col-12">
@@ -271,17 +279,21 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // Upload files if any are selected
-          const fotoSerahTerima = document.getElementById('foto_serah_terima').files[0];
-          const fotoBuktiPlot = document.getElementById('foto_bukti_plot_ubinan').files[0];
-          const fotoBeratTimbangan = document.getElementById('foto_berat_timbangan').files[0];
-          
-          if (fotoSerahTerima || fotoBuktiPlot || fotoBeratTimbangan) {
+          // Upload files if any are selected (5 jenis foto)
+          const fotoPenyampaianUang = document.getElementById('foto_penyampaian_uang').files[0];
+          const fotoKtpPetani = document.getElementById('foto_ktp_petani').files[0];
+          const fotoTimbanganUbinan = document.getElementById('foto_timbangan_ubinan').files[0];
+          const fotoProsesUbinan = document.getElementById('foto_proses_ubinan').files[0];
+          const fotoPlotSetelahPanen = document.getElementById('foto_plot_setelah_panen').files[0];
+
+          if (fotoPenyampaianUang || fotoKtpPetani || fotoTimbanganUbinan || fotoProsesUbinan || fotoPlotSetelahPanen) {
             const formData = new FormData();
-            if (fotoSerahTerima) formData.append('foto_serah_terima', fotoSerahTerima);
-            if (fotoBuktiPlot) formData.append('foto_bukti_plot_ubinan', fotoBuktiPlot);
-            if (fotoBeratTimbangan) formData.append('foto_berat_timbangan', fotoBeratTimbangan);
-            
+            if (fotoPenyampaianUang) formData.append('foto_penyampaian_uang', fotoPenyampaianUang);
+            if (fotoKtpPetani) formData.append('foto_ktp_petani', fotoKtpPetani);
+            if (fotoTimbanganUbinan) formData.append('foto_timbangan_ubinan', fotoTimbanganUbinan);
+            if (fotoProsesUbinan) formData.append('foto_proses_ubinan', fotoProsesUbinan);
+            if (fotoPlotSetelahPanen) formData.append('foto_plot_setelah_panen', fotoPlotSetelahPanen);
+
             try {
               const uploadResponse = await fetch(`${API_BASE}/ubinan/${ubinanId}/upload`, {
                 method: 'POST',
@@ -291,9 +303,9 @@
                 },
                 body: formData
               });
-              
+
               const uploadResult = await uploadResponse.json();
-              
+
               if (!uploadResponse.ok) {
                 // Better error message from backend validation
                 const errorMsg = uploadResult.error || 'Unknown error';

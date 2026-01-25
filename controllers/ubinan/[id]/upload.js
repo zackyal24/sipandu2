@@ -60,7 +60,9 @@ module.exports = async (req, res) => {
 
         // Get desa, tanggal_panen, and existing file paths from database
         const dataResult = await pool.query(
-          'SELECT desa, tanggal_panen, foto_serah_terima, foto_bukti_plot_ubinan, foto_berat_timbangan FROM monitoring_data_panen WHERE id = $1',
+          `SELECT desa, tanggal_panen,
+            foto_penyampaian_uang, foto_ktp_petani, foto_timbangan_ubinan, foto_proses_ubinan, foto_plot_setelah_panen
+          FROM monitoring_data_panen WHERE id = $1`,
           [id]
         );
 
@@ -68,11 +70,16 @@ module.exports = async (req, res) => {
           return res.status(404).json({ error: 'Data ubinan tidak ditemukan' });
         }
 
-        const { desa, tanggal_panen, foto_serah_terima, foto_bukti_plot_ubinan, foto_berat_timbangan } = dataResult.rows[0];
+        const {
+          desa, tanggal_panen,
+          foto_penyampaian_uang, foto_ktp_petani, foto_timbangan_ubinan, foto_proses_ubinan, foto_plot_setelah_panen
+        } = dataResult.rows[0];
         const oldFiles = {
-          foto_serah_terima,
-          foto_bukti_plot_ubinan,
-          foto_berat_timbangan
+          foto_penyampaian_uang,
+          foto_ktp_petani,
+          foto_timbangan_ubinan,
+          foto_proses_ubinan,
+          foto_plot_setelah_panen
         };
         const dateStr = tanggal_panen ? new Date(tanggal_panen).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
 
@@ -136,18 +143,23 @@ module.exports = async (req, res) => {
             }
           }
 
-          let gcsFolder = 'serah_terima';
-          let kategori = 'serah-terima';
-          
-          if (fieldname === 'foto_serah_terima') {
-            gcsFolder = 'serah_terima';
-            kategori = 'serah-terima';
-          } else if (fieldname === 'foto_bukti_plot_ubinan') {
-            gcsFolder = 'bukti_plot_ubinan';
-            kategori = 'bukti-plot';
-          } else if (fieldname === 'foto_berat_timbangan') {
-            gcsFolder = 'berat_timbangan';
-            kategori = 'berat-timbangan';
+          let gcsFolder = 'lainnya';
+          let kategori = fieldname;
+          if (fieldname === 'foto_penyampaian_uang') {
+            gcsFolder = 'penyampaian_uang';
+            kategori = 'penyampaian-uang';
+          } else if (fieldname === 'foto_ktp_petani') {
+            gcsFolder = 'ktp_petani';
+            kategori = 'ktp-petani';
+          } else if (fieldname === 'foto_timbangan_ubinan') {
+            gcsFolder = 'timbangan_ubinan';
+            kategori = 'timbangan-ubinan';
+          } else if (fieldname === 'foto_proses_ubinan') {
+            gcsFolder = 'proses_ubinan';
+            kategori = 'proses-ubinan';
+          } else if (fieldname === 'foto_plot_setelah_panen') {
+            gcsFolder = 'plot_setelah_panen';
+            kategori = 'plot-setelah-panen';
           }
 
           const timestamp = Date.now(); // Unix timestamp untuk unique filename

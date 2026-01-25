@@ -86,9 +86,11 @@
             <tr><th>Estimasi Gabah Kering Panen (GKP)</th><td id="gkp">Belum terdata <span class="text-muted">(ku/ha)</span></td></tr>
             <tr><th>Estimasi Gabah Kering Giling (GKG)</th><td id="gkg">Belum terdata <span class="text-muted">(ku/ha)</span></td></tr>
             <tr><th>Estimasi Produksi Beras (KU)</th><td id="ku">Belum terdata <span class="text-muted">(ku/ha)</span></td></tr>
-            <tr><th>Foto Serah Terima</th><td id="foto_serah_terima_cell">Belum terdata</td></tr>
-            <tr><th>Foto Bukti Plot Ubinan</th><td id="foto_bukti_plot_ubinan_cell">Belum terdata</td></tr>
-            <tr><th>Foto Berat Timbangan</th><td id="foto_berat_timbangan_cell">Belum terdata</td></tr>
+            <tr><th>Foto Penyampaian uang kepada petani</th><td id="foto_penyampaian_uang_cell">Belum terdata</td></tr>
+            <tr><th>KTP Petani</th><td id="foto_ktp_petani_cell">Belum terdata</td></tr>
+            <tr><th>Foto Timbangan hasil ubinan</th><td id="foto_timbangan_ubinan_cell">Belum terdata</td></tr>
+            <tr><th>Proses Ubinan</th><td id="foto_proses_ubinan_cell">Belum terdata</td></tr>
+            <tr><th>Foto plot ubinannya yg setelah dipotong padinya</th><td id="foto_plot_setelah_panen_cell">Belum terdata</td></tr>
           </table>
         </div>
       </div>
@@ -182,21 +184,31 @@
         } else {
           document.getElementById('ku').innerHTML = '<span class="text-muted">Belum terdata</span>';
         }
-        // Foto
-        if (data.foto_serah_terima_url) {
-          document.getElementById('foto_serah_terima_cell').innerHTML = `<img src="${data.foto_serah_terima_url}" class="preview" alt="Foto Serah Terima" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+        // Foto baru
+        if (data.foto_penyampaian_uang_url) {
+          document.getElementById('foto_penyampaian_uang_cell').innerHTML = `<img src="${data.foto_penyampaian_uang_url}" class="preview" alt="Foto Penyampaian Uang" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
         } else {
-          document.getElementById('foto_serah_terima_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
+          document.getElementById('foto_penyampaian_uang_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
         }
-        if (data.foto_bukti_plot_ubinan_url) {
-          document.getElementById('foto_bukti_plot_ubinan_cell').innerHTML = `<img src="${data.foto_bukti_plot_ubinan_url}" class="preview" alt="Foto Bukti Plot" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+        if (data.foto_ktp_petani_url) {
+          document.getElementById('foto_ktp_petani_cell').innerHTML = `<img src="${data.foto_ktp_petani_url}" class="preview" alt="KTP Petani" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
         } else {
-          document.getElementById('foto_bukti_plot_ubinan_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
+          document.getElementById('foto_ktp_petani_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
         }
-        if (data.foto_berat_timbangan_url) {
-          document.getElementById('foto_berat_timbangan_cell').innerHTML = `<img src="${data.foto_berat_timbangan_url}" class="preview" alt="Foto Berat Timbangan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+        if (data.foto_timbangan_ubinan_url) {
+          document.getElementById('foto_timbangan_ubinan_cell').innerHTML = `<img src="${data.foto_timbangan_ubinan_url}" class="preview" alt="Foto Timbangan Ubinan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
         } else {
-          document.getElementById('foto_berat_timbangan_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
+          document.getElementById('foto_timbangan_ubinan_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
+        }
+        if (data.foto_proses_ubinan_url) {
+          document.getElementById('foto_proses_ubinan_cell').innerHTML = `<img src="${data.foto_proses_ubinan_url}" class="preview" alt="Proses Ubinan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+        } else {
+          document.getElementById('foto_proses_ubinan_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
+        }
+        if (data.foto_plot_setelah_panen_url) {
+          document.getElementById('foto_plot_setelah_panen_cell').innerHTML = `<img src="${data.foto_plot_setelah_panen_url}" class="preview" alt="Plot Setelah Panen" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+        } else {
+          document.getElementById('foto_plot_setelah_panen_cell').innerHTML = '<span class="text-muted">Belum terdata</span>';
         }
         // Revisi block jika ada
         const tableEl = document.getElementById('dataTable');

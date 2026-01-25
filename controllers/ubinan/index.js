@@ -66,8 +66,8 @@ module.exports = async (req, res) => {
         const insertResult = await pool.query(
           `INSERT INTO monitoring_data_panen 
            (nama_petani, desa, kecamatan, tanggal_panen, subround, nomor_segmen, nomor_sub_segmen, status, user_id, 
-            berat_plot, gkp, gkg, ku, foto_serah_terima, foto_bukti_plot_ubinan, foto_berat_timbangan, created_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, '', '', '', NOW())
+            berat_plot, gkp, gkg, ku, foto_penyampaian_uang, foto_ktp_petani, foto_timbangan_ubinan, foto_proses_ubinan, foto_plot_setelah_panen, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, '', '', '', '', '', NOW())
            RETURNING id`,
           [nama_petani, desa, kecamatan, tanggal_panen, subround, nomor_segmen, nomor_sub_segmen, status || 'belum selesai', user.id, req.body.berat_plot || 0, gkp, gkg, ku]
         );
@@ -106,9 +106,11 @@ module.exports = async (req, res) => {
         m.revised_at,
         m.created_at,
         m.user_id,
-        m.foto_serah_terima,
-        m.foto_bukti_plot_ubinan,
-        m.foto_berat_timbangan,
+        m.foto_penyampaian_uang,
+        m.foto_ktp_petani,
+        m.foto_timbangan_ubinan,
+        m.foto_proses_ubinan,
+        m.foto_plot_setelah_panen,
         u.nama_lengkap as pcl_name,
         u.no_hp
       FROM monitoring_data_panen m
@@ -132,7 +134,13 @@ module.exports = async (req, res) => {
     const bucket = process.env.GCS_BUCKET;
     if (bucket) {
       for (const row of result.rows) {
-        const photoFields = ['foto_serah_terima', 'foto_bukti_plot_ubinan', 'foto_berat_timbangan'];
+        const photoFields = [
+          'foto_penyampaian_uang',
+          'foto_ktp_petani',
+          'foto_timbangan_ubinan',
+          'foto_proses_ubinan',
+          'foto_plot_setelah_panen'
+        ];
         for (const field of photoFields) {
           if (row[field]) {
             const gcsPath = getFilePathFromUrl(row[field]);

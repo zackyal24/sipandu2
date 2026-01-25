@@ -51,7 +51,13 @@ module.exports = async (req, res) => {
 
       // Generate signed URLs for photos (valid 1 hour)
       if (bucket) {
-        const photoFields = ['foto_serah_terima', 'foto_bukti_plot_ubinan', 'foto_berat_timbangan'];
+        const photoFields = [
+          'foto_penyampaian_uang',
+          'foto_ktp_petani',
+          'foto_timbangan_ubinan',
+          'foto_proses_ubinan',
+          'foto_plot_setelah_panen'
+        ];
         for (const field of photoFields) {
           if (data[field]) {
             const gcsPath = getFilePathFromUrl(data[field]);
