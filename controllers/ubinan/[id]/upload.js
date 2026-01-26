@@ -89,58 +89,44 @@ module.exports = async (req, res) => {
           if (!file) continue;
 
           // ===== FILE VALIDATION =====
-          
           // 1. Check file size (max 10MB = 10485760 bytes)
           const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
           if (file.size > MAX_FILE_SIZE) {
-            // Clean up temp file
-            if (fs.existsSync(file.filepath)) {
-              fs.unlinkSync(file.filepath);
-            }
+            if (fs.existsSync(file.filepath)) fs.unlinkSync(file.filepath);
             return res.status(400).json({ 
               error: `File terlalu besar. Maksimal 10MB (${fieldname} = ${(file.size / 1024 / 1024).toFixed(2)}MB)`
             });
           }
 
           // 2. Check file type (only images)
-          // Tambah variasi MIME yang kadang dikirim browser/ponsel (image/jpg, image/pjpeg) + HEIC/HEIF
           const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'];
           const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'];
-          
           let ext = path.extname(file.originalFilename).toLowerCase();
           let mimeType = file.mimetype || '';
           let uploadPath = file.filepath;
 
           if (!ALLOWED_EXTENSIONS.includes(ext) || !ALLOWED_MIME_TYPES.includes(mimeType)) {
-            // Clean up temp file
-            if (fs.existsSync(file.filepath)) {
-              fs.unlinkSync(file.filepath);
-            }
+            if (fs.existsSync(file.filepath)) fs.unlinkSync(file.filepath);
             return res.status(400).json({ 
               error: `Format file tidak didukung (${fieldname}). Hanya JPG, PNG, GIF, WebP, HEIC/HEIF (akan dikonversi) yang diizinkan`
             });
           }
 
-          // 3. Convert HEIC/HEIF to JPEG
-          const isHeic = ['.heic', '.heif'].includes(ext) || ['image/heic', 'image/heif'].includes(mimeType);
-          if (isHeic) {
-            try {
-              const convertedPath = path.join(path.dirname(file.filepath), `${path.basename(file.filepath, ext)}.jpg`);
-              await sharp(file.filepath).jpeg({ quality: 90 }).toFile(convertedPath);
-              // remove original temp file
-              if (fs.existsSync(file.filepath)) {
-                fs.unlinkSync(file.filepath);
-              }
-              uploadPath = convertedPath;
-              ext = '.jpg';
-              mimeType = 'image/jpeg';
-            } catch (convErr) {
-              console.error('HEIC convert error:', convErr);
-              if (fs.existsSync(file.filepath)) {
-                fs.unlinkSync(file.filepath);
-              }
-              return res.status(400).json({ error: 'Gagal mengonversi foto HEIC ke JPEG, coba ulangi atau set kamera ke JPEG' });
-            }
+          // Resize & compress all images (max width 1280px, JPEG quality 80)
+          try {
+            const resizedPath = path.join(path.dirname(file.filepath), `${path.basename(file.filepath, ext)}_resized.jpg`);
+            await sharp(file.filepath)
+              .resize({ width: 1280, withoutEnlargement: true })
+              .jpeg({ quality: 80 })
+              .toFile(resizedPath);
+            if (fs.existsSync(file.filepath)) fs.unlinkSync(file.filepath);
+            uploadPath = resizedPath;
+            ext = '.jpg';
+            mimeType = 'image/jpeg';
+          } catch (resizeErr) {
+            console.error('Resize/compress error:', resizeErr);
+            if (fs.existsSync(file.filepath)) fs.unlinkSync(file.filepath);
+            return res.status(400).json({ error: 'Gagal resize/kompres gambar, pastikan file valid.' });
           }
 
           let gcsFolder = 'lainnya';

@@ -412,6 +412,7 @@
           // Ensure backdrop is removed after modal is hidden
           setTimeout(() => {
             document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
             // Remove lingering backdrops
             document.querySelectorAll('.modal-backdrop').forEach(el => el.parentNode.removeChild(el));
           }, 300);
@@ -436,6 +437,7 @@
         if (modal) modal.hide();
         setTimeout(() => {
           document.body.classList.remove('modal-open');
+          document.body.style.overflow = '';
           document.querySelectorAll('.modal-backdrop').forEach(el => el.parentNode.removeChild(el));
         }, 300);
         btn.disabled = false;

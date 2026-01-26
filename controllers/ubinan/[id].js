@@ -165,8 +165,10 @@ module.exports = async (req, res) => {
     }
 
     // Get the record with file names
+
     const checkResult = await pool.query(
-      'SELECT foto_serah_terima, foto_bukti_plot_ubinan, foto_berat_timbangan FROM monitoring_data_panen WHERE id = $1',
+      `SELECT foto_penyampaian_uang, foto_ktp_petani, foto_timbangan_ubinan, foto_proses_ubinan, foto_plot_setelah_panen
+       FROM monitoring_data_panen WHERE id = $1`,
       [id]
     );
 
@@ -177,11 +179,13 @@ module.exports = async (req, res) => {
     const record = checkResult.rows[0];
     const bucket = process.env.GCS_BUCKET;
 
-    // Delete associated image files from GCS
+    // Delete associated image files from GCS (field baru)
     const fileFields = [
-      record.foto_serah_terima,
-      record.foto_bukti_plot_ubinan,
-      record.foto_berat_timbangan
+      record.foto_penyampaian_uang,
+      record.foto_ktp_petani,
+      record.foto_timbangan_ubinan,
+      record.foto_proses_ubinan,
+      record.foto_plot_setelah_panen
     ];
 
     if (bucket) {

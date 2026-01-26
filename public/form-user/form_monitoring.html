@@ -186,6 +186,9 @@
       return `${year}-${month}-${day}`;
     }
 
+    // Status revisi global
+    let isRevisi = false;
+
     // Load ubinan data
     async function loadUbinanData() {
       ubinanId = getUbinanIdFromUrl();
@@ -215,7 +218,13 @@
             setTimeout(() => { window.location.href = './dashboard_user.html'; }, 1500);
             return;
           }
-          
+
+          // Deteksi revisi
+          if (st === 'revisi' || data.note_revisi) {
+            isRevisi = true;
+            showAlert('Form ini dalam status revisi. Anda boleh memperbaiki sebagian data saja.', 'info');
+          }
+
           // Fill read-only fields
           document.getElementById('nama_petani').value = data.nama_petani || '';
           document.getElementById('desa').value = data.desa || '';
@@ -256,6 +265,19 @@
         return;
       }
 
+      // Validasi foto hanya jika bukan revisi
+      if (!isRevisi) {
+        const fotoPenyampaianUang = document.getElementById('foto_penyampaian_uang').files[0];
+        const fotoKtpPetani = document.getElementById('foto_ktp_petani').files[0];
+        const fotoTimbanganUbinan = document.getElementById('foto_timbangan_ubinan').files[0];
+        const fotoProsesUbinan = document.getElementById('foto_proses_ubinan').files[0];
+        const fotoPlotSetelahPanen = document.getElementById('foto_plot_setelah_panen').files[0];
+        if (!fotoPenyampaianUang || !fotoKtpPetani || !fotoTimbanganUbinan || !fotoProsesUbinan || !fotoPlotSetelahPanen) {
+          showAlert('Semua foto monitoring wajib diupload untuk data baru.', 'warning');
+          return;
+        }
+      }
+
       document.getElementById('loadingSpinner').classList.remove('d-none');
 
       try {
@@ -279,7 +301,7 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // Upload files if any are selected (5 jenis foto)
+          // Upload files jika ada yang dipilih
           const fotoPenyampaianUang = document.getElementById('foto_penyampaian_uang').files[0];
           const fotoKtpPetani = document.getElementById('foto_ktp_petani').files[0];
           const fotoTimbanganUbinan = document.getElementById('foto_timbangan_ubinan').files[0];
