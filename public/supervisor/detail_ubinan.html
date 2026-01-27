@@ -9,9 +9,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     body { background:#f8f9fc; font-family:'Poppins',sans-serif; padding-top:70px; }
-    img.preview { width:250px; height:180px; object-fit:cover; border:1px solid #ddd; border-radius:8px; padding:5px; margin:10px auto; display:block; cursor:pointer; }
-    @media(max-width:768px){ img.preview{ width:150px; height:120px; } }
-    @media(max-width:576px){ img.preview{ width:120px; height:100px; } }
+    img.preview {
+      width: 320px;
+      height: 220px;
+      max-width: 100%;
+      object-fit: cover;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 5px;
+      margin: 10px auto;
+      display: block;
+      cursor: pointer;
+    }
+    @media(max-width:768px){ img.preview{ width:180px; height:120px; } }
+    @media(max-width:576px){ img.preview{ width:120px; height:80px; } }
     
     /* PDF Export Styles */
     @media print {
@@ -249,19 +260,19 @@
         
         // Foto (gunakan signed URL dari GCS)
         if (data.foto_penyampaian_uang_url) {
-          document.getElementById('foto_penyampaian_uang_cell').innerHTML = `<img src="${data.foto_penyampaian_uang_url}" class="preview" alt="Foto Penyampaian Uang" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+          document.getElementById('foto_penyampaian_uang_cell').innerHTML = `<img src="${data.foto_penyampaian_uang_url}" class="preview" alt="Foto Penyampaian Uang" onclick="window.open(this.src, '_blank')">`;
         }
         if (data.foto_ktp_petani_url) {
-          document.getElementById('foto_ktp_petani_cell').innerHTML = `<img src="${data.foto_ktp_petani_url}" class="preview" alt="KTP Petani" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+          document.getElementById('foto_ktp_petani_cell').innerHTML = `<img src="${data.foto_ktp_petani_url}" class="preview" alt="KTP Petani" onclick="window.open(this.src, '_blank')">`;
         }
         if (data.foto_timbangan_ubinan_url) {
-          document.getElementById('foto_timbangan_ubinan_cell').innerHTML = `<img src="${data.foto_timbangan_ubinan_url}" class="preview" alt="Foto Timbangan Ubinan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+          document.getElementById('foto_timbangan_ubinan_cell').innerHTML = `<img src="${data.foto_timbangan_ubinan_url}" class="preview" alt="Foto Timbangan Ubinan" onclick="window.open(this.src, '_blank')">`;
         }
         if (data.foto_proses_ubinan_url) {
-          document.getElementById('foto_proses_ubinan_cell').innerHTML = `<img src="${data.foto_proses_ubinan_url}" class="preview" alt="Proses Ubinan" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+          document.getElementById('foto_proses_ubinan_cell').innerHTML = `<img src="${data.foto_proses_ubinan_url}" class="preview" alt="Proses Ubinan" onclick="window.open(this.src, '_blank')">`;
         }
         if (data.foto_plot_setelah_panen_url) {
-          document.getElementById('foto_plot_setelah_panen_cell').innerHTML = `<img src="${data.foto_plot_setelah_panen_url}" class="preview" alt="Plot Setelah Panen" onclick="window.open(this.src, '_blank')" style="cursor:pointer;max-width:400px;width:100%;height:auto;display:block;margin:0 auto;">`;
+          document.getElementById('foto_plot_setelah_panen_cell').innerHTML = `<img src="${data.foto_plot_setelah_panen_url}" class="preview" alt="Plot Setelah Panen" onclick="window.open(this.src, '_blank')">`;
         }
         
         // Simpan data untuk digunakan di fungsi aksi
