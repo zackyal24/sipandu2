@@ -87,6 +87,7 @@
         <div id="detail-panen">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold mb-0">Detail Data Ubinan</h3>
+            <div id="aksiValidasi" class="d-flex gap-2"></div>
           </div>
           <div id="loading" class="text-center">
             <div class="spinner-border text-primary" role="status">
@@ -181,9 +182,97 @@
           'belum': 'secondary',
           'sudah': 'info',
           'revisi': 'warning',
+          'sedang diperiksa': 'info',
           'tidak bisa': 'danger'
         }[(data.status || '').toLowerCase()] || 'secondary';
         document.getElementById('status_cell').innerHTML = `<span class="badge bg-${statusColor}">${data.status || 'Belum'}</span>`;
+
+        // Tampilkan tombol aksi jika status sedang diperiksa
+        const aksiDiv = document.getElementById('aksiValidasi');
+        aksiDiv.innerHTML = '';
+        if ((data.status || '').toLowerCase() === 'sedang diperiksa') {
+          aksiDiv.innerHTML = `
+            <button type="button" class="btn btn-warning revisiButton me-2 d-flex align-items-center gap-1" id="btnRevisi">
+              <i class="bi bi-pencil"></i> Revisi
+            </button>
+            <button type="button" class="btn btn-success approveBtn d-flex align-items-center gap-1" id="btnApprove">
+              <i class="bi bi-check"></i> Approve
+            </button>
+          `;
+        }
+            // Approve action
+            document.getElementById('aksiValidasi')?.addEventListener('click', async function(e) {
+              if (e.target.closest('.approveBtn')) {
+                const btn = e.target.closest('.approveBtn');
+                btn.disabled = true;
+                const id = getIdFromUrl();
+                try {
+                  const token = localStorage.getItem('sipandu_token');
+                  // Ambil berat_plot dari tampilan
+                  const beratPlotText = document.getElementById('berat_plot').textContent;
+                  const berat_plot = beratPlotText ? parseFloat(beratPlotText) : null;
+                  if (!berat_plot) {
+                    alert('Gagal approve: berat_plot tidak ditemukan atau belum diisi');
+                    btn.disabled = false;
+                    return;
+                  }
+                  const res = await fetch(`${API_BASE}/ubinan/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'selesai', berat_plot })
+                  });
+                  const result = await res.json();
+                  if (res.ok && result.success) {
+                    btn.disabled = false;
+                    // Reload detail
+                    await loadDetailData();
+                  } else {
+                    alert('Gagal approve: ' + (result.error || 'Unknown error'));
+                    btn.disabled = false;
+                  }
+                } catch (err) {
+                  alert('Gagal approve: ' + (err.message || 'Network error'));
+                  btn.disabled = false;
+                }
+              }
+              // Revisi action
+              if (e.target.closest('.revisiButton')) {
+                const btn = e.target.closest('.revisiButton');
+                btn.disabled = true;
+                const note = prompt('Masukkan catatan revisi untuk PCL:');
+                if (!note || !note.trim()) {
+                  alert('Catatan revisi wajib diisi.');
+                  btn.disabled = false;
+                  return;
+                }
+                const id = getIdFromUrl();
+                try {
+                  const token = localStorage.getItem('sipandu_token');
+                  const res = await fetch(`${API_BASE}/ubinan/${id}/revisi`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ note_revisi: note })
+                  });
+                  const result = await res.json();
+                  if (res.ok && result.success) {
+                    btn.disabled = false;
+                    await loadDetailData();
+                  } else {
+                    alert('Gagal mengirim revisi: ' + (result.error || 'Unknown error'));
+                    btn.disabled = false;
+                  }
+                } catch (err) {
+                  alert('Gagal mengirim revisi: ' + (err.message || 'Network error'));
+                  btn.disabled = false;
+                }
+              }
+            });
         // Berat ubinan
         if (data.berat_plot !== undefined && data.berat_plot !== null && data.berat_plot !== '' && !isNaN(data.berat_plot)) {
           document.getElementById('berat_plot').innerHTML = `<span class='fw-bold text-primary'>${parseFloat(data.berat_plot).toFixed(2)} kg</span>`;

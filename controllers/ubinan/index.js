@@ -62,14 +62,14 @@ module.exports = async (req, res) => {
           ku = gkg * 0.6274;
         }
 
-        // Insert without file uploads (placeholder values)
+        // Insert with status default 'sedang diperiksa'
         const insertResult = await pool.query(
           `INSERT INTO monitoring_data_panen 
            (nama_petani, desa, kecamatan, tanggal_panen, subround, nomor_segmen, nomor_sub_segmen, status, user_id, 
             berat_plot, gkp, gkg, ku, foto_penyampaian_uang, foto_ktp_petani, foto_timbangan_ubinan, foto_proses_ubinan, foto_plot_setelah_panen, created_at)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, '', '', '', '', '', NOW())
            RETURNING id`,
-          [nama_petani, desa, kecamatan, tanggal_panen, subround, nomor_segmen, nomor_sub_segmen, status || 'belum selesai', user.id, req.body.berat_plot || 0, gkp, gkg, ku]
+          [nama_petani, desa, kecamatan, tanggal_panen, subround, nomor_segmen, nomor_sub_segmen, status || 'sedang diperiksa', user.id, req.body.berat_plot || 0, gkp, gkg, ku]
         );
 
         return res.json({

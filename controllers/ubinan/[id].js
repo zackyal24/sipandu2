@@ -96,18 +96,20 @@ module.exports = async (req, res) => {
         const oldStatus = (oldStatusResult.rows[0].status || '').toLowerCase();
         const newStatus = (status || 'selesai').toLowerCase();
 
-        // Validasi berat_plot hanya wajib jika status baru 'selesai' atau 'sudah'
-        if ((newStatus === 'selesai' || newStatus === 'sudah') && !berat_plot) {
-          return res.status(400).json({ error: 'berat_plot harus diisi jika status selesai/sudah' });
+        // Validasi berat_plot hanya wajib jika status baru 'selesai' (approve)
+        if (newStatus === 'selesai' && !berat_plot) {
+          return res.status(400).json({ error: 'berat_plot harus diisi jika status selesai' });
         }
 
 
-        // Definisi transisi FSM
+
+        // FSM baru: status modern
         const validTransitions = {
-          'belum': ['selesai', 'tidak bisa'],
-          'sudah': ['selesai'],
+          'sedang diperiksa': ['selesai', 'revisi'],
+          'revisi': ['selesai', 'sedang diperiksa'],
           'selesai': ['revisi'],
-          'revisi': ['selesai'],
+          'belum': ['sedang diperiksa', 'tidak bisa'],
+          'sudah': ['sedang diperiksa', 'selesai'],
           'tidak bisa': []
         };
 
@@ -131,7 +133,8 @@ module.exports = async (req, res) => {
           ku = gkg * 0.6274;
         }
 
-        const shouldClearRevisi = newStatus === 'selesai';
+        // Hapus note_revisi hanya jika status berubah dari revisi ke sedang diperiksa
+        const shouldClearRevisi = (oldStatus === 'revisi' && newStatus === 'sedang diperiksa');
 
         const updateResult = await pool.query(
           `UPDATE monitoring_data_panen 

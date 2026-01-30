@@ -101,27 +101,27 @@
           <!-- Editable monitoring fields -->
           <div class="col-12">
             <label class="form-label"><i class="bi bi-basket me-2"></i>Berat Panen Per Plot (kg) <span class="text-danger">*</span></label>
-            <input type="number" step="0.01" id="berat_plot" class="form-control" placeholder="4.2" required />
+            <input type="number" step="0.01" id="berat_plot" class="form-control" placeholder="masukan nilai berat ubinan misalnya: 4.2" required />
           </div>
 
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-cash me-2"></i>Foto Penyampaian uang kepada petani</label>
+            <label class="form-label"><i class="bi bi-cash me-2"></i>Foto Penyampaian uang kepada petani <span class="text-danger">*</span></label>
             <input type="file" id="foto_penyampaian_uang" name="foto_penyampaian_uang" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-person-badge me-2"></i>KTP Petani</label>
+            <label class="form-label"><i class="bi bi-person-badge me-2"></i>KTP Petani <span class="text-danger">*</span></label>
             <input type="file" id="foto_ktp_petani" name="foto_ktp_petani" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-speedometer me-2"></i>Foto Timbangan hasil ubinan</label>
+            <label class="form-label"><i class="bi bi-speedometer me-2"></i>Foto Timbangan hasil ubinan <span class="text-danger">*</span></label>
             <input type="file" id="foto_timbangan_ubinan" name="foto_timbangan_ubinan" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-gear me-2"></i>Proses Ubinan</label>
+            <label class="form-label"><i class="bi bi-gear me-2"></i>Proses Ubinan <span class="text-danger">*</span></label>
             <input type="file" id="foto_proses_ubinan" name="foto_proses_ubinan" class="form-control" accept="image/*" />
           </div>
           <div class="col-12">
-            <label class="form-label"><i class="bi bi-grid-3x3-gap me-2"></i>Foto plot ubinannya yg setelah dipotong padinya</label>
+            <label class="form-label"><i class="bi bi-grid-3x3-gap me-2"></i>Foto plot ubinannya yg setelah dipotong padinya <span class="text-danger">*</span></label>
             <input type="file" id="foto_plot_setelah_panen" name="foto_plot_setelah_panen" class="form-control" accept="image/*" />
           </div>
 
@@ -284,7 +284,7 @@
         // Prepare JSON payload
         const payload = {
           berat_plot: parseFloat(beratPlot),
-          status: 'selesai'
+          status: 'sedang diperiksa'
         };
 
         // Make PUT request with JSON
