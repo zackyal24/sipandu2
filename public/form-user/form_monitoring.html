@@ -101,7 +101,7 @@
           <!-- Editable monitoring fields -->
           <div class="col-12">
             <label class="form-label"><i class="bi bi-basket me-2"></i>Berat Panen Per Plot (kg) <span class="text-danger">*</span></label>
-            <input type="number" step="0.01" id="berat_plot" class="form-control" placeholder="masukan nilai berat ubinan misalnya: 4.2" required />
+            <input type="number" step="0.01" id="berat_plot" class="form-control" placeholder="contoh berat ubinan: 4.2" required />
           </div>
 
           <div class="col-12">
@@ -141,6 +141,74 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     let ubinanId = null;
+
+    // ===== CLIENT-SIDE IMAGE COMPRESSION =====
+    async function compressImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Resize ke max 1024px width, maintain aspect ratio
+            if (width > 1024) {
+              height = Math.round((height * 1024) / width);
+              width = 1024;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Compress to JPEG quality 75
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  // Create new File object dengan nama asli
+                  const compressedFile = new File([blob], file.name, {
+                    type: 'image/jpeg',
+                    lastModified: file.lastModified
+                  });
+                  resolve(compressedFile);
+                } else {
+                  reject(new Error('Canvas compression failed'));
+                }
+              },
+              'image/jpeg',
+              0.75
+            );
+          };
+          img.onerror = () => reject(new Error('Image load failed'));
+        };
+        reader.onerror = () => reject(new Error('File read failed'));
+      });
+    }
+
+    // Compress multiple files
+    async function compressImages(fileInputIds) {
+      const compressedFiles = {};
+      for (const fieldId of fileInputIds) {
+        const fileInput = document.getElementById(fieldId);
+        if (fileInput && fileInput.files[0]) {
+          try {
+            console.log(`Compressing ${fieldId}...`);
+            compressedFiles[fieldId] = await compressImage(fileInput.files[0]);
+            console.log(`${fieldId} compressed from ${fileInput.files[0].size} to ${compressedFiles[fieldId].size} bytes`);
+          } catch (err) {
+            console.error(`Error compressing ${fieldId}:`, err);
+            throw new Error(`Gagal mengompres gambar ${fieldId}: ${err.message}`);
+          }
+        }
+      }
+      return compressedFiles;
+    }
 
     // Get ID from URL parameter
     function getUbinanIdFromUrl() {
@@ -301,35 +369,49 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // Upload files jika ada yang dipilih
-          const fotoPenyampaianUang = document.getElementById('foto_penyampaian_uang').files[0];
-          const fotoKtpPetani = document.getElementById('foto_ktp_petani').files[0];
-          const fotoTimbanganUbinan = document.getElementById('foto_timbangan_ubinan').files[0];
-          const fotoProsesUbinan = document.getElementById('foto_proses_ubinan').files[0];
-          const fotoPlotSetelahPanen = document.getElementById('foto_plot_setelah_panen').files[0];
+          // Check if ada file yang perlu di-upload
+          const filesToUpload = [
+            'foto_penyampaian_uang',
+            'foto_ktp_petani',
+            'foto_timbangan_ubinan',
+            'foto_proses_ubinan',
+            'foto_plot_setelah_panen'
+          ].filter(fieldId => document.getElementById(fieldId).files[0]);
 
-          if (fotoPenyampaianUang || fotoKtpPetani || fotoTimbanganUbinan || fotoProsesUbinan || fotoPlotSetelahPanen) {
-            const formData = new FormData();
-            if (fotoPenyampaianUang) formData.append('foto_penyampaian_uang', fotoPenyampaianUang);
-            if (fotoKtpPetani) formData.append('foto_ktp_petani', fotoKtpPetani);
-            if (fotoTimbanganUbinan) formData.append('foto_timbangan_ubinan', fotoTimbanganUbinan);
-            if (fotoProsesUbinan) formData.append('foto_proses_ubinan', fotoProsesUbinan);
-            if (fotoPlotSetelahPanen) formData.append('foto_plot_setelah_panen', fotoPlotSetelahPanen);
-
+          if (filesToUpload.length > 0) {
             try {
+              // Compress semua gambar terlebih dahulu (show progress)
+              showAlert('Sedang mengompres gambar... (1/2)', 'info');
+              const compressedFiles = await compressImages(filesToUpload);
+              
+              // Create FormData dengan file yang sudah dikompres
+              const formData = new FormData();
+              for (const fieldId of filesToUpload) {
+                if (compressedFiles[fieldId]) {
+                  formData.append(fieldId, compressedFiles[fieldId]);
+                }
+              }
+
+              showAlert('Sedang mengupload gambar... (2/2)', 'info');
+              
+              // Upload dengan timeout yang lebih panjang (5 menit untuk mobile network)
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 menit
+              
               const uploadResponse = await fetch(`${API_BASE}/ubinan/${ubinanId}/upload`, {
                 method: 'POST',
                 headers: {
                   'Authorization': `Bearer ${token}`
                   // Don't set Content-Type - let browser set it with multipart boundary
                 },
-                body: formData
+                body: formData,
+                signal: controller.signal
               });
 
+              clearTimeout(timeoutId);
               const uploadResult = await uploadResponse.json();
 
               if (!uploadResponse.ok) {
-                // Better error message from backend validation
                 const errorMsg = uploadResult.error || 'Unknown error';
                 console.error('Upload error:', errorMsg, uploadResult);
                 showAlert('Data tersimpan, tapi upload foto gagal: ' + errorMsg, 'warning');
@@ -338,7 +420,10 @@
               }
             } catch (uploadErr) {
               console.error('Upload exception:', uploadErr);
-              const errorMsg = uploadErr.message || 'Network error';
+              let errorMsg = uploadErr.message || 'Network error';
+              if (uploadErr.name === 'AbortError') {
+                errorMsg = 'Upload timeout - jaringan terlalu lambat, mohon coba lagi di jaringan yang lebih stabil';
+              }
               showAlert('Data tersimpan, tapi upload foto error: ' + errorMsg, 'warning');
             }
           } else {

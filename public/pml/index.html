@@ -273,7 +273,7 @@
               <i class="bi bi-pencil" style="font-size:1.25rem;"></i>
             </button>
             <button type="button" class="btn btn-link p-0 m-0 approveBtn" data-id="${item.id}" data-bs-toggle="tooltip" data-bs-placement="top" title="Approve" style="color:#198754;">
-              <i class="bi bi-check" style="font-size:1.25rem;"></i>
+              <i class="bi bi-check-circle-fill" style="font-size:1.25rem; font-weight:bold;"></i>
             </button>
           `;
         } else if (statusVal === 'selesai') {
@@ -340,8 +340,7 @@
                 row.find('td:eq(7)').html('<button type="button" class="btn btn-link p-0 m-0 revisiButton" data-id="'+id+'" data-nama="" data-bs-toggle="tooltip" data-bs-placement="top" title="Revisi" style="color:#ffc107;"><i class="bi bi-pencil" style="font-size:1.25rem;"></i></button>');
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
-                // Tetap loadData untuk sinkronisasi data
-                await loadData();
+                // Jangan loadData() untuk menghindari flickering - UI sudah updated optimistically
               } else {
                 alert('Gagal approve: ' + (result.error || 'Unknown error'));
                 btn.disabled = false;

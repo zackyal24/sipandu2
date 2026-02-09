@@ -118,6 +118,30 @@
         </div>
       </div>
     </div>
+
+    <!-- Revisi Modal -->
+    <div class="modal fade" id="revisiModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-arrow-counterclockwise me-2"></i>Kirim Revisi</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-muted mb-3">Berikan catatan revisi untuk data ini.</p>
+            <label class="form-label">Catatan Revisi <span class="text-danger">*</span></label>
+            <textarea id="revisiNote" class="form-control" rows="4" placeholder="Tulis catatan revisi yang jelas..."></textarea>
+            <div class="form-text">Catatan ini akan dikirim ke PCL untuk diperbaiki.</div>
+            <div class="text-danger small d-none mt-2" id="revisiError">Catatan revisi tidak boleh kosong.</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-warning" id="submitRevisiBtn" onclick="submitRevisiPML()"><i class="bi bi-send me-1"></i>Kirim Revisi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <footer class="text-center mt-4 mb-3">&copy; <span id="year"></span> SIPANDU - BPS Kabupaten Bekasi</footer>
   </div>
 
@@ -187,92 +211,82 @@
         }[(data.status || '').toLowerCase()] || 'secondary';
         document.getElementById('status_cell').innerHTML = `<span class="badge bg-${statusColor}">${data.status || 'Belum'}</span>`;
 
-        // Tampilkan tombol aksi jika status sedang diperiksa
+        // Tampilkan tombol aksi sesuai status
         const aksiDiv = document.getElementById('aksiValidasi');
         aksiDiv.innerHTML = '';
-        if ((data.status || '').toLowerCase() === 'sedang diperiksa') {
-          aksiDiv.innerHTML = `
+        const statusLower = (data.status || '').toLowerCase();
+        
+        // Tombol Revisi hanya muncul saat status "sedang diperiksa" atau "selesai" (sesuai FSM)
+        if (statusLower === 'sedang diperiksa' || statusLower === 'selesai') {
+          aksiDiv.innerHTML += `
             <button type="button" class="btn btn-warning revisiButton me-2 d-flex align-items-center gap-1" id="btnRevisi">
               <i class="bi bi-pencil"></i> Revisi
             </button>
+          `;
+        }
+        
+        // Tombol Approve hanya muncul saat "sedang diperiksa"
+        if (statusLower === 'sedang diperiksa') {
+          aksiDiv.innerHTML += `
             <button type="button" class="btn btn-success approveBtn d-flex align-items-center gap-1" id="btnApprove">
               <i class="bi bi-check"></i> Approve
             </button>
           `;
         }
-            // Approve action
-            document.getElementById('aksiValidasi')?.addEventListener('click', async function(e) {
-              if (e.target.closest('.approveBtn')) {
-                const btn = e.target.closest('.approveBtn');
-                btn.disabled = true;
-                const id = getIdFromUrl();
-                try {
-                  const token = localStorage.getItem('sipandu_token');
-                  // Ambil berat_plot dari tampilan
-                  const beratPlotText = document.getElementById('berat_plot').textContent;
-                  const berat_plot = beratPlotText ? parseFloat(beratPlotText) : null;
-                  if (!berat_plot) {
-                    alert('Gagal approve: berat_plot tidak ditemukan atau belum diisi');
-                    btn.disabled = false;
-                    return;
-                  }
-                  const res = await fetch(`${API_BASE}/ubinan/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                      'Authorization': `Bearer ${token}`,
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status: 'selesai', berat_plot })
-                  });
-                  const result = await res.json();
-                  if (res.ok && result.success) {
-                    btn.disabled = false;
-                    // Reload detail
-                    await loadDetailData();
-                  } else {
-                    alert('Gagal approve: ' + (result.error || 'Unknown error'));
-                    btn.disabled = false;
-                  }
-                } catch (err) {
-                  alert('Gagal approve: ' + (err.message || 'Network error'));
-                  btn.disabled = false;
-                }
+        
+        // Event listener untuk aksi (di luar if block)
+        document.getElementById('aksiValidasi')?.addEventListener('click', async function(e) {
+          if (e.target.closest('.approveBtn')) {
+            const btn = e.target.closest('.approveBtn');
+            btn.disabled = true;
+            const id = getIdFromUrl();
+            try {
+              const token = localStorage.getItem('sipandu_token');
+              // Ambil berat_plot dari tampilan
+              const beratPlotText = document.getElementById('berat_plot').textContent;
+              const berat_plot = beratPlotText ? parseFloat(beratPlotText) : null;
+              if (!berat_plot) {
+                alert('Gagal approve: berat_plot tidak ditemukan atau belum diisi');
+                btn.disabled = false;
+                return;
               }
-              // Revisi action
-              if (e.target.closest('.revisiButton')) {
-                const btn = e.target.closest('.revisiButton');
-                btn.disabled = true;
-                const note = prompt('Masukkan catatan revisi untuk PCL:');
-                if (!note || !note.trim()) {
-                  alert('Catatan revisi wajib diisi.');
-                  btn.disabled = false;
-                  return;
-                }
-                const id = getIdFromUrl();
-                try {
-                  const token = localStorage.getItem('sipandu_token');
-                  const res = await fetch(`${API_BASE}/ubinan/${id}/revisi`, {
-                    method: 'POST',
-                    headers: {
-                      'Authorization': `Bearer ${token}`,
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ note_revisi: note })
-                  });
-                  const result = await res.json();
-                  if (res.ok && result.success) {
-                    btn.disabled = false;
-                    await loadDetailData();
-                  } else {
-                    alert('Gagal mengirim revisi: ' + (result.error || 'Unknown error'));
-                    btn.disabled = false;
-                  }
-                } catch (err) {
-                  alert('Gagal mengirim revisi: ' + (err.message || 'Network error'));
-                  btn.disabled = false;
-                }
+              const res = await fetch(`${API_BASE}/ubinan/${id}`, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 'selesai', berat_plot })
+              });
+              const result = await res.json();
+              if (res.ok && result.success) {
+                btn.disabled = false;
+                // Reload detail
+                await loadDetailData();
+              } else {
+                alert('Gagal approve: ' + (result.error || 'Unknown error'));
+                btn.disabled = false;
               }
-            });
+            } catch (err) {
+              alert('Gagal approve: ' + (err.message || 'Network error'));
+              btn.disabled = false;
+            }
+          }
+          // Revisi action
+          if (e.target.closest('.revisiButton')) {
+            const id = getIdFromUrl();
+            if (!id) {
+              alert('ID tidak ditemukan');
+              return;
+            }
+            window.pmlRevisiUbinanId = id;
+            document.getElementById('revisiNote').value = '';
+            document.getElementById('revisiError').classList.add('d-none');
+            const modal = new bootstrap.Modal(document.getElementById('revisiModal'));
+            modal.show();
+            return;
+          }
+        });
         // Berat ubinan
         if (data.berat_plot !== undefined && data.berat_plot !== null && data.berat_plot !== '' && !isNaN(data.berat_plot)) {
           document.getElementById('berat_plot').innerHTML = `<span class='fw-bold text-primary'>${parseFloat(data.berat_plot).toFixed(2)} kg</span>`;
@@ -350,6 +364,47 @@
 
     // Load on page load
     window.addEventListener('DOMContentLoaded', loadDetailData);
+
+    // Submit revisi PML
+    async function submitRevisiPML() {
+      const id = window.pmlRevisiUbinanId;
+      const note = document.getElementById('revisiNote').value.trim();
+      
+      if (!note) {
+        document.getElementById('revisiError').classList.remove('d-none');
+        return;
+      }
+      
+      const btn = document.getElementById('submitRevisiBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Memproses...';
+      try {
+        const token = localStorage.getItem('sipandu_token');
+        const res = await fetch(`${API_BASE}/ubinan/${id}/revisi`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ note_revisi: note })
+        });
+        const result = await res.json();
+        if (res.ok && result.success) {
+          const modal = bootstrap.Modal.getInstance(document.getElementById('revisiModal'));
+          modal.hide();
+          await loadDetailData();
+        } else {
+          alert('Gagal mengirim revisi: ' + (result.error || 'Unknown error'));
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-send me-1"></i>Kirim Revisi';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Gagal mengirim revisi: ' + (error.message || 'Network error atau server tidak tersedia'));
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send me-1"></i>Kirim Revisi';
+      }
+    }
   </script>
   <script>
     document.getElementById('exportPDF').addEventListener('click', function(){

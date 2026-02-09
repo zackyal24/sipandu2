@@ -1,0 +1,83 @@
+================================================================================
+                 STATE MACHINE DIAGRAM - DATA UBINAN (Monitoring)
+================================================================================
+
+STATE SET (sesuai controller ubinan/[id].js):
+============================================
+1) belum
+2) sedang diperiksa
+3) revisi
+4) selesai
+5) sudah
+6) tidak bisa
+
+
+TRANSITIONS (sesuai validTransitions dari controller):
+===================================================
+
+Valid transitions mapping:
+- belum → sedang diperiksa, tidak bisa
+- sedang diperiksa → selesai, revisi
+- revisi → selesai, sedang diperiksa
+- selesai → revisi
+- sudah → sedang diperiksa, selesai
+- tidak bisa → (terminal state, tidak ada transisi)
+
+
+DIAGRAM VISUAL (dengan FORK & JOIN):
+===================================
+
+              [Start]
+                 │
+           ╔═════╩═════╗  ← FORK BAR
+           ║           ║
+           v           v
+        belum        sudah
+           │           │
+           └─────┬─────┘
+                 │
+           ╔═════╩═════╗  ← JOIN BAR
+           ║           ║
+           v           v
+      sedang diperiksa
+                 │
+           ╔═════╩═════╗  ← FORK BAR
+           ║           ║
+           v           v
+        revisi      selesai
+           │           │
+           │           │
+           v           v
+        revisi ←─────────
+           │       ↑
+           │ revisi│
+           │ ulang │
+           └───────┘
+
+PENJELASAN:
+- [Start] → FORK BAR: split ke belum atau sudah
+- belum/sudah → JOIN BAR: bertemu di sedang diperiksa
+- sedang diperiksa → FORK BAR: split ke revisi atau selesai
+- revisi ↔ sedang diperiksa: loop (bisa balik-balik)
+- selesai → revisi: ambil kembali untuk koreksi
+
+
+EVENTS / KEJADIAN:
+=================
+- input data / submit         : Start → belum
+- proses pemeriksaan          : belum → sedang diperiksa
+- reject/invalid              : belum → tidak bisa
+- minta revisi                : sedang diperiksa → revisi
+- approve / finalize          : sedang diperiksa → selesai
+- perbaiki data / resubmit    : revisi → sedang diperiksa
+- revisi ulang / ambil kembali: revisi → selesai (hanya recheck)
+- ambil kembali ke revisi     : selesai → revisi
+- verifikasi dari sudah       : sudah → sedang diperiksa
+- langsung approve dari sudah : sudah → selesai
+
+
+NOTES:
+======
+- Status di atas diambil langsung dari validTransitions di controller.
+- Jika ingin disederhanakan untuk laporan, gunakan subset:
+  belum → sedang diperiksa → selesai, dengan cabang revisi.

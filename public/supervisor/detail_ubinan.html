@@ -79,7 +79,7 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="javascript:editData()"><i class="bi bi-pencil me-2"></i>Edit</a></li>
-              <li><a class="dropdown-item" href="javascript:revisiData()"><i class="bi bi-arrow-counterclockwise me-2"></i>Revisi</a></li>
+              <li id="revisiMenuItem" style="display:none;"><a class="dropdown-item" href="javascript:revisiData()"><i class="bi bi-arrow-counterclockwise me-2"></i>Revisi</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item text-danger" href="javascript:deleteData()"><i class="bi bi-trash me-2"></i>Hapus</a></li>
             </ul>
@@ -277,6 +277,15 @@
         
         // Simpan data untuk digunakan di fungsi aksi
         window.currentData = data;
+        
+        // Tampilkan/sembunyikan menu item Revisi berdasarkan FSM (hanya untuk status sedang diperiksa dan selesai)
+        const statusLower = (data.status || '').toLowerCase();
+        const revisiMenuItem = document.getElementById('revisiMenuItem');
+        if (statusLower === 'sedang diperiksa' || statusLower === 'selesai') {
+          revisiMenuItem.style.display = '';
+        } else {
+          revisiMenuItem.style.display = 'none';
+        }
         
         // Tampilkan keterangan revisi jika ada
         renderRevisiNote(data.note_revisi, data.revised_at);
