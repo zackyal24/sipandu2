@@ -100,7 +100,7 @@
             <tr><th style="width:30%;">Nama Petani</th><td id="nama_petani">-</td></tr>
             <tr><th>Desa</th><td id="desa">-</td></tr>
             <tr><th>Kecamatan</th><td id="kecamatan">-</td></tr>
-            <tr><th>Tanggal Panen</th><td id="tanggal_panen">-</td></tr>
+            <tr><th>Tanggal Ubinan</th><td id="tanggal_panen">-</td></tr>
             <tr><th>Subround</th><td id="subround">-</td></tr>
             <tr><th>Nomor Segmen</th><td id="nomor_segmen">-</td></tr>
             <tr><th>Nomor Sub Segmen</th><td id="nomor_sub_segmen">-</td></tr>
@@ -360,22 +360,19 @@
           body: JSON.stringify({ note_revisi: note })
         });
         if (res.ok && res.data?.success) {
-          window.currentData.status = 'revisi';
-          window.currentData.note_revisi = note;
-          window.currentData.revised_at = new Date().toISOString();
-          const statusColor = 'warning';
-          document.getElementById('status_cell').innerHTML = `<span class="badge bg-${statusColor}">Revisi</span>`;
-          renderRevisiNote(note, window.currentData.revised_at);
-          try { localStorage.setItem('sipandu_refresh_ubinan', '1'); } catch(e){}
           const modal = bootstrap.Modal.getInstance(document.getElementById('revisiModal'));
           modal.hide();
+          // Redirect kembali ke monitoring untuk refresh table
+          alert('Revisi berhasil dikirim!');
+          window.location.href = './monitoring_panen.html?refresh=' + Date.now();
         } else {
           alert('Gagal membuat revisi: ' + (res.error || res.data?.error || 'Unknown error'));
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-send me-1"></i>Kirim Revisi';
         }
       } catch (error) {
         console.error('Error:', error);
         alert('Terjadi kesalahan: ' + (error.message || 'Network error atau server tidak tersedia'));
-      } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-send me-1"></i>Kirim Revisi';
       }

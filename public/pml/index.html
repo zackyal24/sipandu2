@@ -8,7 +8,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     body { background:#f8f9fc; font-family:'Poppins',sans-serif; overflow-x:hidden; }
     .navbar-brand { font-weight:bold; font-size:20px; }
@@ -97,9 +96,8 @@
             <thead class="table-light text-center">
               <tr>
                 <th style="width:40px;">No</th>
-                <th>Tanggal Panen</th>
+                <th>Tanggal Ubinan</th>
                 <th>Nama Petani</th>
-                <th class="d-none d-md-table-cell">PCL</th>
                 <th class="d-none d-md-table-cell">Lokasi</th>
                 <th>Berat Plot</th>
                 <th>Status</th>
@@ -107,7 +105,7 @@
               </tr>
             </thead>
             <tbody id="ubinanTableBody">
-              <tr><td colspan="8" class="text-center text-muted">Memuat data...</td></tr>
+              <tr><td colspan="7" class="text-center text-muted">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -170,7 +168,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
   <script>
     let table;
     let allData = [];
@@ -184,14 +181,14 @@
         const response = await fetchWithAuth(API_BASE + '/ubinan?ts=' + Date.now(), { cache: 'no-store' });
         
         if (!response.ok || !response.data || !response.data.success) {
-          $('#ubinanTableBody').html('<tr><td colspan="8" class="text-center text-muted">Gagal memuat data.</td></tr>');
+          $('#ubinanTableBody').html('<tr><td colspan="7" class="text-center text-muted">Gagal memuat data.</td></tr>');
           return;
         }
 
         allData = response.data.data || [];
         
         if (allData.length === 0) {
-          $('#ubinanTableBody').html('<tr><td colspan="8" class="text-center text-muted">Belum ada data ubinan.</td></tr>');
+          $('#ubinanTableBody').html('<tr><td colspan="7" class="text-center text-muted">Belum ada data ubinan.</td></tr>');
           updateStats([]);
           return;
         }
@@ -200,7 +197,7 @@
         updateStats(allData);
       } catch (error) {
         console.error('Error loading data:', error);
-        $('#ubinanTableBody').html('<tr><td colspan="8" class="text-center text-danger">Terjadi kesalahan.</td></tr>');
+        $('#ubinanTableBody').html('<tr><td colspan="7" class="text-center text-danger">Terjadi kesalahan.</td></tr>');
       }
     }
 
@@ -261,7 +258,6 @@
         const lokasi = [item.desa, item.kecamatan].filter(Boolean).join(', ');
         const statusVal = (item.status || '').toLowerCase();
         const beratPlot = item.berat_plot ? parseFloat(item.berat_plot).toFixed(2) : '-';
-        const pclName = item.pcl_name || 'N/A';
         
         let statusBadge = '<span class="badge bg-secondary">Belum</span>';
         let aksiBtn = '';
@@ -296,7 +292,6 @@
             <td class="text-center">${index + 1}</td>
             <td class="text-center">${tanggal}</td>
             <td>${item.nama_petani || '-'}</td>
-            <td class="d-none d-md-table-cell"><small>${pclName}</small></td>
             <td class="d-none d-md-table-cell"><small>${lokasi}</small></td>
             <td class="text-center fw-bold">${beratPlot}</td>
             <td class="text-center">${statusBadge}</td>
@@ -336,8 +331,8 @@
               if (res.ok && result.success) {
                 // Optimistic UI: update status di baris DOM langsung
                 const row = $(btn).closest('tr');
-                row.find('td:eq(6)').html('<span class="badge bg-success">Selesai</span>');
-                row.find('td:eq(7)').html('<button type="button" class="btn btn-link p-0 m-0 revisiButton" data-id="'+id+'" data-nama="" data-bs-toggle="tooltip" data-bs-placement="top" title="Revisi" style="color:#ffc107;"><i class="bi bi-pencil" style="font-size:1.25rem;"></i></button>');
+                row.find('td:eq(5)').html('<span class="badge bg-success">Selesai</span>');
+                row.find('td:eq(6)').html('<button type="button" class="btn btn-link p-0 m-0 revisiButton" data-id="'+id+'" data-nama="" data-bs-toggle="tooltip" data-bs-placement="top" title="Revisi" style="color:#ffc107;"><i class="bi bi-pencil" style="font-size:1.25rem;"></i></button>');
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
                 // Jangan loadData() untuk menghindari flickering - UI sudah updated optimistically
@@ -361,7 +356,7 @@
       
       table = $('#tabelPanen').DataTable({
         responsive: true,
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json', emptyTable: 'Belum ada data panen.' },
+        language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json', emptyTable: 'Belum ada data panen.' },
         pageLength: 10,
         columnDefs: [{ targets: 0, searchable: false, orderable: false }, { targets: -1, orderable: false }],
         order: [[1, 'desc']]
@@ -386,9 +381,9 @@
       const filterValue = (document.getElementById('statusFilter')?.value || '').toLowerCase();
       if (!table) return;
       if (!filterValue) {
-        table.column(6).search('').draw();
+        table.column(5).search('').draw();
       } else {
-        table.column(6).search(filterValue, false, false).draw();
+        table.column(5).search(filterValue, false, false).draw();
       }
     }
 
@@ -442,8 +437,8 @@
           const rowEl = document.querySelector(`#tabelPanen tbody tr[data-id="${selectedIdForRevisi}"]`);
           if (rowEl) {
             rowEl.setAttribute('data-status', 'revisi');
-            const statusCell = rowEl.querySelector('td:nth-child(7)');
-            const actionCell = rowEl.querySelector('td:nth-child(8)');
+            const statusCell = rowEl.querySelector('td:nth-child(6)');
+            const actionCell = rowEl.querySelector('td:nth-child(7)');
             if (statusCell) statusCell.innerHTML = '<span class="badge bg-warning text-dark">Revisi</span>';
             if (actionCell) actionCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-secondary revisiButton" disabled><i class="bi bi-journal-arrow-up"></i></button>';
             if (table) { table.row(rowEl).invalidate().draw(false); }
@@ -469,55 +464,39 @@
       }
     });
 
-    // Export to Excel
-    $('#exportExcelBtn').on('click', function() {
-      if (!allData || allData.length === 0) {
-        alert('Tidak ada data untuk diekspor');
-        return;
+    // Export to Excel (server-side, role-filtered)
+    $('#exportExcelBtn').on('click', async function() {
+      try {
+        const token = localStorage.getItem('sipandu_token');
+        if (!token) {
+          alert('Token tidak ditemukan, silakan login ulang');
+          return;
+        }
+
+        const response = await fetch(API_BASE + '/ubinan/export', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Gagal export data');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Data_Ubinan_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('Export error:', err);
+        alert('Gagal export: ' + err.message);
       }
-
-      // Format data untuk Excel
-      const exportData = allData.map((row, idx) => ({
-        'No': idx + 1,
-        'Tanggal Panen': new Date(row.tanggal_panen).toLocaleDateString('id-ID'),
-        'Nama Petani': row.nama_petani || '-',
-        'Desa': row.desa || '-',
-        'Kecamatan': row.kecamatan || '-',
-        'Subround': row.subround || '-',
-        'Nomor Segmen': row.nomor_segmen || '-',
-        'Sub Segmen': row.nomor_sub_segmen || '-',
-        'Berat Plot (kg)': row.berat_plot ? parseFloat(row.berat_plot).toFixed(2) : '-',
-        'GKP (ku/ha)': row.gkp ? parseFloat(row.gkp).toFixed(4) : '-',
-        'GKG (ku/ha)': row.gkg ? parseFloat(row.gkg).toFixed(4) : '-',
-        'Produksi Beras (ku)': row.ku ? parseFloat(row.ku).toFixed(4) : '-',
-        'Status': row.status || '-'
-      }));
-
-      // Create workbook
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Data Panen');
-
-      // Set column widths
-      ws['!cols'] = [
-        { wch: 5 },   // No
-        { wch: 15 },  // Tanggal Panen
-        { wch: 20 },  // Nama Petani
-        { wch: 15 },  // Desa
-        { wch: 15 },  // Kecamatan
-        { wch: 10 },  // Subround
-        { wch: 12 },  // Nomor Segmen
-        { wch: 12 },  // Sub Segmen
-        { wch: 15 },  // Berat Plot
-        { wch: 14 },  // GKP
-        { wch: 14 },  // GKG
-        { wch: 16 },  // Produksi Beras
-        { wch: 12 }   // Status
-      ];
-
-      // Download
-      const timestamp = new Date().toISOString().slice(0, 10);
-      XLSX.writeFile(wb, `Data_Panen_${timestamp}.xlsx`);
     });
 
     // Status filter

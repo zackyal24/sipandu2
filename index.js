@@ -51,7 +51,7 @@ app.use((err, req, res, next) => {
 // Export app untuk Vercel
 module.exports = app;
 
-// Hanya listen jika dijalankan langsung (bukan di Vercel)
+// Hanya listen jika dijalankan langsung
 if (require.main === module) {
   const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {

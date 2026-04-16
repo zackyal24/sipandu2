@@ -130,31 +130,8 @@ module.exports = async (req, res) => {
 
     const result = await pool.query(query, params);
     
-    // Generate signed URLs for photos
-    const bucket = process.env.GCS_BUCKET;
-    if (bucket) {
-      for (const row of result.rows) {
-        const photoFields = [
-          'foto_penyampaian_uang',
-          'foto_ktp_petani',
-          'foto_timbangan_ubinan',
-          'foto_proses_ubinan',
-          'foto_plot_setelah_panen'
-        ];
-        for (const field of photoFields) {
-          if (row[field]) {
-            const gcsPath = getFilePathFromUrl(row[field]);
-            if (gcsPath) {
-              try {
-                row[`${field}_url`] = await getSignedUrl(bucket, gcsPath, 3600);
-              } catch (err) {
-                console.error(`Error generating signed URL for ${field}:`, err.message);
-              }
-            }
-          }
-        }
-      }
-    }
+    // Skip signed URL generation untuk list view (hanya untuk detail view)
+    // Signed URLs hanya di-generate di endpoint [id].js
     
     res.json({
       success: true,

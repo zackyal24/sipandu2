@@ -81,7 +81,7 @@
               </a>
               <div class="collapse ps-4" id="manajemenMenu">
                 <ul class="nav flex-column">
-                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link text-primary"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link text-primary"><i class="bi bi-person-gear me-2"></i>Akun</a></li>
                   <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link text-primary"><i class="bi bi-123 me-2"></i>Segmen</a></li>
                 </ul>
               </div>
@@ -108,7 +108,7 @@
               </a>
               <div class="collapse ps-4" id="manajemenMenuMobile">
                 <ul class="nav flex-column">
-                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link text-primary"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link text-primary"><i class="bi bi-person-gear me-2"></i>Akun</a></li>
                   <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link text-primary"><i class="bi bi-123 me-2"></i>Segmen</a></li>
                 </ul>
               </div>
@@ -121,9 +121,6 @@
       <main id="mainContent" class="col-12 col-lg-10 px-2 px-md-4 pt-3 pt-md-4" style="margin-left:240px;">
         <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
           <h2 class="mb-0">Data Ubinan</h2>
-          <div class="d-flex gap-2">
-            <button class="btn btn-success btn-sm btn-custom" onclick="exportExcel()"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
-          </div>
         </div>
 
         <div class="row g-2 g-md-3 g-lg-4 mb-3 mb-md-4">
@@ -165,6 +162,10 @@
           </div>
         </div>
 
+        <div class="d-flex justify-content-end align-items-center mb-3">
+          <button class="btn btn-success btn-sm btn-custom" onclick="exportExcel()"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+        </div>
+
         <div class="card shadow-sm">
           <div class="card-body p-2 p-md-3">
             <h5 class="card-title mb-3 mb-md-4" style="font-size:clamp(1rem,2.5vw,1.25rem);">Data Monitoring Ubinan</h5>
@@ -186,7 +187,7 @@
                 <thead class="table-light text-center">
                   <tr>
                     <th class="text-center align-middle" style="width:40px;">No</th>
-                    <th class="text-center align-middle">Tanggal Panen</th>
+                    <th class="text-center align-middle">Tanggal Ubinan</th>
                     <th class="text-center align-middle">Nama Petani</th>
                     <th class="text-center align-middle d-none d-md-table-cell">Lokasi</th>
                     <th class="text-center align-middle">Berat Ubinan</th>
@@ -331,7 +332,7 @@
             <td class="text-center">${formatWeight(item)}</td>
             <td class="text-center">${statusBadge(status)}</td>
             <td class="text-center">
-              <a href="${editUrl}" class="btn btn-sm btn-outline-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>
+              <a href="${editUrl}" class="btn btn-sm btn-outline-warning me-1" title="Edit"><i class="bi bi-pencil-square"></i></a>
               <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-id="${item.id}" title="Hapus"><i class="bi bi-trash"></i></button>
             </td>
           </tr>
@@ -353,7 +354,7 @@
       });
       $.fn.dataTable.ext.search[$.fn.dataTable.ext.search.length-1]._sipanduFlag = true;
       dataTable = tableElem.DataTable({
-        language:{ url:'//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json', emptyTable:'Belum ada data panen.' },
+        language:{ url:'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json', emptyTable:'Belum ada data panen.' },
         responsive:true,
         pageLength:10,
         columnDefs:[{ targets:0, searchable:false, orderable:false }],
@@ -449,8 +450,11 @@
 
     async function loadData(){
       try {
-        const res = await fetchWithAuth(API_BASE + '/ubinan?ts=' + Date.now());
-        if (!res.ok || !res.data?.success) { console.error('Gagal memuat data ubinan', res); return; }
+        const res = await fetchWithAuth(API_BASE + '/ubinan?ts=' + Date.now(), { timeout: 30000 });
+        if (!res.ok || !res.data?.success) { 
+          console.error('Gagal memuat data ubinan', res); 
+          return; 
+        }
         allData = res.data.data || [];
         buildRows();
         updateStats();
@@ -477,37 +481,41 @@
       });
     });
 
+    async function exportFromServer() {
+      const token = localStorage.getItem('sipandu_token');
+      if (!token) {
+        alert('Token tidak ditemukan, silakan login ulang');
+        return;
+      }
+
+      const response = await fetch(API_BASE + '/ubinan/export', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal export data');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Data_Ubinan_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+
     async function exportExcel() {
       try {
-        const token = localStorage.getItem('sipandu_token');
-        if (!token) {
-          alert('Token tidak ditemukan, silakan login ulang');
-          return;
-        }
-
-        const response = await fetch(API_BASE + '/ubinan/export', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Gagal export data');
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Data_Ubinan_${new Date().toISOString().split('T')[0]}.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      } catch (err) {
-        console.error('Export error:', err);
-        alert('Gagal export: ' + err.message);
+        await exportFromServer();
+      } catch (serverErr) {
+        console.error('Export error:', serverErr);
+        alert('Gagal export: ' + serverErr.message);
       }
     }
   </script>

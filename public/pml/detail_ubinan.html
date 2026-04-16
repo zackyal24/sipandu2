@@ -260,9 +260,9 @@
               });
               const result = await res.json();
               if (res.ok && result.success) {
-                btn.disabled = false;
-                // Reload detail
-                await loadDetailData();
+                // Redirect kembali ke index untuk refresh table
+                alert('Data berhasil di-approve!');
+                window.location.href = './index.html?refresh=' + Date.now();
               } else {
                 alert('Gagal approve: ' + (result.error || 'Unknown error'));
                 btn.disabled = false;
@@ -392,7 +392,9 @@
         if (res.ok && result.success) {
           const modal = bootstrap.Modal.getInstance(document.getElementById('revisiModal'));
           modal.hide();
-          await loadDetailData();
+          // Redirect kembali ke index untuk refresh table
+          alert('Revisi berhasil dikirim!');
+          window.location.href = './index.html?refresh=' + Date.now();
         } else {
           alert('Gagal mengirim revisi: ' + (result.error || 'Unknown error'));
           btn.disabled = false;

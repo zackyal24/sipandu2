@@ -89,7 +89,7 @@
               </a>
               <div class="collapse ps-4" id="manajemenMenu">
                 <ul class="nav flex-column">
-                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>Akun</a></li>
                   <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link"><i class="bi bi-123 me-2"></i>Segmen</a></li>
                 </ul>
               </div>
@@ -116,7 +116,7 @@
               </a>
               <div class="collapse ps-4" id="manajemenMenuMobile">
                 <ul class="nav flex-column">
-                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>Akun</a></li>
                   <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link"><i class="bi bi-123 me-2"></i>Segmen</a></li>
                 </ul>
               </div>
@@ -306,7 +306,7 @@
     async function loadData() {
       try {
         const url = API_BASE + '/ubinan?ts=' + Date.now();
-        const response = await fetchWithAuth(url);
+        const response = await fetchWithAuth(url, { timeout: 30000 });
         if (!response.ok || !response.data?.success) {
           showError('Gagal memuat data, silakan coba lagi.');
           return;

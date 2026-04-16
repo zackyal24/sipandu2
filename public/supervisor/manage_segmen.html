@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manage Segmen | SIPANDU</title>
+  <title>Manajemen Segmen | SIPANDU</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
@@ -62,7 +62,7 @@
               </a>
               <div class="collapse ps-4" id="manajemenMenu">
                 <ul class="nav flex-column">
-                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>Akun</a></li>
                   <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link active"><i class="bi bi-123 me-2"></i>Segmen</a></li>
                 </ul>
               </div>
@@ -89,7 +89,7 @@
               </a>
               <div class="collapse ps-4" id="manajemenMenuMobile">
                 <ul class="nav flex-column">
-                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>User</a></li>
+                  <li class="nav-item mb-1"><a href="./monitoring_akun.html" class="nav-link"><i class="bi bi-person-gear me-2"></i>Akun</a></li>
                   <li class="nav-item mb-1"><a href="./manage_segmen.html" class="nav-link active"><i class="bi bi-123 me-2"></i>Segmen</a></li>
                 </ul>
               </div>
@@ -100,7 +100,7 @@
       </div>
 
       <main id="mainContent" class="col-12 col-lg-10 px-2 px-md-4" style="margin-left:240px;">
-        <h2 class="my-4">Manage Segmen</h2>
+        <h2 class="my-4">Manajemen Segmen</h2>
         <div class="card shadow-sm">
           <div class="card-body">
             <div class="d-flex justify-content-end gap-2 mb-3">
@@ -277,7 +277,7 @@
       const table = $('#segmenTable').DataTable({
         pageLength: 10,
         ordering: false,
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' }
+        language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' }
       });
 
       // Update row numbers on every draw (search, filter, pagination)
