@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Express uses req.params, Vercel uses req.query
+    // Support both req.params (Express route) dan req.query (query string) untuk fleksibilitas
     const id = req.query.id || req.params.id;
     const pool = getPool();
 

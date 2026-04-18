@@ -48,7 +48,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error', details: err.message });
 });
 
-// Export app untuk Vercel
+// Export app untuk deployment (Express.js)
 module.exports = app;
 
 // Hanya listen jika dijalankan langsung

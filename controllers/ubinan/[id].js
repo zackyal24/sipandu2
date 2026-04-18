@@ -103,7 +103,7 @@ module.exports = async (req, res) => {
 
 
 
-        // FSM baru: status modern
+        // FSM
         const validTransitions = {
           'sedang diperiksa': ['selesai', 'revisi'],
           'revisi': ['selesai', 'sedang diperiksa'],

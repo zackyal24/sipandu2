@@ -1,5 +1,5 @@
 // API Configuration
-// Gunakan origin halaman agar cocok dengan port vercel dev/produksi
+// Gunakan origin halaman agar cocok dengan port lokal/produksi
 const API_BASE_URL = `${window.location.origin}/api`;
 
 // Simple fetch helper that injects Authorization header and returns a rich response object

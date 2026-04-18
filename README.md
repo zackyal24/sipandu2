@@ -1,6 +1,6 @@
 # SIPANDU - Sistem Informasi Padi Ubinan
 
-API Backend menggunakan Express.js yang compatible untuk deployment ke Vercel.
+API Backend menggunakan Express.js dan dideploy menggunakan Google Cloud Run.
 
 ## 🚀 Quick Start (Development Lokal)
 
@@ -48,7 +48,6 @@ sipandu/
 ├── index.js                # Main Express server
 ├── package.json            # Dependencies & scripts
 ├── .env                    # Environment variables (jangan di-commit)
-├── vercel.json            # Konfigurasi Vercel (untuk deployment)
 │
 ├── routes/                 # Route definitions
 │   ├── index.js           # Mount semua routes
@@ -148,38 +147,37 @@ Atau gunakan tools seperti:
 - **Thunder Client** (VS Code Extension)
 - **REST Client** (VS Code Extension)
 
-## 🌐 Deploy ke Vercel
+## 🌐 Deploy ke Cloud Run
 
 ### Persiapan
-1. Pastikan database PostgreSQL bisa diakses dari internet
-   - Gunakan: Vercel Postgres, Neon, Supabase, Railway, dll
-2. Install Vercel CLI: `npm install -g vercel`
+1. Pastikan project Google Cloud sudah aktif billing.
+2. Aktifkan API: Cloud Run, Artifact Registry, dan Cloud Build.
+3. Pastikan database PostgreSQL bisa diakses dari Cloud Run.
 
-### Deploy
+### Build & Deploy
 ```bash
-# Login ke Vercel
-vercel login
+# Build image dan push ke Artifact Registry via Cloud Build
+gcloud builds submit --tag REGION-docker.pkg.dev/PROJECT_ID/REPO_NAME/sipandu:latest
 
-# Deploy (development)
-vercel
-
-# Deploy (production)
-vercel --prod
+# Deploy ke Cloud Run
+gcloud run deploy sipandu \
+  --image REGION-docker.pkg.dev/PROJECT_ID/REPO_NAME/sipandu:latest \
+  --platform managed \
+  --region REGION \
+  --allow-unauthenticated
 ```
 
-### Set Environment Variables di Vercel
-Setelah deploy, tambahkan environment variables di Vercel Dashboard:
-1. Buka https://vercel.com/dashboard
-2. Pilih project → Settings → Environment Variables
-3. Tambahkan semua variable dari file `.env`
+### Set Environment Variables di Cloud Run
+Tambahkan environment variables saat deploy atau update service:
+```bash
+gcloud run services update sipandu \
+  --region REGION \
+  --update-env-vars DB_HOST=...,DB_PORT=5432,DB_USER=...,DB_PASSWORD=...,DB_NAME=...,JWT_SECRET=...,NODE_ENV=production
+```
 
-### ⚠️ Catatan Penting untuk Vercel
-- **File Uploads**: Vercel menggunakan filesystem read-only untuk serverless functions
-  - Untuk production di Vercel, migrate file uploads ke cloud storage:
-    - Vercel Blob Storage
-    - AWS S3
-    - Cloudinary
-    - Google Cloud Storage
+### ⚠️ Catatan Penting untuk Production
+- **File Uploads**: jangan mengandalkan filesystem lokal container untuk penyimpanan permanen.
+- Gunakan cloud storage (misalnya Google Cloud Storage) untuk file upload.
 
 ## 🛠️ Development
 
