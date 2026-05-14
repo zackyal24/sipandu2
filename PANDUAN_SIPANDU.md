@@ -28,7 +28,7 @@ Kalimat singkat yang aman dipakai saat presentasi:
 - Upload dan optimasi gambar: formidable, sharp
 - Export laporan: xlsx
 - Penyimpanan file: Google Cloud Storage
-- Deployment target: Vercel/serverless-compatible Express app
+- Deployment target: Google Cloud Run (containerized Express app)
 
 Makna teknisnya:
 
@@ -103,7 +103,7 @@ Proyek ini mengikuti pola yang mirip MVC walaupun tidak memakai folder `models` 
 - View: halaman HTML di folder `public/`.
 - Controller: file di folder `controllers/`.
 
-Jadi kalau dosen bertanya, Anda bisa menjawab:
+Jadi:
 
 > Pola yang dipakai adalah MVC sederhana. View ada di frontend HTML, controller ada di backend Express, dan model direpresentasikan oleh struktur tabel serta query SQL di PostgreSQL.
 
@@ -192,7 +192,7 @@ Validasi dilakukan di dua sisi:
 - frontend memeriksa role dari data user di `localStorage`,
 - backend memeriksa token JWT sebelum memberi akses data sensitif.
 
-Saat sidang, Anda bisa menyampaikan bahwa validasi frontend membantu pengalaman pengguna, tetapi sumber kebenaran tetap backend.
+bahwa validasi frontend membantu pengalaman pengguna, tetapi sumber kebenaran tetap backend.
 
 ## 9. Database dan Fungsi Tiap Tabel
 
@@ -288,7 +288,7 @@ Makna sederhananya:
 - `berat_plot` adalah input dasar dari hasil ubinan.
 - `GKP`, `GKG`, dan `KU` adalah nilai turunan yang dihitung otomatis.
 
-Saat presentasi, Anda tidak perlu terlalu teknis. Cukup sampaikan bahwa sistem mengotomatiskan konversi hasil ubinan dari berat plot menjadi indikator produksi agar proses perhitungan lebih konsisten.
+bahwa sistem mengotomatiskan konversi hasil ubinan dari berat plot menjadi indikator produksi agar proses perhitungan lebih konsisten.
 
 ## 11. Alur Bisnis Ubinan dari Awal Sampai Akhir
 
@@ -441,8 +441,6 @@ Nilai akademis dari bagian ini:
 - sistem tidak hanya menyimpan data,
 - sistem juga mengendalikan alur kerja melalui aturan status.
 
-Ini sangat baik untuk dibahas saat sidang karena menunjukkan bahwa aplikasi Anda memiliki kontrol proses, bukan sekadar form input biasa.
-
 ## 13. Hak Akses Data per Role
 
 ### 13.1 PCL
@@ -530,7 +528,7 @@ Ini sangat baik untuk dibahas saat sidang karena menunjukkan bahwa aplikasi Anda
 - `public/supervisor/edit_akun.html`: edit akun.
 - `public/supervisor/manage_segmen.html`: kelola segmen.
 
-## 16. Alur Request yang Baik untuk Dijelaskan ke Dosen
+## 16. Alur Request yang Baik
 
 Gunakan contoh ini saat menjelaskan kode.
 
@@ -545,7 +543,7 @@ Contoh: PCL menambah rencana ubinan.
 7. Backend mengembalikan JSON sukses.
 8. Frontend menampilkan pesan berhasil dan redirect ke dashboard.
 
-Kalau Anda bisa menjelaskan satu flow ini dengan lancar, biasanya dosen akan melihat bahwa Anda benar-benar memahami aplikasi.
+
 
 ## 17. Mengapa Desain Ini Layak Secara Teknis
 
@@ -570,9 +568,7 @@ Poin yang bisa Anda pakai untuk pembelaan teknis:
 
 ## 19. Keterbatasan Sistem yang Bisa Diakui Saat Sidang
 
-Bagian ini penting. Jangan mengklaim sistem sempurna.
-
-Keterbatasan yang aman dan jujur untuk disebutkan:
+Keterbatasan:
 
 - frontend masih berbasis multi-page HTML, belum SPA modern,
 - query SQL masih ditulis langsung di controller, belum dipisah ke layer repository/model yang lebih rapi,
@@ -580,7 +576,7 @@ Keterbatasan yang aman dan jujur untuk disebutkan:
 - audit log perubahan belum terlalu lengkap,
 - pengujian otomatis belum terlihat disiapkan di proyek ini.
 
-Kalau dosen bertanya pengembangan lanjutan, jawab saja bahwa sistem bisa ditingkatkan dengan refactor arsitektur service layer, unit test, dan dashboard analitik yang lebih kaya.
+sistem bisa ditingkatkan dengan refactor arsitektur service layer, unit test, dan dashboard analitik yang lebih kaya.
 
 ## 20. Narasi Presentasi 3-5 Menit
 
@@ -617,11 +613,11 @@ Karena data bersifat relasional, misalnya relasi user, desa, kecamatan, dan data
 
 ### Kenapa memakai JWT?
 
-Karena sistem berbasis API dan perlu autentikasi stateless yang cocok untuk deployment serverless.
+Karena sistem berbasis API dan perlu autentikasi stateless yang cocok untuk deployment berbasis container seperti Cloud Run.
 
 ### Mengapa file disimpan di Google Cloud Storage?
 
-Karena deployment seperti Vercel tidak cocok untuk penyimpanan file lokal permanen. Cloud storage lebih aman dan skalabel.
+Karena lingkungan runtime container seperti Cloud Run tidak ideal untuk penyimpanan file lokal permanen. Cloud storage lebih aman dan skalabel.
 
 ### Apa manfaat status workflow?
 
@@ -666,3 +662,146 @@ Fokus pelajari empat hal ini dulu:
 4. struktur tabel `monitoring_data_panen`.
 
 Kalau empat hal ini sudah Anda kuasai, Anda biasanya sudah cukup kuat untuk menjawab sebagian besar pertanyaan sidang tentang aplikasi.
+
+## 26. Lampiran: Peta Fungsi Masing-Masing File
+
+Bagian ini adalah ringkasan cepat fungsi per file agar Anda bisa memahami proyek tanpa membuka semuanya sekaligus.
+
+### 26.1 Root Project
+
+- `index.js`: entry point Express, middleware global, mount `/api`, health check, static file server.
+- `package.json`: metadata project, scripts (`start`, `dev`), daftar dependencies.
+- `Dockerfile`: instruksi build image container untuk deployment.
+- `cors.json`: konfigurasi CORS untuk environment cloud (terutama storage policy).
+- `schema_postgres.sql`: definisi struktur tabel dan relasi database.
+- `data_postgres.sql`: data seed/initial data untuk pengisian awal.
+- `README.md`: dokumentasi setup, endpoint, dan deployment.
+
+### 26.2 Folder `config/`
+
+- `config/database.js`: membuat singleton PostgreSQL connection pool (`pg.Pool`) dengan dukungan SSL opsional.
+- `config/gcs.js`: helper Google Cloud Storage untuk upload file, delete file, ekstrak path URL, dan signed URL.
+
+### 26.3 Folder `middleware/`
+
+- `middleware/auth.js`: fungsi validasi JWT (`verifyToken`) dan auth opsional (`optionalAuth`).
+
+Catatan: di kode saat ini, banyak controller masih melakukan verifikasi token secara manual langsung di file controller.
+
+### 26.4 Folder `routes/`
+
+- `routes/index.js`: agregator semua route module.
+- `routes/auth.js`: route login, logout, ganti password.
+- `routes/users.js`: CRUD user (list/create dan by id).
+- `routes/ubinan.js`: route data ubinan, upload foto, revisi, export.
+- `routes/desa.js`: route list desa dan desa berdasarkan id kecamatan.
+- `routes/kecamatan.js`: route list kecamatan.
+- `routes/segmen.js`: route list/tambah/hapus/import segmen.
+
+### 26.5 Folder `controllers/` (Backend Logic)
+
+- `controllers/authController.js`:
+  - `login`: autentikasi username/password, generate JWT.
+  - `logout`: response logout sederhana.
+  - `changePassword`: validasi password lama, hash password baru.
+- `controllers/userController.js`:
+  - `listOrCreate`: GET daftar user, POST tambah user.
+  - `getOrUpdateOrDelete`: GET detail user, PUT update user, DELETE user.
+- `controllers/kecamatan.js`: handler GET daftar kecamatan.
+- `controllers/desa.js`: handler GET daftar desa berdasarkan query kecamatan.
+- `controllers/desa/[id].js`: handler GET desa berdasarkan parameter id kecamatan.
+- `controllers/segmen.js`:
+  - GET daftar segmen.
+  - POST tambah segmen (single/bulk).
+  - POST multipart import CSV/Excel segmen.
+  - DELETE segmen tertentu atau semua.
+
+### 26.6 Folder `controllers/ubinan/` (Inti Sistem)
+
+- `controllers/ubinan/index.js`:
+  - GET daftar data ubinan (filter sesuai role).
+  - POST tambah data rencana ubinan.
+  - hitung `gkp`, `gkg`, `ku` jika `berat_plot` ada.
+- `controllers/ubinan/[id].js`:
+  - GET detail 1 data ubinan.
+  - PUT update data ubinan + validasi transisi status (FSM).
+  - DELETE data ubinan + hapus file terkait di GCS.
+- `controllers/ubinan/[id]/upload.js`:
+  - parse multipart form upload.
+  - validasi ukuran/tipe gambar.
+  - resize-kompres gambar pakai `sharp`.
+  - upload ke GCS, update URL file di database.
+- `controllers/ubinan/[id]/revisi.js`:
+  - simpan `note_revisi`.
+  - ubah status menjadi `revisi`.
+- `controllers/ubinan/export.js`:
+  - ambil data ubinan sesuai hak akses role.
+  - generate file Excel (`xlsx`) dan kirim sebagai attachment.
+
+### 26.7 Folder `public/` (Frontend)
+
+#### A. Common Assets
+
+- `public/assets/js/auth.js`: helper auth frontend (`requireAuth`, `requireRole`, `logout`, getter user).
+- `public/assets/js/api.js`: helper `fetchWithAuth` + timeout + offline handling.
+- `public/assets/js/api-config.js`: set `API_BASE_URL` berbasis `window.location.origin` + helper fetch versi global.
+- `public/index.html`: halaman login utama.
+
+#### B. Halaman Auth
+
+- `public/auth/ganti_password.html`: form ganti password.
+- `public/auth/reset_password.html`: halaman reset/lupa password (UI alur reset).
+
+#### C. Halaman PCL (`public/form-user/`)
+
+- `dashboard_user.html`: daftar data ubinan milik PCL.
+- `tambah_data.html`: buat rencana ubinan awal.
+- `form_monitoring.html`: isi hasil monitoring + upload foto bukti.
+
+#### D. Halaman PML (`public/pml/`)
+
+- `index.html`: dashboard data ubinan + statistik + revisi + approve + export.
+- `detail_ubinan.html`: detail data dan proses verifikasi per entri.
+
+#### E. Halaman Supervisor (`public/supervisor/`)
+
+- `index.html`: dashboard ringkasan supervisor.
+- `monitoring.html`: monitoring umum data.
+- `monitoring_panen.html`: tabel data ubinan lengkap + delete + export.
+- `detail_ubinan.html`: detail data ubinan untuk supervisor.
+- `edit_ubinan.html`: edit data ubinan tertentu.
+- `monitoring_akun.html`: daftar akun user.
+- `tambah_user.html`: tambah akun baru.
+- `edit_akun.html`: ubah data akun.
+- `manage_segmen.html`: kelola master segmen dan import file.
+
+### 26.8 Folder `credentials/`
+
+- `credentials/sipandu-storage-key.json`: service account key GCS untuk akses lokal.
+
+Penting: file ini sensitif dan idealnya tidak disimpan di repository publik.
+
+### 26.9 Bagaimana Membaca Fungsi Kode dengan Cepat
+
+Gunakan pola ini saat membuka file JavaScript:
+
+1. Cari `module.exports = async (req, res)` atau `exports.namaFungsi`.
+2. Lihat blok `if (req.method === 'GET' | 'POST' | 'PUT' | 'DELETE')`.
+3. Cek validasi token (`authorization bearer`).
+4. Cek query SQL (`pool.query(...)`).
+5. Lihat bentuk response JSON (`success`, `data`, `error`).
+
+Dengan pola tersebut, Anda bisa membaca 1 controller rata-rata dalam 5-10 menit.
+
+### 26.10 Peta Alur Sederhana per Fitur
+
+- Login:
+  - `public/index.html` -> `routes/auth.js` -> `controllers/authController.js` -> tabel `users`.
+- Tambah rencana ubinan:
+  - `public/form-user/tambah_data.html` -> `routes/ubinan.js` -> `controllers/ubinan/index.js` -> tabel `monitoring_data_panen`.
+- Monitoring + upload foto:
+  - `public/form-user/form_monitoring.html` -> `controllers/ubinan/[id].js` + `controllers/ubinan/[id]/upload.js` -> tabel `monitoring_data_panen` + GCS.
+- Revisi/approve:
+  - `public/pml/index.html` atau `public/supervisor/detail_ubinan.html` -> `controllers/ubinan/[id].js` atau `controllers/ubinan/[id]/revisi.js`.
+- Export:
+  - `public/pml/index.html` atau `public/supervisor/monitoring_panen.html` -> `controllers/ubinan/export.js`.

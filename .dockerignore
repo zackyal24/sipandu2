@@ -5,7 +5,6 @@ dist
 .gitignore
 .vscode
 .env
-.env.*
 credentials/*.json
 .DS_Store
 *.md

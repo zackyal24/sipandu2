@@ -123,7 +123,6 @@ module.exports = async (req, res) => {
           }
         }
 
-
         // Kalkulasi GKP, GKG, KU dari berat_plot jika ada
         let berat_plot_num = null, gkp = null, gkg = null, ku = null;
         if (berat_plot) {

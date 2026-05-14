@@ -94,6 +94,8 @@ sipandu/
 
 ## 🔌 API Endpoints
 
+Dokumentasi API lengkap tersedia di file `API_DOCUMENTATION.md`.
+
 ### Authentication
 - `POST /api/auth/login` - Login user
 - `POST /api/auth/logout` - Logout user

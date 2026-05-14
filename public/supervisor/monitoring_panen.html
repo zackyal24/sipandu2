@@ -13,6 +13,13 @@
     body.authenticated { display:block; }
     .navbar-brand { font-weight:700; font-size:20px; }
     .card { border-radius:12px; }
+    .filter-panel {
+      background: linear-gradient(180deg, rgba(248,249,252,0.98) 0%, rgba(255,255,255,1) 100%);
+      border: 1px solid rgba(13, 110, 253, 0.12);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    }
     .btn-custom { border-radius:8px; transition:all .2s ease; }
     .btn-custom:hover { transform:scale(1.03); }
     .table-row-link { cursor:pointer; }
@@ -168,18 +175,33 @@
 
         <div class="card shadow-sm">
           <div class="card-body p-2 p-md-3">
-            <h5 class="card-title mb-3 mb-md-4" style="font-size:clamp(1rem,2.5vw,1.25rem);">Data Monitoring Ubinan</h5>
-            <div class="row mb-3">
-              <div class="col-12 col-md-4 mb-2 mb-md-0">
-                <select id="statusFilter" class="form-select" style="font-size:clamp(0.8rem,1.5vw,0.875rem);">
-                  <option value="">Semua Status</option>
-                  <option value="sedang diperiksa">Sedang Diperiksa</option>
-                  <option value="selesai">Selesai</option>
-                  <option value="sudah">Sudah</option>
-                  <option value="belum">Belum</option>
-                  <option value="revisi">Revisi</option>
-                  <option value="tidak bisa">Tidak Bisa</option>
-                </select>
+            <h5 class="card-title mb-3 mb-md-4" style="font-size:clamp(1rem,2.5vw,1.25rem);">Data Ubinan</h5>
+            <div class="filter-panel mb-3">
+              <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-6 col-lg-3">
+                  <select id="statusFilter" class="form-select form-select-sm">
+                    <option value="">Semua Status</option>
+                    <option value="sedang diperiksa">Sedang Diperiksa</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="sudah">Sudah</option>
+                    <option value="belum">Belum</option>
+                    <option value="revisi">Revisi</option>
+                    <option value="tidak bisa">Tidak Bisa</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                  <select id="filterType" class="form-select form-select-sm">
+                    <option value="">Semua Data</option>
+                    <option value="monthly">Bulanan</option>
+                    <option value="yearly">Tahunan</option>
+                    <option value="daterange">Rentang Bulan</option>
+                    <option value="subround">Per Subround</option>
+                  </select>
+                </div>
+                <div class="col-12 col-lg-6" id="filterInputsContainer"></div>
+                <div class="col-12 d-flex gap-2 justify-content-end pt-1 flex-wrap">
+                  <button class="btn btn-outline-secondary btn-sm" id="clearFilterBtn"><i class="bi bi-arrow-clockwise me-1"></i>Reset</button>
+                </div>
               </div>
             </div>
             <div class="table-responsive">
@@ -450,7 +472,44 @@
 
     async function loadData(){
       try {
-        const res = await fetchWithAuth(API_BASE + '/ubinan?ts=' + Date.now(), { timeout: 30000 });
+        // Build API URL dengan filter params jika ada
+        const url = new URL(API_BASE + '/ubinan');
+        url.searchParams.set('ts', Date.now());
+        
+        const ft = document.getElementById('filterType').value;
+        if (ft === 'monthly') {
+          const m = document.getElementById('filterMonth')?.value;
+          if (m) {
+            const [y,mo] = m.split('-');
+            url.searchParams.set('filterType', 'monthly');
+            url.searchParams.set('month', mo);
+            url.searchParams.set('year', y);
+          }
+        } else if (ft === 'yearly') {
+          const y = document.getElementById('filterYear')?.value;
+          if (y) {
+            url.searchParams.set('filterType', 'yearly');
+            url.searchParams.set('year', y);
+          }
+        } else if (ft === 'daterange') {
+          const sm = document.getElementById('filterStartMonth')?.value;
+          const em = document.getElementById('filterEndMonth')?.value;
+          if (sm && em) {
+            url.searchParams.set('filterType', 'daterange');
+            url.searchParams.set('startMonth', sm);
+            url.searchParams.set('endMonth', em);
+          }
+        } else if (ft === 'subround') {
+          const sr = document.getElementById('filterSubround')?.value;
+          if (sr) {
+            url.searchParams.set('filterType', 'subround');
+            url.searchParams.set('subround', sr);
+            const y = document.getElementById('filterSubroundYear')?.value;
+            if (y) url.searchParams.set('year', y);
+          }
+        }
+
+        const res = await fetchWithAuth(url.toString(), { timeout: 30000 });
         if (!res.ok || !res.data?.success) { 
           console.error('Gagal memuat data ubinan', res); 
           return; 
@@ -465,6 +524,88 @@
         if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Gagal memuat data</td></tr>';
       }
     }
+
+    // Filter UI handlers
+    function renderFilterInputs() {
+      const ft = document.getElementById('filterType').value;
+      const container = document.getElementById('filterInputsContainer');
+      container.innerHTML = '';
+      if (ft === 'monthly') {
+        container.innerHTML = `
+          <div class="col-12 col-md-6">
+            <label class="form-label small mb-2">Bulan & Tahun</label>
+            <input type="month" id="filterMonth" class="form-control form-control-sm" />
+          </div>
+        `;
+      } else if (ft === 'yearly') {
+        container.innerHTML = `
+          <div class="col-12 col-md-6">
+            <label class="form-label small mb-2">Tahun</label>
+            <input type="number" id="filterYear" class="form-control form-control-sm" placeholder="2026" min="2000" max="2100" />
+          </div>
+        `;
+      } else if (ft === 'daterange') {
+        container.innerHTML = `
+          <div class="d-flex gap-2 flex-wrap align-items-end">
+            <div style="min-width:170px; flex:1;">
+              <label class="form-label small mb-2">Dari Bulan</label>
+              <input type="month" id="filterStartMonth" class="form-control form-control-sm" />
+            </div>
+            <div style="min-width:170px; flex:1;">
+              <label class="form-label small mb-2">Sampai Bulan</label>
+              <input type="month" id="filterEndMonth" class="form-control form-control-sm" />
+            </div>
+          </div>
+        `;
+      } else if (ft === 'subround') {
+        container.innerHTML = `
+          <div class="d-flex gap-2 flex-wrap align-items-end">
+            <div style="min-width:170px; flex:1;">
+              <label class="form-label small mb-2">Subround</label>
+              <select id="filterSubround" class="form-select form-select-sm">
+                <option value="">Pilih</option>
+                <option value="1">Subround 1</option>
+                <option value="2">Subround 2</option>
+                <option value="3">Subround 3</option>
+              </select>
+            </div>
+            <div style="min-width:170px; flex:1;">
+              <label class="form-label small mb-2">Tahun (Opsional)</label>
+              <input type="number" id="filterSubroundYear" class="form-control form-control-sm" placeholder="2026" min="2000" max="2100" />
+            </div>
+          </div>
+        `;
+      }
+      bindTimeFilterEvents();
+    }
+
+    function reloadWithCurrentTimeFilter() {
+      loadData();
+    }
+
+    function bindTimeFilterEvents() {
+      const filterMonth = document.getElementById('filterMonth');
+      const filterYear = document.getElementById('filterYear');
+      const filterStartMonth = document.getElementById('filterStartMonth');
+      const filterEndMonth = document.getElementById('filterEndMonth');
+      const filterSubround = document.getElementById('filterSubround');
+      const filterSubroundYear = document.getElementById('filterSubroundYear');
+
+      [filterMonth, filterYear, filterStartMonth, filterEndMonth, filterSubround, filterSubroundYear].forEach((el) => {
+        if (el) {
+          el.onchange = reloadWithCurrentTimeFilter;
+          el.oninput = reloadWithCurrentTimeFilter;
+        }
+      });
+    }
+
+    document.getElementById('filterType').addEventListener('change', renderFilterInputs);
+    document.getElementById('filterType').addEventListener('change', loadData);
+    document.getElementById('clearFilterBtn').addEventListener('click', function(){
+      document.getElementById('filterType').value = '';
+      renderFilterInputs();
+      loadData();
+    });
 
     $(document).ready(function(){
       attachRowClick();
@@ -488,7 +629,42 @@
         return;
       }
 
-      const response = await fetch(API_BASE + '/ubinan/export', {
+      // Build export URL dengan filter params jika ada
+      const exportUrl = new URL(API_BASE + '/ubinan/export');
+      const ft = document.getElementById('filterType')?.value;
+      if (ft === 'monthly') {
+        const m = document.getElementById('filterMonth')?.value;
+        if (m) {
+          const [y,mo] = m.split('-');
+          exportUrl.searchParams.set('filterType', 'monthly');
+          exportUrl.searchParams.set('month', mo);
+          exportUrl.searchParams.set('year', y);
+        }
+      } else if (ft === 'yearly') {
+        const y = document.getElementById('filterYear')?.value;
+        if (y) {
+          exportUrl.searchParams.set('filterType', 'yearly');
+          exportUrl.searchParams.set('year', y);
+        }
+      } else if (ft === 'daterange') {
+        const sm = document.getElementById('filterStartMonth')?.value;
+        const em = document.getElementById('filterEndMonth')?.value;
+        if (sm && em) {
+          exportUrl.searchParams.set('filterType', 'daterange');
+          exportUrl.searchParams.set('startMonth', sm);
+          exportUrl.searchParams.set('endMonth', em);
+        }
+      } else if (ft === 'subround') {
+        const sr = document.getElementById('filterSubround')?.value;
+        if (sr) {
+          exportUrl.searchParams.set('filterType', 'subround');
+          exportUrl.searchParams.set('subround', sr);
+          const y = document.getElementById('filterSubroundYear')?.value;
+          if (y) exportUrl.searchParams.set('year', y);
+        }
+      }
+
+      const response = await fetch(exportUrl.toString(), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -500,14 +676,14 @@
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const blobUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
+      a.href = blobUrl;
       a.download = `Data_Ubinan_${new Date().toISOString().split('T')[0]}.xlsx`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(blobUrl);
     }
 
     async function exportExcel() {

@@ -25,7 +25,54 @@ module.exports = async (req, res) => {
       whereClause = 'WHERE u.pml_id = $1';
       params.push(id);
     }
-    
+
+    // Apply date/subround filters
+    const { filterType } = req.query || {};
+    if (filterType === 'monthly') {
+      const month = parseInt(req.query.month, 10);
+      const year = parseInt(req.query.year, 10);
+      if (month && year) {
+        const connector = whereClause ? ' AND ' : ' WHERE ';
+        whereClause += `${connector}EXTRACT(MONTH FROM m.tanggal_panen) = $${params.length + 1}`;
+        params.push(month);
+        whereClause += ` AND EXTRACT(YEAR FROM m.tanggal_panen) = $${params.length + 1}`;
+        params.push(year);
+      }
+    } else if (filterType === 'yearly') {
+      const year = parseInt(req.query.year, 10);
+      if (year) {
+        const connector = whereClause ? ' AND ' : ' WHERE ';
+        whereClause += `${connector}EXTRACT(YEAR FROM m.tanggal_panen) = $${params.length + 1}`;
+        params.push(year);
+      }
+    } else if (filterType === 'subround') {
+      const sr = parseInt(req.query.subround, 10);
+      if (sr) {
+        const connector = whereClause ? ' AND ' : ' WHERE ';
+        whereClause += `${connector}m.subround = $${params.length + 1}`;
+        params.push(sr);
+        const year = parseInt(req.query.year, 10);
+        if (year) {
+          whereClause += ` AND EXTRACT(YEAR FROM m.tanggal_panen) = $${params.length + 1}`;
+          params.push(year);
+        }
+      }
+    } else if (filterType === 'daterange') {
+      const startMonth = req.query.startMonth;
+      const endMonth = req.query.endMonth;
+      if (startMonth && endMonth) {
+        const [startYear, startMo] = startMonth.split('-');
+        const [endYear, endMo] = endMonth.split('-');
+        const startDate = `${startYear}-${String(startMo).padStart(2, '0')}-01`;
+        const endLastDay = new Date(parseInt(endYear), parseInt(endMo), 0).getDate();
+        const endDate = `${endYear}-${String(endMo).padStart(2, '0')}-${String(endLastDay).padStart(2, '0')}`;
+        const connector = whereClause ? ' AND ' : ' WHERE ';
+        whereClause += `${connector}m.tanggal_panen >= $${params.length + 1}`;
+        params.push(startDate);
+        whereClause += ` AND m.tanggal_panen <= $${params.length + 1}`;
+        params.push(endDate);
+      }
+    }
     // Get all ubinan data
     const result = await pool.query(`
       SELECT 

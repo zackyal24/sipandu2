@@ -83,11 +83,11 @@ module.exports = async (req, res) => {
       }
     }
 
-    // GET - Ambil data ubinan
+    // GET - Ambil data ubinan (dengan opsi filter tanggal/subround)
     const isPcl = role === 'pcl';
     const isPml = role === 'pml';
 
-    let query = `
+    let baseQuery = `
       SELECT 
         m.id, 
         m.nama_petani, 
@@ -116,19 +116,69 @@ module.exports = async (req, res) => {
       FROM monitoring_data_panen m
       LEFT JOIN users u ON m.user_id = u.id
     `;
-    let params = [];
+
+    const whereClauses = [];
+    const params = [];
 
     if (isPcl) {
-      query += ' WHERE m.user_id = $1';
+      whereClauses.push(`m.user_id = $${params.length + 1}`);
       params.push(user.id);
     } else if (isPml) {
-      query += ' WHERE u.pml_id = $1';
+      whereClauses.push(`u.pml_id = $${params.length + 1}`);
       params.push(user.id);
     }
 
-    query += ' ORDER BY m.tanggal_panen DESC NULLS LAST, m.created_at DESC LIMIT 200';
+    // Apply date/subround filters
+    const { filterType } = req.query || {};
+    if (filterType === 'monthly') {
+      const month = parseInt(req.query.month, 10);
+      const year = parseInt(req.query.year, 10);
+      if (month && year) {
+        whereClauses.push(`EXTRACT(MONTH FROM m.tanggal_panen) = $${params.length + 1}`);
+        params.push(month);
+        whereClauses.push(`EXTRACT(YEAR FROM m.tanggal_panen) = $${params.length + 1}`);
+        params.push(year);
+      }
+    } else if (filterType === 'yearly') {
+      const year = parseInt(req.query.year, 10);
+      if (year) {
+        whereClauses.push(`EXTRACT(YEAR FROM m.tanggal_panen) = $${params.length + 1}`);
+        params.push(year);
+      }
+    } else if (filterType === 'subround') {
+      const sr = parseInt(req.query.subround, 10);
+      if (sr) {
+        whereClauses.push(`m.subround = $${params.length + 1}`);
+        params.push(sr);
+        const year = parseInt(req.query.year, 10);
+        if (year) {
+          whereClauses.push(`EXTRACT(YEAR FROM m.tanggal_panen) = $${params.length + 1}`);
+          params.push(year);
+        }
+      }
+    } else if (filterType === 'daterange') {
+      const startMonth = req.query.startMonth;
+      const endMonth = req.query.endMonth;
+      if (startMonth && endMonth) {
+        const [startYear, startMo] = startMonth.split('-');
+        const [endYear, endMo] = endMonth.split('-');
+        const startDate = `${startYear}-${String(startMo).padStart(2, '0')}-01`;
+        const endLastDay = new Date(parseInt(endYear), parseInt(endMo), 0).getDate();
+        const endDate = `${endYear}-${String(endMo).padStart(2, '0')}-${String(endLastDay).padStart(2, '0')}`;
+        whereClauses.push(`m.tanggal_panen >= $${params.length + 1}`);
+        params.push(startDate);
+        whereClauses.push(`m.tanggal_panen <= $${params.length + 1}`);
+        params.push(endDate);
+      }
+    }
 
-    const result = await pool.query(query, params);
+    let finalQuery = baseQuery;
+    if (whereClauses.length) {
+      finalQuery += ' WHERE ' + whereClauses.join(' AND ');
+    }
+    finalQuery += ' ORDER BY m.tanggal_panen DESC NULLS LAST, m.created_at DESC LIMIT 200';
+
+    const result = await pool.query(finalQuery, params);
     
     // Skip signed URL generation untuk list view (hanya untuk detail view)
     // Signed URLs hanya di-generate di endpoint [id].js
