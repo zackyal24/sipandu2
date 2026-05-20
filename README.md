@@ -23,7 +23,9 @@ DB_NAME=sipandu
 JWT_SECRET=your-secret-key-here
 
 # Server Configuration
-PORT=3000
+PORT=8080
+# Public contact (WhatsApp) for supervisor; keep value in server env only
+SUPERVISOR_WA_LINK=your_supervisor_whatsapp_link
 NODE_ENV=development
 ```
 
@@ -39,7 +41,7 @@ psql -U postgres -d sipandu < data_postgres.sql
 npm start
 ```
 
-Server akan berjalan di: **http://localhost:3000**
+Server akan berjalan di: **http://localhost:8080**
 
 ## 📁 Struktur Proyek (MVC Pattern)
 
@@ -127,20 +129,23 @@ Dokumentasi API lengkap tersedia di file `API_DOCUMENTATION.md`.
 ### Health Check
 - `GET /health` - Server status check
 
+### Support / Contact
+- `GET /api/contact-supervisor` - Redirects (302) to the supervisor WhatsApp link configured in `SUPERVISOR_WA_LINK` (server-side redirect; frontend should point to this endpoint)
+
 ## 🧪 Testing API
 
 Menggunakan curl:
 ```bash
 # Health check
-curl http://localhost:3000/health
+curl http://localhost:8080/health
 
 # Login
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"password123"}'
 
 # Get kecamatan (dengan token)
-curl http://localhost:3000/api/kecamatan \
+curl http://localhost:8080/api/kecamatan \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
@@ -174,7 +179,7 @@ Tambahkan environment variables saat deploy atau update service:
 ```bash
 gcloud run services update sipandu \
   --region REGION \
-  --update-env-vars DB_HOST=...,DB_PORT=5432,DB_USER=...,DB_PASSWORD=...,DB_NAME=...,JWT_SECRET=...,NODE_ENV=production
+  --update-env-vars DB_HOST=...,DB_PORT=5432,DB_USER=...,DB_PASSWORD=...,DB_NAME=...,JWT_SECRET=...,NODE_ENV=production,SUPERVISOR_WA_LINK=...
 ```
 
 ### ⚠️ Catatan Penting untuk Production
