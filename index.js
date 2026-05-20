@@ -31,6 +31,17 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
+// Redirect to supervisor WhatsApp link from environment
+app.get('/api/contact-supervisor', (req, res) => {
+  const waLink = process.env.SUPERVISOR_WA_LINK;
+
+  if (!waLink) {
+    return res.status(503).send('Kontak supervisor belum dikonfigurasi.');
+  }
+
+  return res.redirect(302, waLink);
+});
+
 
 // Serve index.html for root route
 app.get('/', (req, res) => {
